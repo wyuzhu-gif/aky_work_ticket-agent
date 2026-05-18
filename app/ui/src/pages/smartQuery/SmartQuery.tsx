@@ -457,6 +457,7 @@ export default function SmartQuery() {
               key={i}
               className={`${classes.msgBubble} ${msg.role === 'user' ? classes.userBubble : classes.aiBubble}`}
             >
+              {msg.role === 'user' && <div>{msg.content}</div>}
               {msg.role === 'assistant' && msg.isStreaming && !msg.content && (!msg.thinkingSteps?.length) && !msg.queryData && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Spinner size="tiny" /> 思考中...

@@ -666,3 +666,1041 @@ INFO:     127.0.0.1:45086 - "GET /api/v1/sqlagent/db-config HTTP/1.1" 200 OK
             completed in 0.70s
             with status 200
 INFO:     127.0.0.1:42682 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 10:39:13,172 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 10:39:13,188 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work
+            completed in 0.02s
+            with status 200
+INFO:     127.0.0.1:47050 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-18 10:40:09,585 - middleware.logging - INFO - Received GET for
+            http://localhost:38021/api/v1/sqlagent/db-config from 127.0.0.1 using curl/8.5.0
+2026-05-18 10:40:09,613 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/db-config "HTTP/1.1 200 OK"
+2026-05-18 10:40:09,615 - middleware.logging - INFO - GET http://localhost:38021/api/v1/sqlagent/db-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:45770 - "GET /api/v1/sqlagent/db-config HTTP/1.1" 200 OK
+2026-05-18 11:08:41,187 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:08:41,217 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-18 11:08:41,219 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:57650 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-18 11:08:42,409 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/db-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:08:42,454 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/db-config "HTTP/1.1 200 OK"
+2026-05-18 11:08:42,455 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/db-config
+            completed in 0.05s
+            with status 200
+INFO:     127.0.0.1:57664 - "GET /api/v1/sqlagent/db-config HTTP/1.1" 200 OK
+2026-05-18 11:08:42,863 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:08:43,918 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 11:08:43,919 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 1.06s
+            with status 200
+INFO:     127.0.0.1:57668 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 11:08:49,522 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/sqlagent/training/add from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:08:52,710 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/training/add "HTTP/1.1 200 OK"
+2026-05-18 11:08:52,710 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/sqlagent/training/add
+            completed in 3.19s
+            with status 200
+INFO:     127.0.0.1:52658 - "POST /api/v1/sqlagent/training/add HTTP/1.1" 200 OK
+2026-05-18 11:08:52,715 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:08:53,515 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 11:08:53,516 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 0.80s
+            with status 200
+INFO:     127.0.0.1:52666 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 11:09:01,717 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/sqlagent/training/add from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:09:02,606 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/training/add "HTTP/1.1 200 OK"
+2026-05-18 11:09:02,607 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/sqlagent/training/add
+            completed in 0.89s
+            with status 200
+INFO:     127.0.0.1:35262 - "POST /api/v1/sqlagent/training/add HTTP/1.1" 200 OK
+2026-05-18 11:09:02,611 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:09:03,317 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 11:09:03,319 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 0.71s
+            with status 200
+INFO:     127.0.0.1:35266 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 11:11:55,263 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/sqlagent/training/add from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:11:57,292 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/training/add "HTTP/1.1 200 OK"
+2026-05-18 11:11:57,292 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/sqlagent/training/add
+            completed in 2.03s
+            with status 200
+INFO:     127.0.0.1:55726 - "POST /api/v1/sqlagent/training/add HTTP/1.1" 200 OK
+2026-05-18 11:11:57,297 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:11:58,318 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 11:11:58,320 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 1.02s
+            with status 200
+INFO:     127.0.0.1:55742 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 11:12:10,034 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/sqlagent/training/add from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:12:11,210 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/training/add "HTTP/1.1 200 OK"
+2026-05-18 11:12:11,210 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/sqlagent/training/add
+            completed in 1.18s
+            with status 200
+INFO:     127.0.0.1:34486 - "POST /api/v1/sqlagent/training/add HTTP/1.1" 200 OK
+2026-05-18 11:12:11,216 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:12:12,317 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 11:12:12,318 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 1.10s
+            with status 200
+INFO:     127.0.0.1:34496 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 11:12:19,803 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/sqlagent/training/add from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:12:21,914 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/training/add "HTTP/1.1 200 OK"
+2026-05-18 11:12:21,915 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/sqlagent/training/add
+            completed in 2.11s
+            with status 200
+INFO:     127.0.0.1:45204 - "POST /api/v1/sqlagent/training/add HTTP/1.1" 200 OK
+2026-05-18 11:12:21,919 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:12:22,919 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 11:12:22,921 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 1.00s
+            with status 200
+INFO:     127.0.0.1:45212 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 11:12:37,132 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/sqlagent/training/add from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:12:37,726 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/training/add "HTTP/1.1 200 OK"
+2026-05-18 11:12:37,726 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/sqlagent/training/add
+            completed in 0.59s
+            with status 200
+INFO:     127.0.0.1:45746 - "POST /api/v1/sqlagent/training/add HTTP/1.1" 200 OK
+2026-05-18 11:12:37,731 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:12:38,718 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 11:12:38,719 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 0.99s
+            with status 200
+INFO:     127.0.0.1:45760 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 11:12:44,269 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/sqlagent/training/add from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:12:45,246 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/training/add "HTTP/1.1 200 OK"
+2026-05-18 11:12:45,247 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/sqlagent/training/add
+            completed in 0.98s
+            with status 200
+INFO:     127.0.0.1:46870 - "POST /api/v1/sqlagent/training/add HTTP/1.1" 200 OK
+2026-05-18 11:12:45,256 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 11:12:46,119 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 11:12:46,121 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 0.87s
+            with status 200
+INFO:     127.0.0.1:46878 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 12:23:34,789 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 12:23:35,522 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 12:23:35,524 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 0.74s
+            with status 200
+INFO:     127.0.0.1:49000 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 12:23:35,775 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 12:23:35,804 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-18 12:23:35,805 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:49002 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-18 12:24:51,147 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 12:24:51,175 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-18 12:24:51,177 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:51308 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-18 12:24:55,604 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/db-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 12:24:55,632 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/db-config "HTTP/1.1 200 OK"
+2026-05-18 12:24:55,634 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/db-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:51320 - "GET /api/v1/sqlagent/db-config HTTP/1.1" 200 OK
+2026-05-18 12:24:56,316 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 12:24:57,320 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 12:24:57,322 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 1.01s
+            with status 200
+INFO:     127.0.0.1:51322 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 12:25:15,977 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/sqlagent/training/add from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 12:25:16,274 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/training/add "HTTP/1.1 200 OK"
+2026-05-18 12:25:16,275 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/sqlagent/training/add
+            completed in 0.30s
+            with status 200
+INFO:     127.0.0.1:53588 - "POST /api/v1/sqlagent/training/add HTTP/1.1" 200 OK
+2026-05-18 12:25:16,282 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 12:25:17,120 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 12:25:17,122 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 0.84s
+            with status 200
+INFO:     127.0.0.1:53590 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 12:38:43,448 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 12:38:44,321 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 12:38:44,324 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 0.88s
+            with status 200
+INFO:     127.0.0.1:55406 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 12:38:44,423 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 12:38:44,453 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-18 12:38:44,455 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:55422 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-18 14:11:56,815 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 14:11:56,843 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-18 14:11:56,845 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:55630 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-18 14:11:59,873 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 14:12:00,920 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 14:12:00,922 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 1.05s
+            with status 200
+INFO:     127.0.0.1:37974 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 14:13:15,470 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/sqlagent/training/add from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 14:13:15,691 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/training/add "HTTP/1.1 200 OK"
+2026-05-18 14:13:15,692 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/sqlagent/training/add
+            completed in 0.22s
+            with status 200
+INFO:     127.0.0.1:46152 - "POST /api/v1/sqlagent/training/add HTTP/1.1" 200 OK
+2026-05-18 14:13:15,698 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 14:13:16,519 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 14:13:16,522 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 0.82s
+            with status 200
+INFO:     127.0.0.1:46166 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 14:40:06,367 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/sqlagent/training/add from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 14:40:10,878 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/training/add "HTTP/1.1 200 OK"
+2026-05-18 14:40:10,878 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/sqlagent/training/add
+            completed in 4.51s
+            with status 200
+INFO:     127.0.0.1:52986 - "POST /api/v1/sqlagent/training/add HTTP/1.1" 200 OK
+2026-05-18 14:40:10,899 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 14:40:11,722 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 14:40:11,724 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 0.83s
+            with status 200
+INFO:     127.0.0.1:38808 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 14:40:22,370 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 14:40:22,395 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.02s
+            with status 200
+INFO:     127.0.0.1:41048 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 14:40:22,477 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 14:43:52,493 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 14:43:52,517 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.02s
+            with status 200
+INFO:     127.0.0.1:49454 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 14:43:55,922 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 14:49:59,688 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 14:49:59,710 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.02s
+            with status 200
+INFO:     127.0.0.1:34410 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 14:50:00,062 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 15:11:03,313 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 15:11:03,344 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:46054 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 15:11:03,458 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 15:13:09,849 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 15:13:09,866 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work
+            completed in 0.02s
+            with status 200
+INFO:     127.0.0.1:40574 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-18 15:13:15,833 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/permits from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 15:13:15,883 - middleware.logging - ERROR - Exception during POST
+                Url http://0.0.0.0:38021/api/v1/permits after 0.05s: invalid input for query argument $3: '2020-02' (expected a datetime.date or datetime.datetime instance, got 'str')
+Traceback (most recent call last):
+  File "asyncpg/protocol/prepared_stmt.pyx", line 175, in asyncpg.protocol.protocol.PreparedStatementState._encode_bind_msg
+  File "asyncpg/protocol/codecs/base.pyx", line 251, in asyncpg.protocol.protocol.Codec.encode
+  File "asyncpg/protocol/codecs/base.pyx", line 153, in asyncpg.protocol.protocol.Codec.encode_scalar
+  File "asyncpg/pgproto/codecs/datetime.pyx", line 147, in asyncpg.pgproto.pgproto.timestamp_encode
+TypeError: expected a datetime.date or datetime.datetime instance, got 'str'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 71, in save_permit
+    saved = await service.save_permit_generic(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 311, in save_permit_generic
+    await self._repo.generic_insert_gas(gas_table, ga)
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 190, in generic_insert_gas
+    return await self.generic_insert(gas_table, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 160, in generic_insert
+    row = await self._pg.fetchrow(sql, *vals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 43, in fetchrow
+    return await conn.fetchrow(query, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 752, in fetchrow
+    data = await self._execute(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1873, in _execute
+    result, _ = await self.__execute(
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1970, in __execute
+    result, stmt = await self._do_execute(
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2033, in _do_execute
+    result = await executor(stmt, None)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 184, in bind_execute
+  File "asyncpg/protocol/prepared_stmt.pyx", line 204, in asyncpg.protocol.protocol.PreparedStatementState._encode_bind_msg
+asyncpg.exceptions.DataError: invalid input for query argument $3: '2020-02' (expected a datetime.date or datetime.datetime instance, got 'str')
+2026-05-18 15:13:15,893 - main - ERROR - Unexpected error occurred: invalid input for query argument $3: '2020-02' (expected a datetime.date or datetime.datetime instance, got 'str')
+Traceback (most recent call last):
+  File "asyncpg/protocol/prepared_stmt.pyx", line 175, in asyncpg.protocol.protocol.PreparedStatementState._encode_bind_msg
+  File "asyncpg/protocol/codecs/base.pyx", line 251, in asyncpg.protocol.protocol.Codec.encode
+  File "asyncpg/protocol/codecs/base.pyx", line 153, in asyncpg.protocol.protocol.Codec.encode_scalar
+  File "asyncpg/pgproto/codecs/datetime.pyx", line 147, in asyncpg.pgproto.pgproto.timestamp_encode
+TypeError: expected a datetime.date or datetime.datetime instance, got 'str'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    with collapse_excgroups():
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 71, in save_permit
+    saved = await service.save_permit_generic(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 311, in save_permit_generic
+    await self._repo.generic_insert_gas(gas_table, ga)
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 190, in generic_insert_gas
+    return await self.generic_insert(gas_table, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 160, in generic_insert
+    row = await self._pg.fetchrow(sql, *vals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 43, in fetchrow
+    return await conn.fetchrow(query, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 752, in fetchrow
+    data = await self._execute(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1873, in _execute
+    result, _ = await self.__execute(
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1970, in __execute
+    result, stmt = await self._do_execute(
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2033, in _do_execute
+    result = await executor(stmt, None)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 184, in bind_execute
+  File "asyncpg/protocol/prepared_stmt.pyx", line 204, in asyncpg.protocol.protocol.PreparedStatementState._encode_bind_msg
+asyncpg.exceptions.DataError: invalid input for query argument $3: '2020-02' (expected a datetime.date or datetime.datetime instance, got 'str')
+INFO:     127.0.0.1:40588 - "POST /api/v1/permits HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "asyncpg/protocol/prepared_stmt.pyx", line 175, in asyncpg.protocol.protocol.PreparedStatementState._encode_bind_msg
+  File "asyncpg/protocol/codecs/base.pyx", line 251, in asyncpg.protocol.protocol.Codec.encode
+  File "asyncpg/protocol/codecs/base.pyx", line 153, in asyncpg.protocol.protocol.Codec.encode_scalar
+  File "asyncpg/pgproto/codecs/datetime.pyx", line 147, in asyncpg.pgproto.pgproto.timestamp_encode
+TypeError: expected a datetime.date or datetime.datetime instance, got 'str'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 401, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    with collapse_excgroups():
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 71, in save_permit
+    saved = await service.save_permit_generic(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 311, in save_permit_generic
+    await self._repo.generic_insert_gas(gas_table, ga)
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 190, in generic_insert_gas
+    return await self.generic_insert(gas_table, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 160, in generic_insert
+    row = await self._pg.fetchrow(sql, *vals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 43, in fetchrow
+    return await conn.fetchrow(query, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 752, in fetchrow
+    data = await self._execute(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1873, in _execute
+    result, _ = await self.__execute(
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1970, in __execute
+    result, stmt = await self._do_execute(
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2033, in _do_execute
+    result = await executor(stmt, None)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 184, in bind_execute
+  File "asyncpg/protocol/prepared_stmt.pyx", line 204, in asyncpg.protocol.protocol.PreparedStatementState._encode_bind_msg
+asyncpg.exceptions.DataError: invalid input for query argument $3: '2020-02' (expected a datetime.date or datetime.datetime instance, got 'str')
+2026-05-18 15:13:21,105 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/permits from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 15:13:21,111 - middleware.logging - ERROR - Exception during POST
+                Url http://0.0.0.0:38021/api/v1/permits after 0.01s: duplicate key value violates unique constraint "hot_work_permits_permit_code_key"
+DETAIL:  Key (permit_code)=(YDH20260222005) already exists.
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 71, in save_permit
+    saved = await service.save_permit_generic(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 299, in save_permit_generic
+    saved = await self._repo.generic_insert(table, permit_data)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 160, in generic_insert
+    row = await self._pg.fetchrow(sql, *vals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 43, in fetchrow
+    return await conn.fetchrow(query, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 752, in fetchrow
+    data = await self._execute(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1873, in _execute
+    result, _ = await self.__execute(
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1970, in __execute
+    result, stmt = await self._do_execute(
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2033, in _do_execute
+    result = await executor(stmt, None)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 205, in bind_execute
+asyncpg.exceptions.UniqueViolationError: duplicate key value violates unique constraint "hot_work_permits_permit_code_key"
+DETAIL:  Key (permit_code)=(YDH20260222005) already exists.
+2026-05-18 15:13:21,116 - main - ERROR - Unexpected error occurred: duplicate key value violates unique constraint "hot_work_permits_permit_code_key"
+DETAIL:  Key (permit_code)=(YDH20260222005) already exists.
+  + Exception Group Traceback (most recent call last):
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 87, in collapse_excgroups
+  |     yield
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 190, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    |     await self.simple_response(scope, receive, send, request_headers=headers)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    |     await self.app(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    |     with collapse_excgroups():
+    |          ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    |     self.gen.throw(value)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    |     response = await call_next(request)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    |     raise app_exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    |     await route.handle(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    |     await self.app(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    |     response = await func(request)
+    |                ^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    |     raw_response = await run_endpoint_function(
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    |     return await dependant.call(**values)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 71, in save_permit
+    |     saved = await service.save_permit_generic(
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 299, in save_permit_generic
+    |     saved = await self._repo.generic_insert(table, permit_data)
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 160, in generic_insert
+    |     row = await self._pg.fetchrow(sql, *vals)
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 43, in fetchrow
+    |     return await conn.fetchrow(query, *args)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 752, in fetchrow
+    |     data = await self._execute(
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1873, in _execute
+    |     result, _ = await self.__execute(
+    |                 ^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1970, in __execute
+    |     result, stmt = await self._do_execute(
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2033, in _do_execute
+    |     result = await executor(stmt, None)
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "asyncpg/protocol/protocol.pyx", line 205, in bind_execute
+    | asyncpg.exceptions.UniqueViolationError: duplicate key value violates unique constraint "hot_work_permits_permit_code_key"
+    | DETAIL:  Key (permit_code)=(YDH20260222005) already exists.
+    +------------------------------------
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    with collapse_excgroups():
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 71, in save_permit
+    saved = await service.save_permit_generic(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 299, in save_permit_generic
+    saved = await self._repo.generic_insert(table, permit_data)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 160, in generic_insert
+    row = await self._pg.fetchrow(sql, *vals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 43, in fetchrow
+    return await conn.fetchrow(query, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 752, in fetchrow
+    data = await self._execute(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1873, in _execute
+    result, _ = await self.__execute(
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1970, in __execute
+    result, stmt = await self._do_execute(
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2033, in _do_execute
+    result = await executor(stmt, None)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 205, in bind_execute
+asyncpg.exceptions.UniqueViolationError: duplicate key value violates unique constraint "hot_work_permits_permit_code_key"
+DETAIL:  Key (permit_code)=(YDH20260222005) already exists.
+INFO:     127.0.0.1:37352 - "POST /api/v1/permits HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+  + Exception Group Traceback (most recent call last):
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 87, in collapse_excgroups
+  |     yield
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 190, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 401, in run_asgi
+    |     result = await app(  # type: ignore[func-returns-value]
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    |     return await self.app(scope, receive, send)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    |     await super().__call__(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/applications.py", line 123, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    |     await self.simple_response(scope, receive, send, request_headers=headers)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    |     await self.app(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    |     with collapse_excgroups():
+    |          ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    |     self.gen.throw(value)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    |     response = await call_next(request)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    |     raise app_exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    |     await route.handle(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    |     await self.app(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    |     response = await func(request)
+    |                ^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    |     raw_response = await run_endpoint_function(
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    |     return await dependant.call(**values)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 71, in save_permit
+    |     saved = await service.save_permit_generic(
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 299, in save_permit_generic
+    |     saved = await self._repo.generic_insert(table, permit_data)
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 160, in generic_insert
+    |     row = await self._pg.fetchrow(sql, *vals)
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 43, in fetchrow
+    |     return await conn.fetchrow(query, *args)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 752, in fetchrow
+    |     data = await self._execute(
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1873, in _execute
+    |     result, _ = await self.__execute(
+    |                 ^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1970, in __execute
+    |     result, stmt = await self._do_execute(
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2033, in _do_execute
+    |     result = await executor(stmt, None)
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "asyncpg/protocol/protocol.pyx", line 205, in bind_execute
+    | asyncpg.exceptions.UniqueViolationError: duplicate key value violates unique constraint "hot_work_permits_permit_code_key"
+    | DETAIL:  Key (permit_code)=(YDH20260222005) already exists.
+    +------------------------------------
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 401, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    with collapse_excgroups():
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 71, in save_permit
+    saved = await service.save_permit_generic(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 299, in save_permit_generic
+    saved = await self._repo.generic_insert(table, permit_data)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 160, in generic_insert
+    row = await self._pg.fetchrow(sql, *vals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 43, in fetchrow
+    return await conn.fetchrow(query, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 752, in fetchrow
+    data = await self._execute(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1873, in _execute
+    result, _ = await self.__execute(
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 1970, in __execute
+    result, stmt = await self._do_execute(
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2033, in _do_execute
+    result = await executor(stmt, None)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 205, in bind_execute
+asyncpg.exceptions.UniqueViolationError: duplicate key value violates unique constraint "hot_work_permits_permit_code_key"
+DETAIL:  Key (permit_code)=(YDH20260222005) already exists.
+2026-05-18 15:13:48,347 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/permits from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 15:13:48,529 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/permits
+            completed in 0.18s
+            with status 200
+INFO:     127.0.0.1:46516 - "POST /api/v1/permits HTTP/1.1" 200 OK
+2026-05-18 15:13:48,537 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 15:13:48,542 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work
+            completed in 0.01s
+            with status 200
+INFO:     127.0.0.1:46522 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-18 15:14:10,579 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 15:14:10,586 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.01s
+            with status 200
+INFO:     127.0.0.1:38712 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 15:14:10,633 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 15:14:29,327 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 15:14:29,333 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work
+            completed in 0.01s
+            with status 200
+INFO:     127.0.0.1:35690 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-18 15:26:58,815 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 15:26:58,839 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.02s
+            with status 200
+INFO:     127.0.0.1:45378 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 15:26:58,887 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 15:30:13,310 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 15:30:13,338 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:58794 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 15:30:13,389 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 15:30:16,223 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 15:30:16,246 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.02s
+            with status 200
+INFO:     127.0.0.1:58798 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 15:30:22,534 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 15:40:39,983 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 15:40:40,000 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work
+            completed in 0.02s
+            with status 200
+INFO:     127.0.0.1:48538 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 200 OK

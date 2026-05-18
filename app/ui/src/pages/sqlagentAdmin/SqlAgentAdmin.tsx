@@ -27,6 +27,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Tooltip,
 } from '@fluentui/react-components'
 import {
   BrainCircuitRegular,
@@ -38,6 +39,8 @@ import {
   DeleteRegular,
   ArrowSyncRegular,
   CheckmarkRegular,
+  CopyRegular,
+  EditRegular,
 } from '@fluentui/react-icons'
 import type { LLMConfig, DBConfig, AgentConfig, TrainingItem } from '../../services/sqlagentAdminApi'
 import {
@@ -264,6 +267,8 @@ function TrainingTab() {
   const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState<string>('')
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogMode, setDialogMode] = useState<'add' | 'edit' | 'copy'>('add')
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [addType, setAddType] = useState<string>('ddl')
   const [addContent, setAddContent] = useState('')
   const [addQuestion, setAddQuestion] = useState('')
@@ -282,27 +287,78 @@ function TrainingTab() {
 
   useEffect(() => { loadData() }, [loadData])
 
-  const handleAdd = async () => {
+  const resetForm = () => {
+    setAddType('ddl'); setAddContent(''); setAddQuestion(''); setAddSql('')
+    setEditingId(null)
+  }
+
+  const openAddDialog = () => {
+    resetForm()
+    setDialogMode('add')
+    setDialogOpen(true)
+  }
+
+  const openEditDialog = (item: TrainingItem) => {
+    const t = item.training_data_type
+    setAddType(t)
+    if (t === 'sql') {
+      setAddQuestion(item.question || '')
+      setAddSql(item.sql || '')
+      setAddContent('')
+    } else {
+      setAddContent(item.content || '')
+      setAddQuestion('')
+      setAddSql('')
+    }
+    setEditingId(item.id)
+    setDialogMode('edit')
+    setDialogOpen(true)
+  }
+
+  const openCopyDialog = (item: TrainingItem) => {
+    const t = item.training_data_type
+    setAddType(t)
+    if (t === 'sql') {
+      setAddQuestion(item.question || '')
+      setAddSql(item.sql || '')
+      setAddContent('')
+    } else {
+      setAddContent(item.content || '')
+      setAddQuestion('')
+      setAddSql('')
+    }
+    setEditingId(null)
+    setDialogMode('copy')
+    setDialogOpen(true)
+  }
+
+  const handleSave = async () => {
     setAdding(true)
     try {
       const payload: any = { training_type: addType }
       if (addType === 'ddl' || addType === 'documentation') payload.content = addContent
-      if (addType === 'sql') { payload.question = addQuestion; payload.sql = addAddSql }
+      if (addType === 'sql') { payload.question = addQuestion; payload.sql = addSql }
+
+      if (dialogMode === 'edit' && editingId) {
+        await deleteTrainingData(editingId)
+      }
       await addTrainingData(payload)
+
       setDialogOpen(false)
-      setAddContent(''); setAddQuestion(''); setAddSql('')
-      setMsg({ intent: 'success', text: '添加成功' })
+      resetForm()
+      setMsg({ intent: 'success', text: dialogMode === 'edit' ? '修改成功' : dialogMode === 'copy' ? '复制成功' : '添加成功' })
       loadData()
     } catch (e: any) { setMsg({ intent: 'error', text: e.message }) }
     finally { setAdding(false) }
   }
 
   const handleDelete = async (id: string) => {
-    try { await deleteTrainingData(id); loadData() }
+    try { await deleteTrainingData(id); setMsg({ intent: 'success', text: '删除成功' }); loadData() }
     catch (e: any) { setMsg({ intent: 'error', text: e.message }) }
   }
 
   const typeLabel = (t: string) => t === 'ddl' ? 'DDL' : t === 'sql' ? 'SQL 示例' : '文档'
+  const dialogTitle = dialogMode === 'edit' ? '编辑训练数据' : dialogMode === 'copy' ? '复制训练数据' : '添加训练数据'
 
   return (
     <div className={classes.card}>
@@ -317,7 +373,7 @@ function TrainingTab() {
             <option value="documentation">文档</option>
           </Select>
         </div>
-        <Button appearance="primary" size="small" icon={<AddRegular />} onClick={() => setDialogOpen(true)}>添加</Button>
+        <Button appearance="primary" size="small" icon={<AddRegular />} onClick={openAddDialog}>添加</Button>
       </div>
 
       {loading ? <Spinner /> : items.length === 0 ? (
@@ -329,7 +385,7 @@ function TrainingTab() {
               <TableRow>
                 <TableHeaderCell style={{ width: 80 }}>类型</TableHeaderCell>
                 <TableHeaderCell>内容摘要</TableHeaderCell>
-                <TableHeaderCell style={{ width: 80 }}>操作</TableHeaderCell>
+                <TableHeaderCell style={{ width: 140 }}>操作</TableHeaderCell>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -338,7 +394,17 @@ function TrainingTab() {
                   <TableCell><Badge appearance="ghost" color="informative" size="small">{typeLabel(item.training_data_type)}</Badge></TableCell>
                   <TableCell><Text size={200} truncate>{(item.content || item.sql || item.question || '-').slice(0, 120)}</Text></TableCell>
                   <TableCell>
-                    <Button size="small" appearance="subtle" icon={<DeleteRegular />} onClick={() => handleDelete(item.id)} />
+                    <div style={{ display: 'flex', gap: 2 }}>
+                      <Tooltip content="编辑" relationship="label">
+                        <Button size="small" appearance="subtle" icon={<EditRegular />} onClick={() => openEditDialog(item)} />
+                      </Tooltip>
+                      <Tooltip content="复制" relationship="label">
+                        <Button size="small" appearance="subtle" icon={<CopyRegular />} onClick={() => openCopyDialog(item)} />
+                      </Tooltip>
+                      <Tooltip content="删除" relationship="label">
+                        <Button size="small" appearance="subtle" icon={<DeleteRegular />} onClick={() => handleDelete(item.id)} />
+                      </Tooltip>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -347,15 +413,15 @@ function TrainingTab() {
         </div>
       )}
 
-      <Dialog open={dialogOpen} onOpenChange={(_, d) => !d.type && setDialogOpen(false)}>
+      <Dialog open={dialogOpen} onOpenChange={(_, d) => { if (!d.type) { setDialogOpen(false); resetForm() } }}>
         <DialogSurface>
           <DialogBody>
-            <DialogTitle>添加训练数据</DialogTitle>
+            <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogContent>
               <div className={classes.addForm}>
                 <div className={classes.fieldItem}>
                   <Label className={classes.fieldLabel}>类型</Label>
-                  <Select value={addType} onChange={(_, d) => setAddType(d.value)}>
+                  <Select value={addType} onChange={(_, d) => setAddType(d.value)} disabled={dialogMode === 'edit'}>
                     <option value="ddl">DDL (表结构)</option>
                     <option value="documentation">文档 (业务说明)</option>
                     <option value="sql">SQL 示例 (问答对)</option>
@@ -364,7 +430,7 @@ function TrainingTab() {
                 {(addType === 'ddl' || addType === 'documentation') && (
                   <div className={classes.fieldItem}>
                     <Label className={classes.fieldLabel}>{addType === 'ddl' ? 'DDL 语句' : '文档内容'}</Label>
-                    <Textarea rows={6} value={addContent} onChange={(_, d) => setAddContent(d.value)} />
+                    <Textarea rows={10} value={addContent} onChange={(_, d) => setAddContent(d.value)} />
                   </div>
                 )}
                 {addType === 'sql' && (
@@ -375,16 +441,16 @@ function TrainingTab() {
                     </div>
                     <div className={classes.fieldItem}>
                       <Label className={classes.fieldLabel}>SQL</Label>
-                      <Textarea rows={4} value={addSql} onChange={(_, d) => setAddSql(d.value)} />
+                      <Textarea rows={6} value={addSql} onChange={(_, d) => setAddSql(d.value)} />
                     </div>
                   </>
                 )}
               </div>
             </DialogContent>
             <DialogActions>
-              <Button appearance="subtle" onClick={() => setDialogOpen(false)}>取消</Button>
-              <Button appearance="primary" icon={adding ? <Spinner size="tiny" /> : <CheckmarkRegular />} onClick={handleAdd} disabled={adding}>
-                添加
+              <Button appearance="subtle" onClick={() => { setDialogOpen(false); resetForm() }}>取消</Button>
+              <Button appearance="primary" icon={adding ? <Spinner size="tiny" /> : <CheckmarkRegular />} onClick={handleSave} disabled={adding}>
+                {dialogMode === 'edit' ? '保存修改' : dialogMode === 'copy' ? '添加副本' : '添加'}
               </Button>
             </DialogActions>
           </DialogBody>
