@@ -11,9 +11,12 @@ import {
   ShieldCheckmarkRegular,
   BookRegular,
   DatabaseRegular,
+  DataUsageRegular,
   FolderRegular,
   WeatherMoonRegular,
   WeatherSunnyRegular,
+  SettingsRegular,
+  BrainCircuitRegular,
 } from '@fluentui/react-icons'
 import { PropsWithChildren } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
@@ -244,7 +247,7 @@ export function AppShell({ mode, onToggleMode, children }: AppShellProps) {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const pageTitle = location.pathname === '/review' ? '智能审阅' : location.pathname === '/rule-library' ? '规则库' : location.pathname === '/ticket-database' ? '作业票数据库' : '作业票文档库'
+  const pageTitle = location.pathname === '/review' ? '智能审阅' : location.pathname === '/rule-library' ? '规则库' : location.pathname === '/ticket-database' ? '作业票数据库' : location.pathname === '/smart-query' ? '智能问数' : location.pathname === '/sqlagent-admin' ? '智能问数智能体管理' : '作业票文档库'
 
   return (
     <div className={classes.shell}>
@@ -275,7 +278,19 @@ export function AppShell({ mode, onToggleMode, children }: AppShellProps) {
             <span className={classes.navItemIcon}><DatabaseRegular /></span>
             <span>作业票数据库</span>
           </NavLink>
-          <NavItem to="/rule-library" label="规则库" icon={<BookRegular />} />
+          <NavLink to="/smart-query" className={({ isActive }) => mergeClasses(classes.navItem, isActive && classes.navItemActive)} style={{ position: 'relative', paddingLeft: '44px' }}>
+            <span className={classes.navItemIcon}><DataUsageRegular /></span>
+            <span>智能问数</span>
+          </NavLink>
+
+          <div className={classes.navItem} style={{ cursor: 'default', marginTop: '12px' }}>
+            <span className={classes.navItemIcon}><SettingsRegular /></span>
+            <span>系统管理</span>
+          </div>
+          <NavLink to="/sqlagent-admin" className={({ isActive }) => mergeClasses(classes.navItem, isActive && classes.navItemActive)} style={{ position: 'relative', paddingLeft: '44px' }}>
+            <span className={classes.navItemIcon}><BrainCircuitRegular /></span>
+            <span>智能问数智能体管理</span>
+          </NavLink>          <NavItem to="/rule-library" label="规则库" icon={<BookRegular />} />
         </aside>
 
         <div className={classes.content}>

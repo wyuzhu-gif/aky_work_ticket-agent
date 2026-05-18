@@ -84,3 +84,36 @@ async def get_rule_documents_service() -> RuleDocumentsService:
         await rules_repo.init()
         _rule_docs_service = RuleDocumentsService(rule_docs_repo, rules_repo)
         return _rule_docs_service
+
+
+# ──────────── Permits Service (PostgreSQL) ────────────
+
+from database.pg_client import PgClient
+from database.permits_repository import PermitsRepository
+from services.permits_service import PermitsService
+
+_permits_service: PermitsService | None = None
+_permits_service_lock = asyncio.Lock()
+
+
+async def get_permits_service() -> PermitsService:
+    """Dependency that returns a singleton PermitsService."""
+    global _permits_service
+
+    if _permits_service is not None:
+        return _permits_service
+
+    async with _permits_service_lock:
+        if _permits_service is not None:
+            return _permits_service
+
+        from config.config import settings
+        dsn = (
+            f"postgresql://{settings.pg_user}:{settings.pg_password}"
+            f"@{settings.pg_host}:{settings.pg_port}/{settings.pg_database}"
+        )
+        pg = PgClient(dsn)
+        await pg.init()
+        repo = PermitsRepository(pg)
+        _permits_service = PermitsService(repo)
+        return _permits_service

@@ -21,7 +21,8 @@ from config.config import settings
 from fastapi.staticfiles import StaticFiles
 from middleware.logging import LoggingMiddleware, setup_logging
 from routers import issues
-from routers import review_external, files, rules, rule_documents
+from routers import review_external, files, rules, rule_documents, permits, chat
+from routers import sqlagent_admin
 
 
 # Set up logging configuration
@@ -54,6 +55,9 @@ app.include_router(review_external.router)
 app.include_router(files.router)
 app.include_router(rules.router)
 app.include_router(rule_documents.router)
+app.include_router(permits.router)
+app.include_router(chat.router)
+app.include_router(sqlagent_admin.router)
 
 
 # Health check endpoint

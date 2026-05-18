@@ -1,0 +1,668 @@
+INFO:     Will watch for changes in these directories: ['/data/lvm_data_48T/wyuz/ai-document-review/app/api']
+INFO:     Uvicorn running on http://0.0.0.0:38021 (Press CTRL+C to quit)
+INFO:     Started reloader process [2154118] using WatchFiles
+Process SpawnProcess-1:
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+    await self._serve(sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+    config.load()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/main.py", line 24, in <module>
+    from routers import review_external, files, rules, rule_documents, permits, chat
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/chat.py", line 20
+    url = f"{settings.sqlagent_url.rstrip(/)}/api/v1/projects/{settings.sqlagent_project_id}/chat/stream"
+                                         ^
+SyntaxError: f-string: expecting '=', or '!', or ':', or '}'
+WARNING:  WatchFiles detected changes in 'routers/chat.py'. Reloading...
+Process SpawnProcess-2:
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+    await self._serve(sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+    config.load()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/main.py", line 24, in <module>
+    from routers import review_external, files, rules, rule_documents, permits, chat
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/chat.py", line 20
+    url = f"{settings.sqlagent_url.rstrip('/')/api/v1/projects/{settings.sqlagent_project_id}/chat/stream"
+                                                                                                         ^
+SyntaxError: f-string: expecting '}'
+WARNING:  WatchFiles detected changes in 'routers/chat.py'. Reloading...
+Process SpawnProcess-3:
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+    await self._serve(sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+    config.load()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/main.py", line 24, in <module>
+    from routers import review_external, files, rules, rule_documents, permits, chat
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/chat.py", line 38
+    yield data: {type: error, message: SQLAgent 服务不可用}nn
+              ^
+SyntaxError: invalid syntax
+WARNING:  WatchFiles detected changes in 'services/lc_pipeline.py'. Reloading...
+Process SpawnProcess-4:
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+    await self._serve(sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+    config.load()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/main.py", line 24, in <module>
+    from routers import review_external, files, rules, rule_documents, permits, chat
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/chat.py", line 38
+    yield data: {type: error, message: SQLAgent 服务不可用}nn
+              ^
+SyntaxError: invalid syntax
+WARNING:  WatchFiles detected changes in 'routers/chat.py'. Reloading...
+Process SpawnProcess-5:
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+    await self._serve(sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+    config.load()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/main.py", line 24, in <module>
+    from routers import review_external, files, rules, rule_documents, permits, chat
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/chat.py", line 38
+    yield 'data: {"type": "error", "message": "SQLAgent 服务不可用"}
+          ^
+SyntaxError: unterminated string literal (detected at line 38)
+WARNING:  WatchFiles detected changes in 'routers/chat.py'. Reloading...
+Process SpawnProcess-6:
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+    await self._serve(sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+    config.load()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/main.py", line 24, in <module>
+    from routers import review_external, files, rules, rule_documents, permits, chat
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/chat.py", line 20
+    url = f"{settings.sqlagent_url.rstrip(('/')}/api/v1/projects/{settings.sqlagent_project_id}/chat/stream
+                                               ^
+SyntaxError: closing parenthesis '}' does not match opening parenthesis '('
+WARNING:  WatchFiles detected changes in 'routers/chat.py'. Reloading...
+Process SpawnProcess-7:
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+    await self._serve(sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+    config.load()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/main.py", line 24, in <module>
+    from routers import review_external, files, rules, rule_documents, permits, chat
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/chat.py", line 34
+    yield line + "
+                 ^
+SyntaxError: unterminated string literal (detected at line 34)
+WARNING:  WatchFiles detected changes in 'routers/chat.py'. Reloading...
+Process SpawnProcess-8:
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+    await self._serve(sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+    config.load()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/main.py", line 24, in <module>
+    from routers import review_external, files, rules, rule_documents, permits, chat
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/chat.py", line 34
+    yield line + "
+                 ^
+SyntaxError: unterminated string literal (detected at line 34)
+WARNING:  WatchFiles detected changes in 'routers/chat.py'. Reloading...
+Process SpawnProcess-9:
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+    await self._serve(sockets)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+    config.load()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/main.py", line 24, in <module>
+    from routers import review_external, files, rules, rule_documents, permits, chat
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/chat.py", line 38
+    yield \'data: {"type": "error", "message": "SQLAgent 服务不可用"}\n\n\'
+           ^
+SyntaxError: unexpected character after line continuation character
+WARNING:  WatchFiles detected changes in 'routers/chat.py'. Reloading...
+INFO:     Started server process [2566190]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026-05-15 16:06:55,434 - middleware.logging - INFO - Received GET for
+            http://localhost:38021/ from 127.0.0.1 using curl/8.5.0
+2026-05-15 16:06:55,450 - middleware.logging - INFO - GET http://localhost:38021/
+            completed in 0.02s
+            with status 200
+INFO:     127.0.0.1:35076 - "GET / HTTP/1.1" 200 OK
+2026-05-15 16:07:52,684 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-15 16:07:52,699 - database.pg_client - INFO - PostgreSQL connection pool created.
+2026-05-15 16:07:53,087 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work
+            completed in 0.40s
+            with status 200
+INFO:     127.0.0.1:55712 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-15 16:28:52,557 - middleware.logging - INFO - Received POST for
+            http://localhost:38021/api/v1/chat/stream from 127.0.0.1 using curl/8.5.0
+2026-05-15 16:28:52,591 - middleware.logging - INFO - POST http://localhost:38021/api/v1/chat/stream
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:39492 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-15 16:28:52,653 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-15 16:32:40,052 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-15 16:32:40,079 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:53128 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-15 16:32:40,128 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-15 16:32:49,299 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-15 16:32:49,324 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.02s
+            with status 200
+INFO:     127.0.0.1:53134 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-15 16:32:49,376 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+WARNING:  WatchFiles detected changes in 'routers/sqlagent_admin.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2566190]
+INFO:     Started server process [2757094]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2757094]
+INFO:     Started server process [2758194]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026-05-15 17:06:00,615 - middleware.logging - INFO - Received GET for
+            http://localhost:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using curl/8.5.0
+2026-05-15 17:06:00,664 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-15 17:06:00,665 - middleware.logging - INFO - GET http://localhost:38021/api/v1/sqlagent/llm-config
+            completed in 0.05s
+            with status 200
+INFO:     127.0.0.1:59140 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-15 17:13:24,917 - middleware.logging - INFO - Received GET for
+            http://localhost:38021/api/v1/sqlagent/db-config from 127.0.0.1 using curl/8.5.0
+2026-05-15 17:13:24,977 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/db-config "HTTP/1.1 200 OK"
+2026-05-15 17:13:24,982 - middleware.logging - INFO - GET http://localhost:38021/api/v1/sqlagent/db-config
+            completed in 0.07s
+            with status 200
+INFO:     127.0.0.1:46012 - "GET /api/v1/sqlagent/db-config HTTP/1.1" 200 OK
+2026-05-15 17:13:24,994 - middleware.logging - INFO - Received GET for
+            http://localhost:38021/api/v1/sqlagent/agent-config from 127.0.0.1 using curl/8.5.0
+2026-05-15 17:13:25,023 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/agent-config "HTTP/1.1 200 OK"
+2026-05-15 17:13:25,024 - middleware.logging - INFO - GET http://localhost:38021/api/v1/sqlagent/agent-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:46016 - "GET /api/v1/sqlagent/agent-config HTTP/1.1" 200 OK
+2026-05-15 17:13:35,777 - middleware.logging - INFO - Received GET for
+            http://localhost:38021/api/v1/sqlagent/training from 127.0.0.1 using curl/8.5.0
+2026-05-15 17:13:36,525 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-15 17:13:36,527 - middleware.logging - INFO - GET http://localhost:38021/api/v1/sqlagent/training
+            completed in 0.75s
+            with status 200
+INFO:     127.0.0.1:49804 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-15 17:16:33,790 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/files from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-15 17:16:33,793 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/files
+            completed in 0.00s
+            with status 200
+INFO:     127.0.0.1:53628 - "GET /api/v1/files HTTP/1.1" 200 OK
+2026-05-15 17:16:34,783 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-15 17:16:34,813 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-15 17:16:34,815 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:53644 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-15 17:16:39,293 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-15 17:16:39,332 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-15 17:16:39,334 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.04s
+            with status 200
+INFO:     127.0.0.1:53646 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-15 17:16:42,960 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-15 17:16:42,975 - database.pg_client - INFO - PostgreSQL connection pool created.
+2026-05-15 17:16:43,284 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work
+            completed in 0.32s
+            with status 200
+INFO:     127.0.0.1:55748 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-15 17:16:45,213 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-15 17:16:45,244 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-15 17:16:45,246 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:55764 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-15 17:16:55,320 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/db-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-15 17:16:55,349 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/db-config "HTTP/1.1 200 OK"
+2026-05-15 17:16:55,351 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/db-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:39744 - "GET /api/v1/sqlagent/db-config HTTP/1.1" 200 OK
+2026-05-15 17:30:08,657 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-15 17:30:09,326 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-15 17:30:09,329 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 0.67s
+            with status 200
+INFO:     127.0.0.1:43862 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-15 17:30:18,654 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/agent-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-15 17:30:18,684 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/agent-config "HTTP/1.1 200 OK"
+2026-05-15 17:30:18,686 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/agent-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:53692 - "GET /api/v1/sqlagent/agent-config HTTP/1.1" 200 OK
+2026-05-15 17:36:25,548 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-15 17:36:25,575 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:47610 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-15 17:36:25,643 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-15 17:47:22,194 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-15 17:47:22,224 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:36362 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-15 17:47:22,667 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 09:21:43,266 - middleware.logging - INFO - Received POST for
+            http://localhost:38021/api/v1/chat/stream from 127.0.0.1 using curl/8.5.0
+2026-05-18 09:21:43,277 - middleware.logging - INFO - POST http://localhost:38021/api/v1/chat/stream
+            completed in 0.01s
+            with status 200
+INFO:     127.0.0.1:34318 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 09:21:43,386 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 09:29:45,269 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 09:29:45,306 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.04s
+            with status 200
+INFO:     127.0.0.1:43626 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 09:29:45,347 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 09:42:40,351 - middleware.logging - INFO - Received POST for
+            http://localhost:38021/api/v1/chat/stream from 127.0.0.1 using curl/8.5.0
+2026-05-18 09:42:40,379 - middleware.logging - INFO - POST http://localhost:38021/api/v1/chat/stream
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:52756 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 09:42:45,126 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 09:43:40,133 - middleware.logging - INFO - Received POST for
+            http://localhost:38021/api/v1/chat/stream from 127.0.0.1 using curl/8.5.0
+2026-05-18 09:43:40,158 - middleware.logging - INFO - POST http://localhost:38021/api/v1/chat/stream
+            completed in 0.02s
+            with status 200
+INFO:     127.0.0.1:35756 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 09:43:48,130 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 09:47:23,988 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 09:47:24,017 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-18 09:47:24,019 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:32816 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-18 09:47:26,416 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/db-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 09:47:26,444 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/db-config "HTTP/1.1 200 OK"
+2026-05-18 09:47:26,445 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/db-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:32826 - "GET /api/v1/sqlagent/db-config HTTP/1.1" 200 OK
+2026-05-18 09:47:27,775 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 09:47:28,525 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 09:47:28,527 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 0.75s
+            with status 200
+INFO:     127.0.0.1:32842 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 09:47:28,787 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/agent-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 09:47:28,817 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/agent-config "HTTP/1.1 200 OK"
+2026-05-18 09:47:28,819 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/agent-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:32844 - "GET /api/v1/sqlagent/agent-config HTTP/1.1" 200 OK
+2026-05-18 09:47:29,763 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 09:47:30,525 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 09:47:30,527 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 0.76s
+            with status 200
+INFO:     127.0.0.1:38064 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK
+2026-05-18 09:47:31,641 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/db-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 09:47:31,671 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/db-config "HTTP/1.1 200 OK"
+2026-05-18 09:47:31,672 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/db-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:38076 - "GET /api/v1/sqlagent/db-config HTTP/1.1" 200 OK
+2026-05-18 09:55:33,266 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 09:55:33,296 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-18 09:55:33,297 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:51544 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-18 09:55:33,302 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 09:55:33,329 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-18 09:55:33,331 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:51556 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-18 09:57:52,456 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 09:57:52,482 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:36292 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 09:57:52,531 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 10:00:51,002 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/chat/stream from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 10:00:51,041 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/chat/stream
+            completed in 0.04s
+            with status 200
+INFO:     127.0.0.1:52254 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+2026-05-18 10:00:51,439 - httpx - INFO - HTTP Request: POST http://localhost:38038/api/v1/projects/97f5bc34/chat/stream "HTTP/1.1 200 OK"
+2026-05-18 10:01:31,780 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 10:01:31,810 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-18 10:01:31,812 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:45070 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-18 10:01:33,522 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/db-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 10:01:33,550 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/db-config "HTTP/1.1 200 OK"
+2026-05-18 10:01:33,551 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/db-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:45086 - "GET /api/v1/sqlagent/db-config HTTP/1.1" 200 OK
+2026-05-18 10:05:14,626 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/training from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 10:05:15,325 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/training/get "HTTP/1.1 200 OK"
+2026-05-18 10:05:15,327 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/training
+            completed in 0.70s
+            with status 200
+INFO:     127.0.0.1:42682 - "GET /api/v1/sqlagent/training HTTP/1.1" 200 OK

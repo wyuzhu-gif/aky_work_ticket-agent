@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     mineru_max_wait_sec: float = 300.0
     mineru_cache_artifacts: bool = True
     mineru_cache_dir: str = "./app/data/mineru"
+    mineru_local_url: str = ""  # local MinerU API, e.g. http://192.168.16.85:38030
     # MinerU bbox coordinate assumptions
     # Most MinerU JSON outputs use image-like coordinates with origin at top-left.
     mineru_bbox_origin: str = "top-left"  # "top-left" or "bottom-left"
@@ -43,7 +44,19 @@ class Settings(BaseSettings):
     rule_docs_dir: str = "./app/data/rule_docs"
     rule_context_max_chars: int = 3000
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
+    
+    # PostgreSQL
+    pg_host: str = "localhost"
+    pg_port: int = 5432
+    pg_database: str = "ai_doc_review"
+    pg_user: str = "postgres"
+    pg_password: str = ""
+
+    # SQLAgent
+    sqlagent_url: str = ""
+    sqlagent_project_id: str = ""
+
+model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 
 
 settings = Settings()
