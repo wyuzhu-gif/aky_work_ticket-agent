@@ -36,7 +36,7 @@ import { RulesPanel } from '../../components/RulesPanel'
 import { RuleDocumentsPanel } from '../../components/RuleDocumentsPanel'
 import { addAnnotation, deleteAnnotation, initAnnotations } from '../../services/annotations'
 import { streamApi } from '../../services/api'
-import { getBlob } from '../../services/storage'
+import { getBlob, uploadBlob } from '../../services/storage'
 import { APIEvent } from '../../types/api-events'
 import { Issue, IssueStatus } from '../../types/issue'
 import { issueRiskLevel, issueRiskTone, issueStatusLabel, issueTypeDescription, issueTypeLabel, normalizeIssueStatus } from '../../i18n/labels'
@@ -375,6 +375,7 @@ function Review() {
 
   const [hideTypesFilter, setHideTypesFilter] = useState<string[]>([])
   const [statusFilter, setStatusFilter] = useState<string[]>(Object.values(IssueStatus))
+  const [riskFilter, setRiskFilter] = useState<string[]>([]) // 空=全部, '高'/'中'/'低'/'提示'
   const [query, setQuery] = useState('')
   const [enabledRuleIds, setEnabledRuleIds] = useState<string[]>([])
   const [totalRulesCount, setTotalRulesCount] = useState(0)
@@ -408,10 +409,15 @@ function Review() {
     const q = query.trim()
     return issues
       .filter((issue) => statusFilter.includes(normalizeIssueStatus(issue.status as unknown as string)) && !hideTypesFilter.includes(issue.type))
+      .filter((issue) => {
+        if (riskFilter.length === 0) return true
+        const rl = issueRiskLevel(issue.type, (issue as any).risk_level)
+        return riskFilter.includes(rl)
+      })
       .filter((issue) => (q ? `${issue.text} ${issue.explanation} ${issue.suggested_fix}`.includes(q) : true))
       .slice()
       .sort((a, b) => (a.location?.page_num ?? 0) - (b.location?.page_num ?? 0))
-  }, [issues, statusFilter, hideTypesFilter, query])
+  }, [issues, statusFilter, hideTypesFilter, riskFilter, query])
 
   const types = useMemo(() => {
     const map = new Map<string, number>()
@@ -580,7 +586,7 @@ function Review() {
   useEffect(() => {
     const d = searchParams.get('document')
     if (d) setDocId(d)
-    else setPdfLoadError('URL 中未指定文档')
+    // 不再设置 pdfLoadError — 允许无 document 参数时显示上传入口
   }, [searchParams])
 
   useEffect(() => {
@@ -622,6 +628,61 @@ function Review() {
   }, [compareMode])
 
   const checkButtonIcon = checkInProgress ? <Spinner size="tiny" /> : checkComplete ? <CheckmarkFilled /> : undefined
+
+  // 上传处理
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string>()
+
+  const handleUpload = async (file: File) => {
+    setUploading(true)
+    setUploadError(undefined)
+    try {
+      await uploadBlob(file)
+      navigate(`/review?document=${encodeURIComponent(file.name)}`)
+    } catch (e: any) {
+      setUploadError(e.message || '上传失败')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  // 无文档时显示上传入口
+  if (!docId) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: '24px' }}>
+        <span style={{ fontSize: '64px' }}>📄</span>
+        <h2 style={{ margin: 0 }}>上传文档开始审核</h2>
+        <p style={{ color: '#888', margin: 0 }}>支持 PDF 格式的作业票文档</p>
+        {uploadError && <MessageBar intent="error"><MessageBarBody>{uploadError}</MessageBarBody></MessageBar>}
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          onDragOver={(e) => { e.preventDefault(); e.stopPropagation() }}
+          onDrop={(e) => { e.preventDefault(); e.stopPropagation(); const f = e.dataTransfer.files?.[0]; if (f) handleUpload(f) }}
+          style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px',
+            padding: '48px 40px', borderRadius: '16px', border: '2px dashed #ccc', cursor: 'pointer',
+            backgroundColor: 'var(--colorNeutralBackground2)', minWidth: '360px', transition: 'border-color 0.2s',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--colorBrandStroke1)')}
+          onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#ccc')}
+        >
+          {uploading ? (
+            <>
+              <Spinner size="large" />
+              <span style={{ color: '#888' }}>上传中...</span>
+            </>
+          ) : (
+            <>
+              <span style={{ fontSize: '32px', color: 'var(--colorBrandForeground1)' }}>☁️</span>
+              <span>拖拽 PDF 到此处，或点击选择文件</span>
+            </>
+          )}
+        </div>
+        <input ref={fileInputRef} type="file" accept=".pdf" style={{ display: 'none' }} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload(f); e.target.value = '' }} />
+      </div>
+    )
+  }
 
   return (
     <div className={classes.layout}>
@@ -675,6 +736,30 @@ function Review() {
             >
               已忽略
             </Button>
+            <span style={{ width: 1, height: 16, background: tokens.colorNeutralStroke2, margin: '0 4px' }} />
+            <Button
+              size="small"
+              appearance={riskFilter.length === 0 ? 'primary' : 'secondary'}
+              className={classes.filterBtn}
+              onClick={() => setRiskFilter([])}
+            >
+              全部风险
+            </Button>
+            {([['高', '🔴'], ['中', '🟠'], ['低', '🟢'], ['提示', '⚪']] as const).map(([label, icon]) => (
+              <Button
+                key={label}
+                size="small"
+                appearance={riskFilter.includes(label) ? 'primary' : 'secondary'}
+                className={classes.filterBtn}
+                onClick={() => {
+                  setRiskFilter(prev =>
+                    prev.includes(label) ? prev.filter(r => r !== label) : [...prev, label]
+                  )
+                }}
+              >
+                {icon} {label}
+              </Button>
+            ))}
           </div>
         </div>
         <div className={classes.leftList}>
@@ -737,12 +822,12 @@ function Review() {
               disabled={issues.filter(i => normalizeIssueStatus(i.status as any) === 'accepted').length === 0}
               onClick={() => {
                 const accepted = issues.filter(i => normalizeIssueStatus(i.status as any) === 'accepted')
-                navigate('/report', { state: { docId: docId ?? '', issues: accepted } })
+                navigate(`/review/${docId ?? ''}/report`, { state: { docId: docId ?? '', issues: accepted } })
               }}
             >
               导出报告
             </Button>
-            <Button size="small" appearance="secondary" onClick={() => navigate('/')}>
+            <Button size="small" appearance="secondary" onClick={() => navigate('/review')}>
               返回
             </Button>
           </div>

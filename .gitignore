@@ -180,3 +180,32 @@ certs/
 
 # Azure Pipelines
 !.ado/**
+
+# ── 项目专用 ──
+
+# Old/backup dependency directories
+node_modules_old/
+venv_old*/
+*_old/
+
+# PID files
+*.pid
+
+# Fix/patch scripts (development artifacts)
+fix_scripts/
+
+# Wiki (local knowledge base)
+wiki/
+
+# Root-level dev scripts
+fix_*.py
+patch_*.py
+test_*.py
+highlight_pdf.py
+
+# macOS download duplicates (* (1).xxx)
+*(1).*
+
+# SQLite databases (anywhere)
+**/app.db
+**/app.db-journal

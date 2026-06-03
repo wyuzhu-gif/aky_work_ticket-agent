@@ -1704,3 +1704,1222 @@ INFO:     127.0.0.1:58798 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
             completed in 0.02s
             with status 200
 INFO:     127.0.0.1:48538 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-18 16:10:46,913 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 16:10:46,928 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work
+            completed in 0.01s
+            with status 200
+INFO:     127.0.0.1:56434 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-18 16:10:49,912 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/files from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 16:10:49,914 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/files
+            completed in 0.00s
+            with status 200
+INFO:     127.0.0.1:51180 - "GET /api/v1/files HTTP/1.1" 200 OK
+2026-05-18 16:10:52,816 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 16:10:52,822 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work
+            completed in 0.01s
+            with status 200
+INFO:     127.0.0.1:51192 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'services/permits_service.py', 'routers/permits.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2758194]
+INFO:     Started server process [3928651]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026-05-18 16:21:01,354 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 16:21:01,367 - database.pg_client - INFO - PostgreSQL connection pool created.
+2026-05-18 16:21:01,628 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work
+            completed in 0.27s
+            with status 200
+INFO:     127.0.0.1:33042 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-18 16:21:48,229 - middleware.logging - INFO - Received GET for
+            http://localhost:38021/api/v1/permit-types from 127.0.0.1 using curl/8.5.0
+2026-05-18 16:21:48,231 - middleware.logging - INFO - GET http://localhost:38021/api/v1/permit-types
+            completed in 0.00s
+            with status 200
+INFO:     127.0.0.1:54898 - "GET /api/v1/permit-types HTTP/1.1" 200 OK
+2026-05-18 16:24:00,357 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/permits/upload-and-extract?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 16:24:00,381 - services.permits_service - INFO - Image upload detected: 2.1.jpg
+2026-05-18 16:24:00,384 - services.permits_service - INFO - Vision LLM extracting from image: 2.1.jpg, size=303478, mime=image/jpeg
+2026-05-18 16:24:25,941 - httpx - INFO - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-18 16:24:25,975 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/permits/upload-and-extract?permit_type=hot_work
+            completed in 25.62s
+            with status 200
+INFO:     127.0.0.1:33216 - "POST /api/v1/permits/upload-and-extract?permit_type=hot_work HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'services/permits_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [3928651]
+INFO:     Started server process [3974612]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/permits_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [3974612]
+INFO:     Started server process [3981506]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026-05-18 16:39:24,387 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/permits/upload-and-extract?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-18 16:39:24,413 - database.pg_client - INFO - PostgreSQL connection pool created.
+2026-05-18 16:39:24,741 - services.permits_service - INFO - Image upload detected: 2.1.jpg
+2026-05-18 16:39:24,742 - services.permits_service - INFO - Vision LLM extracting from image: 2.1.jpg, size=303478, mime=image/jpeg
+2026-05-18 16:39:49,878 - httpx - INFO - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-18 16:39:49,889 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/permits/upload-and-extract?permit_type=hot_work
+            completed in 25.50s
+            with status 200
+INFO:     127.0.0.1:39684 - "POST /api/v1/permits/upload-and-extract?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-19 10:01:53,342 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-19 10:01:53,382 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-19 10:01:53,386 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.04s
+            with status 200
+INFO:     127.0.0.1:41564 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-19 10:01:56,790 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/db-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-19 10:01:56,822 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/db-config "HTTP/1.1 200 OK"
+2026-05-19 10:01:56,824 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/db-config
+            completed in 0.03s
+            with status 200
+INFO:     127.0.0.1:41580 - "GET /api/v1/sqlagent/db-config HTTP/1.1" 200 OK
+2026-05-19 10:01:59,711 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/sqlagent/llm-config from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-19 10:01:59,754 - httpx - INFO - HTTP Request: GET http://localhost:38038/api/v1/projects/97f5bc34/llm-config "HTTP/1.1 200 OK"
+2026-05-19 10:01:59,756 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/sqlagent/llm-config
+            completed in 0.05s
+            with status 200
+INFO:     127.0.0.1:36974 - "GET /api/v1/sqlagent/llm-config HTTP/1.1" 200 OK
+2026-05-19 10:07:55,674 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-19 10:07:55,689 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work
+            completed in 0.01s
+            with status 200
+INFO:     127.0.0.1:40114 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-19 10:08:00,258 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits/11?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-19 10:08:00,269 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits/11?permit_type=hot_work
+            completed in 0.01s
+            with status 200
+INFO:     127.0.0.1:55696 - "GET /api/v1/permits/11?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-19 10:09:23,976 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits/13?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-19 10:09:23,984 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits/13?permit_type=hot_work
+            completed in 0.01s
+            with status 200
+INFO:     127.0.0.1:57954 - "GET /api/v1/permits/13?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-19 10:16:33,568 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits/5?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-19 10:16:33,586 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits/5?permit_type=hot_work
+            completed in 0.02s
+            with status 200
+INFO:     127.0.0.1:34496 - "GET /api/v1/permits/5?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-19 10:16:39,271 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits/8?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-19 10:16:39,278 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/permits/8?permit_type=hot_work
+            completed in 0.01s
+            with status 200
+INFO:     127.0.0.1:34510 - "GET /api/v1/permits/8?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-19 10:17:39,523 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/permits/upload-and-extract?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-19 10:17:39,652 - services.permits_service - INFO - MINERU_LOCAL_URL=http://192.168.1.100:38030
+2026-05-19 10:17:39,653 - services.permits_service - INFO - Local MinerU extracting: 2.pdf
+2026-05-19 10:17:39,653 - services.permits_service - INFO - Calling local MinerU: url=http://192.168.1.100:38030/file_parse backend=vlm-auto-engine
+2026-05-19 10:17:45,677 - httpx - INFO - HTTP Request: POST http://192.168.1.100:38030/file_parse "HTTP/1.1 200 OK"
+2026-05-19 10:17:45,680 - services.permits_service - INFO - Local MinerU done, md length=4675
+2026-05-19 10:17:45,680 - services.permits_service - INFO - MinerU done, md length=4675
+2026-05-19 10:18:06,033 - httpx - INFO - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-19 10:18:06,037 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/permits/upload-and-extract?permit_type=hot_work
+            completed in 26.51s
+            with status 200
+INFO:     127.0.0.1:52474 - "POST /api/v1/permits/upload-and-extract?permit_type=hot_work HTTP/1.1" 200 OK
+2026-05-19 10:25:23,667 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/permits/compliance-review from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-19 10:25:23,671 - services.permits_service - INFO - Loaded GB 30871-2022 standard from /data/lvm_data_48T/wyuz/ai-document-review/GB_30871-2022危险化学品企业特殊作业安全规范.md, length=40642
+2026-05-19 10:25:49,380 - httpx - INFO - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-19 10:25:49,385 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/permits/compliance-review
+            completed in 25.72s
+            with status 200
+INFO:     127.0.0.1:60508 - "POST /api/v1/permits/compliance-review HTTP/1.1" 200 OK
+2026-05-19 10:36:34,957 - middleware.logging - INFO - Received POST for
+            http://0.0.0.0:38021/api/v1/permits/compliance-review from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-19 10:36:50,377 - httpx - INFO - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-19 10:36:50,382 - middleware.logging - INFO - POST http://0.0.0.0:38021/api/v1/permits/compliance-review
+            completed in 15.42s
+            with status 200
+INFO:     127.0.0.1:59116 - "POST /api/v1/permits/compliance-review HTTP/1.1" 200 OK
+2026-05-21 16:19:30,893 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-21 16:19:30,900 - middleware.logging - ERROR - Exception during GET
+                Url http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work after 0.01s: [Errno 111] Connection refused
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 103, in list_permits
+    return await service.list_permits_typed(permit_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 414, in list_permits_typed
+    return await self._repo.generic_list(cfg["table"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 180, in generic_list
+    rows = await self._pg.fetch(f"SELECT * FROM {table} ORDER BY create_time DESC NULLS LAST, id DESC")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 38, in fetch
+    async with self._pool.acquire() as conn:
+               ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 1056, in __aenter__
+    self.connection = await self.pool._acquire(self.timeout)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 896, in _acquire
+    return await _acquire_impl()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 881, in _acquire_impl
+    proxy = await ch.acquire()  # type: PoolConnectionProxy
+            ^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 161, in acquire
+    await self.connect()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 153, in connect
+    self._con = await self._pool._get_new_connection()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 538, in _get_new_connection
+    con = await self._connect(
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2443, in connect
+    return await connect_utils._connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1249, in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1218, in _connect
+    conn = await _connect_addr(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1050, in _connect_addr
+    return await __connect_addr(params, False, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1099, in __connect_addr
+    tr, pr = await connector
+             ^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 2043, in create_connection
+  File "uvloop/loop.pyx", line 2020, in uvloop.loop.Loop.create_connection
+ConnectionRefusedError: [Errno 111] Connection refused
+2026-05-21 16:19:30,913 - main - ERROR - Unexpected error occurred: [Errno 111] Connection refused
+  + Exception Group Traceback (most recent call last):
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 87, in collapse_excgroups
+  |     yield
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 190, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    |     await self.app(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    |     with collapse_excgroups():
+    |          ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    |     self.gen.throw(value)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    |     response = await call_next(request)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    |     raise app_exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    |     await route.handle(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    |     await self.app(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    |     response = await func(request)
+    |                ^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    |     raw_response = await run_endpoint_function(
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    |     return await dependant.call(**values)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 103, in list_permits
+    |     return await service.list_permits_typed(permit_type)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 414, in list_permits_typed
+    |     return await self._repo.generic_list(cfg["table"])
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 180, in generic_list
+    |     rows = await self._pg.fetch(f"SELECT * FROM {table} ORDER BY create_time DESC NULLS LAST, id DESC")
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 38, in fetch
+    |     async with self._pool.acquire() as conn:
+    |                ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 1056, in __aenter__
+    |     self.connection = await self.pool._acquire(self.timeout)
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 896, in _acquire
+    |     return await _acquire_impl()
+    |            ^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 881, in _acquire_impl
+    |     proxy = await ch.acquire()  # type: PoolConnectionProxy
+    |             ^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 161, in acquire
+    |     await self.connect()
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 153, in connect
+    |     self._con = await self._pool._get_new_connection()
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 538, in _get_new_connection
+    |     con = await self._connect(
+    |           ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2443, in connect
+    |     return await connect_utils._connect(
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1249, in _connect
+    |     raise last_error or exceptions.TargetServerAttributeNotMatched(
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1218, in _connect
+    |     conn = await _connect_addr(
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1050, in _connect_addr
+    |     return await __connect_addr(params, False, *args)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1099, in __connect_addr
+    |     tr, pr = await connector
+    |              ^^^^^^^^^^^^^^^
+    |   File "uvloop/loop.pyx", line 2043, in create_connection
+    |   File "uvloop/loop.pyx", line 2020, in uvloop.loop.Loop.create_connection
+    | ConnectionRefusedError: [Errno 111] Connection refused
+    +------------------------------------
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    with collapse_excgroups():
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 103, in list_permits
+    return await service.list_permits_typed(permit_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 414, in list_permits_typed
+    return await self._repo.generic_list(cfg["table"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 180, in generic_list
+    rows = await self._pg.fetch(f"SELECT * FROM {table} ORDER BY create_time DESC NULLS LAST, id DESC")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 38, in fetch
+    async with self._pool.acquire() as conn:
+               ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 1056, in __aenter__
+    self.connection = await self.pool._acquire(self.timeout)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 896, in _acquire
+    return await _acquire_impl()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 881, in _acquire_impl
+    proxy = await ch.acquire()  # type: PoolConnectionProxy
+            ^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 161, in acquire
+    await self.connect()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 153, in connect
+    self._con = await self._pool._get_new_connection()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 538, in _get_new_connection
+    con = await self._connect(
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2443, in connect
+    return await connect_utils._connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1249, in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1218, in _connect
+    conn = await _connect_addr(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1050, in _connect_addr
+    return await __connect_addr(params, False, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1099, in __connect_addr
+    tr, pr = await connector
+             ^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 2043, in create_connection
+  File "uvloop/loop.pyx", line 2020, in uvloop.loop.Loop.create_connection
+ConnectionRefusedError: [Errno 111] Connection refused
+INFO:     127.0.0.1:56968 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+  + Exception Group Traceback (most recent call last):
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 87, in collapse_excgroups
+  |     yield
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 190, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 401, in run_asgi
+    |     result = await app(  # type: ignore[func-returns-value]
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    |     return await self.app(scope, receive, send)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    |     await super().__call__(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/applications.py", line 123, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    |     await self.app(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    |     with collapse_excgroups():
+    |          ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    |     self.gen.throw(value)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    |     response = await call_next(request)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    |     raise app_exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    |     await route.handle(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    |     await self.app(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    |     response = await func(request)
+    |                ^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    |     raw_response = await run_endpoint_function(
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    |     return await dependant.call(**values)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 103, in list_permits
+    |     return await service.list_permits_typed(permit_type)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 414, in list_permits_typed
+    |     return await self._repo.generic_list(cfg["table"])
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 180, in generic_list
+    |     rows = await self._pg.fetch(f"SELECT * FROM {table} ORDER BY create_time DESC NULLS LAST, id DESC")
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 38, in fetch
+    |     async with self._pool.acquire() as conn:
+    |                ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 1056, in __aenter__
+    |     self.connection = await self.pool._acquire(self.timeout)
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 896, in _acquire
+    |     return await _acquire_impl()
+    |            ^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 881, in _acquire_impl
+    |     proxy = await ch.acquire()  # type: PoolConnectionProxy
+    |             ^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 161, in acquire
+    |     await self.connect()
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 153, in connect
+    |     self._con = await self._pool._get_new_connection()
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 538, in _get_new_connection
+    |     con = await self._connect(
+    |           ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2443, in connect
+    |     return await connect_utils._connect(
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1249, in _connect
+    |     raise last_error or exceptions.TargetServerAttributeNotMatched(
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1218, in _connect
+    |     conn = await _connect_addr(
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1050, in _connect_addr
+    |     return await __connect_addr(params, False, *args)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1099, in __connect_addr
+    |     tr, pr = await connector
+    |              ^^^^^^^^^^^^^^^
+    |   File "uvloop/loop.pyx", line 2043, in create_connection
+    |   File "uvloop/loop.pyx", line 2020, in uvloop.loop.Loop.create_connection
+    | ConnectionRefusedError: [Errno 111] Connection refused
+    +------------------------------------
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 401, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    with collapse_excgroups():
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 103, in list_permits
+    return await service.list_permits_typed(permit_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 414, in list_permits_typed
+    return await self._repo.generic_list(cfg["table"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 180, in generic_list
+    rows = await self._pg.fetch(f"SELECT * FROM {table} ORDER BY create_time DESC NULLS LAST, id DESC")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 38, in fetch
+    async with self._pool.acquire() as conn:
+               ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 1056, in __aenter__
+    self.connection = await self.pool._acquire(self.timeout)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 896, in _acquire
+    return await _acquire_impl()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 881, in _acquire_impl
+    proxy = await ch.acquire()  # type: PoolConnectionProxy
+            ^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 161, in acquire
+    await self.connect()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 153, in connect
+    self._con = await self._pool._get_new_connection()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 538, in _get_new_connection
+    con = await self._connect(
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2443, in connect
+    return await connect_utils._connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1249, in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1218, in _connect
+    conn = await _connect_addr(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1050, in _connect_addr
+    return await __connect_addr(params, False, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1099, in __connect_addr
+    tr, pr = await connector
+             ^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 2043, in create_connection
+  File "uvloop/loop.pyx", line 2020, in uvloop.loop.Loop.create_connection
+ConnectionRefusedError: [Errno 111] Connection refused
+2026-05-27 10:57:59,727 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/files from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-27 10:57:59,739 - middleware.logging - INFO - GET http://0.0.0.0:38021/api/v1/files
+            completed in 0.01s
+            with status 200
+INFO:     127.0.0.1:59434 - "GET /api/v1/files HTTP/1.1" 200 OK
+2026-05-27 10:58:05,071 - middleware.logging - INFO - Received GET for
+            http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work from 127.0.0.1 using Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0
+2026-05-27 10:58:05,076 - middleware.logging - ERROR - Exception during GET
+                Url http://0.0.0.0:38021/api/v1/permits?permit_type=hot_work after 0.00s: [Errno 111] Connection refused
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 103, in list_permits
+    return await service.list_permits_typed(permit_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 414, in list_permits_typed
+    return await self._repo.generic_list(cfg["table"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 180, in generic_list
+    rows = await self._pg.fetch(f"SELECT * FROM {table} ORDER BY create_time DESC NULLS LAST, id DESC")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 38, in fetch
+    async with self._pool.acquire() as conn:
+               ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 1056, in __aenter__
+    self.connection = await self.pool._acquire(self.timeout)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 896, in _acquire
+    return await _acquire_impl()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 881, in _acquire_impl
+    proxy = await ch.acquire()  # type: PoolConnectionProxy
+            ^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 161, in acquire
+    await self.connect()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 153, in connect
+    self._con = await self._pool._get_new_connection()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 538, in _get_new_connection
+    con = await self._connect(
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2443, in connect
+    return await connect_utils._connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1249, in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1218, in _connect
+    conn = await _connect_addr(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1050, in _connect_addr
+    return await __connect_addr(params, False, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1099, in __connect_addr
+    tr, pr = await connector
+             ^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 2043, in create_connection
+  File "uvloop/loop.pyx", line 2020, in uvloop.loop.Loop.create_connection
+ConnectionRefusedError: [Errno 111] Connection refused
+2026-05-27 10:58:05,082 - main - ERROR - Unexpected error occurred: [Errno 111] Connection refused
+  + Exception Group Traceback (most recent call last):
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 87, in collapse_excgroups
+  |     yield
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 190, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    |     await self.app(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    |     with collapse_excgroups():
+    |          ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    |     self.gen.throw(value)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    |     response = await call_next(request)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    |     raise app_exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    |     await route.handle(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    |     await self.app(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    |     response = await func(request)
+    |                ^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    |     raw_response = await run_endpoint_function(
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    |     return await dependant.call(**values)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 103, in list_permits
+    |     return await service.list_permits_typed(permit_type)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 414, in list_permits_typed
+    |     return await self._repo.generic_list(cfg["table"])
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 180, in generic_list
+    |     rows = await self._pg.fetch(f"SELECT * FROM {table} ORDER BY create_time DESC NULLS LAST, id DESC")
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 38, in fetch
+    |     async with self._pool.acquire() as conn:
+    |                ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 1056, in __aenter__
+    |     self.connection = await self.pool._acquire(self.timeout)
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 896, in _acquire
+    |     return await _acquire_impl()
+    |            ^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 881, in _acquire_impl
+    |     proxy = await ch.acquire()  # type: PoolConnectionProxy
+    |             ^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 161, in acquire
+    |     await self.connect()
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 153, in connect
+    |     self._con = await self._pool._get_new_connection()
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 538, in _get_new_connection
+    |     con = await self._connect(
+    |           ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2443, in connect
+    |     return await connect_utils._connect(
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1249, in _connect
+    |     raise last_error or exceptions.TargetServerAttributeNotMatched(
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1218, in _connect
+    |     conn = await _connect_addr(
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1050, in _connect_addr
+    |     return await __connect_addr(params, False, *args)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1099, in __connect_addr
+    |     tr, pr = await connector
+    |              ^^^^^^^^^^^^^^^
+    |   File "uvloop/loop.pyx", line 2043, in create_connection
+    |   File "uvloop/loop.pyx", line 2020, in uvloop.loop.Loop.create_connection
+    | ConnectionRefusedError: [Errno 111] Connection refused
+    +------------------------------------
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    with collapse_excgroups():
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 103, in list_permits
+    return await service.list_permits_typed(permit_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 414, in list_permits_typed
+    return await self._repo.generic_list(cfg["table"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 180, in generic_list
+    rows = await self._pg.fetch(f"SELECT * FROM {table} ORDER BY create_time DESC NULLS LAST, id DESC")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 38, in fetch
+    async with self._pool.acquire() as conn:
+               ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 1056, in __aenter__
+    self.connection = await self.pool._acquire(self.timeout)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 896, in _acquire
+    return await _acquire_impl()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 881, in _acquire_impl
+    proxy = await ch.acquire()  # type: PoolConnectionProxy
+            ^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 161, in acquire
+    await self.connect()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 153, in connect
+    self._con = await self._pool._get_new_connection()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 538, in _get_new_connection
+    con = await self._connect(
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2443, in connect
+    return await connect_utils._connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1249, in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1218, in _connect
+    conn = await _connect_addr(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1050, in _connect_addr
+    return await __connect_addr(params, False, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1099, in __connect_addr
+    tr, pr = await connector
+             ^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 2043, in create_connection
+  File "uvloop/loop.pyx", line 2020, in uvloop.loop.Loop.create_connection
+ConnectionRefusedError: [Errno 111] Connection refused
+INFO:     127.0.0.1:59442 - "GET /api/v1/permits?permit_type=hot_work HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+  + Exception Group Traceback (most recent call last):
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 87, in collapse_excgroups
+  |     yield
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 190, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 401, in run_asgi
+    |     result = await app(  # type: ignore[func-returns-value]
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    |     return await self.app(scope, receive, send)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    |     await super().__call__(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/applications.py", line 123, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    |     await self.app(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    |     with collapse_excgroups():
+    |          ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    |     self.gen.throw(value)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    |     response = await call_next(request)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    |     raise app_exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    |     await route.handle(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    |     await self.app(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    |     response = await func(request)
+    |                ^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    |     raw_response = await run_endpoint_function(
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    |     return await dependant.call(**values)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 103, in list_permits
+    |     return await service.list_permits_typed(permit_type)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 414, in list_permits_typed
+    |     return await self._repo.generic_list(cfg["table"])
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 180, in generic_list
+    |     rows = await self._pg.fetch(f"SELECT * FROM {table} ORDER BY create_time DESC NULLS LAST, id DESC")
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 38, in fetch
+    |     async with self._pool.acquire() as conn:
+    |                ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 1056, in __aenter__
+    |     self.connection = await self.pool._acquire(self.timeout)
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 896, in _acquire
+    |     return await _acquire_impl()
+    |            ^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 881, in _acquire_impl
+    |     proxy = await ch.acquire()  # type: PoolConnectionProxy
+    |             ^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 161, in acquire
+    |     await self.connect()
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 153, in connect
+    |     self._con = await self._pool._get_new_connection()
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 538, in _get_new_connection
+    |     con = await self._connect(
+    |           ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2443, in connect
+    |     return await connect_utils._connect(
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1249, in _connect
+    |     raise last_error or exceptions.TargetServerAttributeNotMatched(
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1218, in _connect
+    |     conn = await _connect_addr(
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1050, in _connect_addr
+    |     return await __connect_addr(params, False, *args)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1099, in __connect_addr
+    |     tr, pr = await connector
+    |              ^^^^^^^^^^^^^^^
+    |   File "uvloop/loop.pyx", line 2043, in create_connection
+    |   File "uvloop/loop.pyx", line 2020, in uvloop.loop.Loop.create_connection
+    | ConnectionRefusedError: [Errno 111] Connection refused
+    +------------------------------------
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 401, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 189, in __call__
+    with collapse_excgroups():
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/middleware/logging.py", line 26, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/routers/permits.py", line 103, in list_permits
+    return await service.list_permits_typed(permit_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/services/permits_service.py", line 414, in list_permits_typed
+    return await self._repo.generic_list(cfg["table"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/permits_repository.py", line 180, in generic_list
+    rows = await self._pg.fetch(f"SELECT * FROM {table} ORDER BY create_time DESC NULLS LAST, id DESC")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/lvm_data_48T/wyuz/ai-document-review/app/api/database/pg_client.py", line 38, in fetch
+    async with self._pool.acquire() as conn:
+               ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 1056, in __aenter__
+    self.connection = await self.pool._acquire(self.timeout)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 896, in _acquire
+    return await _acquire_impl()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 881, in _acquire_impl
+    proxy = await ch.acquire()  # type: PoolConnectionProxy
+            ^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 161, in acquire
+    await self.connect()
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 153, in connect
+    self._con = await self._pool._get_new_connection()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/pool.py", line 538, in _get_new_connection
+    con = await self._connect(
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connection.py", line 2443, in connect
+    return await connect_utils._connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1249, in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1218, in _connect
+    conn = await _connect_addr(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1050, in _connect_addr
+    return await __connect_addr(params, False, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/nvme1n1p1/wangyuzhu/miniforge3/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1099, in __connect_addr
+    tr, pr = await connector
+             ^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 2043, in create_connection
+  File "uvloop/loop.pyx", line 2020, in uvloop.loop.Loop.create_connection
+ConnectionRefusedError: [Errno 111] Connection refused

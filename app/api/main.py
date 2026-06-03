@@ -23,12 +23,28 @@ from middleware.logging import LoggingMiddleware, setup_logging
 from routers import issues
 from routers import review_external, files, rules, rule_documents, permits, chat
 from routers import sqlagent_admin
-
+from routers import dashboard
 
 # Set up logging configuration
 setup_logging()
 
 logging = get_logger(__name__)
+
+# SmartQuery 初始化（在 lifespan 中调用）
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """应用生命周期管理：启动时初始化 SmartQuery"""
+    try:
+        from smart_query.service import initialize_smartquery
+        initialize_smartquery(settings)
+        logging.info("SmartQuery NL2SQL system initialized via lifespan")
+    except Exception as e:
+        logging.error(f"SmartQuery initialization failed: {e}")
+        logging.warning("SmartQuery features will be unavailable")
+    yield
+    logging.info("Application shutdown")
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -37,6 +53,7 @@ app = FastAPI(
         "usePkceWithAuthorizationCodeGrant": True,
         "clientId": settings.aad_client_id or None,
     },
+    lifespan=lifespan,
 )
 
 # Add middlewares
@@ -58,6 +75,7 @@ app.include_router(rule_documents.router)
 app.include_router(permits.router)
 app.include_router(chat.router)
 app.include_router(sqlagent_admin.router)
+app.include_router(dashboard.router)
 
 
 # Health check endpoint

@@ -186,6 +186,14 @@ class SQLiteClient:
             rows = await cursor.fetchall()
             return [dict(row) for row in rows]
 
+    async def retrieve_all_items(self, table: str) -> List[Dict[str, Any]]:
+        """Retrieve all rows from a table."""
+        async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
+            cursor = await db.execute(f"SELECT * FROM {table}")
+            rows = await cursor.fetchall()
+            return [dict(row) for row in rows]
+
     async def delete_item(self, table: str, item_id: str) -> None:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(f"DELETE FROM {table} WHERE id = ?", (item_id,))

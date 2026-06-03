@@ -12,6 +12,7 @@ from typing import Literal
 import fitz
 
 from common.logger import get_logger
+from common.llm_utils import extract_llm_content
 from common.models import Issue, IssueStatusEnum, IssueType, Location, ReviewRule, RiskLevel, RuleDocument
 from config.config import settings
 from services.bbox import bbox_to_quadpoints
@@ -57,8 +58,8 @@ _DEFAULT_ISSUE_TYPES = [
 ]
 
 
-def _build_system_prompt(custom_rules: List[ReviewRule] | None = None, rule_documents: List[RuleDocument] | None = None) -> str:
-    """Build system prompt with custom rules and rule documents.
+def _build_system_prompt(custom_rules: List[ReviewRule] | None = None, rule_documents: List[RuleDocument] | None = None, wiki_context: str = "") -> str:
+    """Build system prompt with custom rules, rule documents, and wiki context.
 
     If any selected custom_rules have a prompt field, use their prompts
     to build the review focus section. Otherwise fall back to defaults.
@@ -91,6 +92,11 @@ def _build_system_prompt(custom_rules: List[ReviewRule] | None = None, rule_docu
             doc_lines.append(f"- [{rdoc.name}]: {snippet}")
         rule_doc_section = "\n\n参考标准文件：\n" + "\n".join(doc_lines)
 
+    # Build wiki regulation context section
+    wiki_section = ""
+    if wiki_context:
+        wiki_section = f"\n\nGB 30871-2022 相关法规原文（请严格依据以下条款审查）：\n{wiki_context}"
+
     issues_str = chr(10).join(issue_types)
     parts = [
         "你是专业的特殊作业票合规审核专家，严格依据 GB 30871-2022《危险化学品企业特殊作业安全规范》进行审核。",
@@ -109,6 +115,7 @@ def _build_system_prompt(custom_rules: List[ReviewRule] | None = None, rule_docu
         "问题类型包括但不限于：",
         issues_str,
         rule_doc_section,
+        wiki_section,
         "",
         "输出要求：",
         "- text字段：简要描述不合规的具体内容（给用户看的问题说明）",
@@ -156,9 +163,9 @@ def _build_guidance(custom_rules: List[ReviewRule] | None = None, rule_documents
 
 class LangChainPipeline:
     def __init__(self) -> None:
-        # Prefer LangChain v1 provider-based initialization for DeepSeek.
+        # Prefer LangChain v1 provider-based initialization.
         # This avoids OpenAI "response_format" structured output features that DeepSeek may not support.
-        self.llm = _init_deepseek_model()
+        self.llm = _init_llm_model()
         self.parser = PydanticOutputParser(pydantic_object=ReviewOutput)
         self.mineru = MinerUClient()
 
@@ -271,8 +278,24 @@ class LangChainPipeline:
     ) -> List[Issue]:
         prepared = "\n".join([f"[{i}]{p['content']}" for i, p in enumerate(chunk)])
 
-        # Build dynamic prompts with custom rules
-        system_prompt = _build_system_prompt(custom_rules, rule_documents)
+        # Fetch wiki regulation context for document review
+        wiki_context = ""
+        try:
+            from services.wiki_search import get_wiki_search
+            wiki = get_wiki_search()
+            # Extract keywords from the first few paragraphs for wiki search
+            sample_text = " ".join(p.get("content", "")[:100] for p in chunk[:3])
+            wiki_context = wiki.get_document_review_context(
+                keywords=sample_text,
+                max_chars=4000,
+            )
+            if wiki_context:
+                logging.info(f"Wiki context injected: {len(wiki_context)} chars")
+        except Exception as e:
+            logging.warning(f"Wiki context fetch failed (non-fatal): {e}")
+
+        # Build dynamic prompts with custom rules and wiki context
+        system_prompt = _build_system_prompt(custom_rules, rule_documents, wiki_context)
         guidance = _build_guidance(custom_rules, rule_documents)
 
         messages = [
@@ -289,16 +312,12 @@ class LangChainPipeline:
 
         try:
             resp = await self.llm.ainvoke(messages)
-            content = resp.content if hasattr(resp, "content") else resp
-            if isinstance(content, list):
-                content = "".join(
-                    [c.get("text", "") if isinstance(c, dict) else str(c) for c in content]
-                )
+            content = extract_llm_content(resp)
             # Log Agent 1 raw response
-            logging.info(f"Agent 1 raw response length: {len(str(content))} chars")
-            logging.info(f"Agent 1 response preview: {str(content)[:500]}")
+            logging.info(f"Agent 1 raw response length: {len(content)} chars")
+            logging.info(f"Agent 1 response preview: {content[:500]}")
             # Parse using PydanticOutputParser (no provider-side response_format).
-            out = self.parser.parse(str(content))
+            out = self.parser.parse(content)
             raw_issues = out.issues
             logging.info(f"Agent 1 parsed {len(raw_issues)} issues")
         except Exception as e:
@@ -520,20 +539,20 @@ def _extract_pdf_page_text(pdf_path: str) -> Dict[int, str]:
     return page_texts
 
 
-def _init_deepseek_model():
+def _init_llm_model():
     """
     Initialize chat model via ChatOpenAI (OpenAI-compatible).
-    Works with DeepSeek, DashScope/Qwen, or any OpenAI-compatible endpoint.
-    Uses DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL from settings/.env.
+    Works with Qwen/DashScope, DeepSeek, or any OpenAI-compatible endpoint.
+    Uses LLM_API_KEY, LLM_BASE_URL, LLM_MODEL from settings/.env.
     """
     logging.info(
-        f"Initializing LLM: base_url={settings.deepseek_base_url}, "
-        f"model={settings.deepseek_model}"
+        f"Initializing LLM: base_url={settings.llm_base_url}, "
+        f"model={settings.llm_model}"
     )
     return ChatOpenAI(
-        api_key=settings.deepseek_api_key,
-        base_url=settings.deepseek_base_url,
-        model=settings.deepseek_model,
+        api_key=settings.llm_api_key,
+        base_url=settings.llm_base_url,
+        model=settings.llm_model,
         temperature=0.2,
     )
 

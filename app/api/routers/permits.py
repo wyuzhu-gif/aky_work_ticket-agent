@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 from pydantic import BaseModel
+from pathlib import Path
 from typing import Any
 
 from dependencies import get_permits_service
@@ -41,8 +42,9 @@ async def upload_and_extract(
     permit_type: str = Query("hot_work", description="作业票类型"),
     service: PermitsService = Depends(get_permits_service),
 ):
-    if not file.filename or not file.filename.lower().endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="仅支持 PDF 文件")
+    ext = Path(file.filename).suffix.lower() if file.filename else ""
+    if ext not in {".pdf", ".jpg", ".jpeg", ".png"}:
+        raise HTTPException(status_code=400, detail="仅支持 PDF、JPG、PNG 文件")
     # Validate type
     try:
         get_permit_type(permit_type)

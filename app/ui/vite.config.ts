@@ -13,13 +13,13 @@ export default defineConfig({
     proxy: {
       // Default to the local FastAPI port used in this repo.
       '/api': {
-        target: process.env.VITE_API_PROXY_TARGET ?? 'http://0.0.0.0:38021',
+        target: process.env.VITE_API_PROXY_TARGET ?? 'http://127.0.0.1:5100',
         changeOrigin: true,
         secure: false,
         timeout: 600000
       },
       '/ws': {
-        target: process.env.VITE_API_PROXY_TARGET ?? 'http://0.0.0.0:38021',
+        target: process.env.VITE_API_PROXY_TARGET ?? 'http://127.0.0.1:5100',
         ws: true,
         changeOrigin: true,
         secure: false

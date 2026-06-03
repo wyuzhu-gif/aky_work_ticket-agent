@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -32,10 +34,14 @@ class Settings(BaseSettings):
     mineru_bbox_units: str = "auto"  # "auto", "px", "pt"
     mineru_bbox_content_coverage: float = 0.92  # used to infer full-page bbox canvas size from content extents
 
-    # LLM (DeepSeek via LangChain)
-    deepseek_api_key: str = ""
-    deepseek_base_url: str = "https://api.deepseek.com/v1"
-    deepseek_model: str = "chatdeepseek"
+    # LLM (OpenAI-compatible, e.g. Qwen/DashScope)
+    llm_api_key: str = ""
+    llm_base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    llm_model: str = "qwen3.5-flash"
+    llm_vision_model: str = "qwen-vl-plus"
+    # Wiki knowledge base (replaces Milvus RAG + hardcoded gb_standard_path)
+    wiki_path: str = "./wiki"  # path to LLM Wiki directory
+    wiki_search_limit: int = 3  # max pages to return per search
 
     # Streaming / batching
     pagination: int = 32
@@ -52,11 +58,24 @@ class Settings(BaseSettings):
     pg_user: str = "postgres"
     pg_password: str = ""
 
-    # SQLAgent
-    sqlagent_url: str = ""
-    sqlagent_project_id: str = ""
+    # SmartQuery (NL2SQL 智能问数，内嵌版，原 SQLAgent 已迁移集成)
+    sq_llm_model: str = "qwen-flash"  # 智能问数使用的 LLM 模型
+    sq_llm_temperature: float = 0.2
+    sq_llm_max_tokens: int = 14000
+    sq_embedding_provider: str = "jina"  # jina | qwen | bge
+    sq_embedding_api_url: str = "http://10.8.0.100:38898/v1/embeddings"
+    sq_embedding_api_key: str = ""
+    sq_embedding_model_name: str = ""
+    sq_milvus_uri: str = "http://10.8.0.100:39530"
+    sq_milvus_metric_type: str = "COSINE"
+    sq_agent_recursion_limit: int = 500
+    sq_dialect: str = "PostgreSQL"
+    sq_language: str = "zh-CN"
 
-model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
+    # CORS
+    cors_origins: str = "*"  # comma-separated, e.g. "http://localhost:35173,http://192.168.1.100:35173"
+
+model_config = SettingsConfigDict(env_file=str(Path(__file__).resolve().parent.parent / ".env"), case_sensitive=False, extra="ignore")
 
 
 settings = Settings()

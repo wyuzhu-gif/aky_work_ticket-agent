@@ -20,6 +20,28 @@ _rule_docs_service: RuleDocumentsService | None = None
 _rule_docs_service_lock = asyncio.Lock()
 
 
+_issues_repo: IssuesRepository | None = None
+_issues_repo_lock = asyncio.Lock()
+
+
+async def get_issues_repo() -> IssuesRepository:
+    """Dependency that returns a singleton IssuesRepository (for dashboard stats)."""
+    global _issues_repo
+
+    if _issues_repo is not None:
+        return _issues_repo
+
+    async with _issues_repo_lock:
+        if _issues_repo is not None:
+            return _issues_repo
+
+        db_client = SQLiteClient()
+        repo = IssuesRepository(db_client)
+        await repo.init()
+        _issues_repo = repo
+        return _issues_repo
+
+
 async def get_issues_service() -> IssuesService:
     """
     Dependency that returns a singleton IssuesService.

@@ -85,3 +85,8 @@ class IssuesRepository:
         count = await self.db_client.delete_items_by_values("issues", {"doc_id": doc_id})
         logging.info(f"Deleted {count} issues for document {doc_id}")
         return count
+
+    async def get_all_issues(self) -> list[Issue]:
+        """Retrieve all issues (for dashboard stats)."""
+        items = await self.db_client.retrieve_all_items("issues")
+        return [Issue(**self._deserialize_issue(item)) for item in items]

@@ -6,10 +6,10 @@
 
 from __future__ import annotations
 
+import base64
 import httpx
 import json
 import os
-import re
 import tempfile
 from pathlib import Path
 
@@ -28,6 +28,7 @@ from common.permit_models import (
     PermitUploadResponse,
 )
 from common.logger import get_logger
+from common.llm_utils import extract_llm_content, strip_code_fences, llm_invoke_json
 
 logger = get_logger(__name__)
 
@@ -53,14 +54,13 @@ _GB_STANDARD_TEXT: str | None = None
 
 
 def _load_gb_standard() -> str:
-    """加载 GB 30871-2022 标准原文（MD 格式），启动时调用一次。"""
+    """加载 GB 30871-2022 标准原文（MD 格式），作为 wiki 的 fallback。"""
     global _GB_STANDARD_TEXT
     if _GB_STANDARD_TEXT is not None:
         return _GB_STANDARD_TEXT
-    # 标准文件路径（按优先级排列）
+    # 标准文件路径：项目根目录下的标准文件
     candidates = [
-        '/data/lvm_data_48T/wyuz/ai-document-review/GB_30871-2022危险化学品企业特殊作业安全规范.md',
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'GB_30871-2022危险化学品企业特殊作业安全规范.md'),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'GB_30871-2022危险化学品企业特殊作业安全规范.md')
     ]
     for p in candidates:
         p = os.path.normpath(p)
@@ -79,12 +79,22 @@ class PermitsService:
         self._repo = repo
         self._mineru = MinerUClient()
         self._llm = self._init_llm()
+        self._vision_llm = self._init_vision_llm()
+
+
+    def _init_vision_llm(self) -> ChatOpenAI:
+        return ChatOpenAI(
+            api_key=settings.llm_api_key,
+            base_url=settings.llm_base_url,
+            model=settings.llm_vision_model,
+            temperature=0.1,
+        )
 
     def _init_llm(self) -> ChatOpenAI:
         return ChatOpenAI(
-            api_key=settings.deepseek_api_key,
-            base_url=settings.deepseek_base_url,
-            model=settings.deepseek_model,
+            api_key=settings.llm_api_key,
+            base_url=settings.llm_base_url,
+            model=settings.llm_model,
             temperature=0.1,
             extra_body={"enable_thinking": False},
         )
@@ -95,7 +105,8 @@ class PermitsService:
         url = f"{settings.mineru_local_url.rstrip('/')}/file_parse"
         files = {"files": (filename, file_bytes, "application/pdf")}
         data = {"lang_list": "ch", "backend": "vlm-auto-engine"}
-        logger.info(f"Calling local MinerU: url={url} backend={data["backend"]}")
+        backend = data["backend"]
+        logger.info(f"Calling local MinerU: url={url} backend={backend}")
 
         async with httpx.AsyncClient(timeout=300) as client:
             resp = await client.post(url, files=files, data=data)
@@ -115,22 +126,77 @@ class PermitsService:
 
         raise RuntimeError("Local MinerU returned no md_content")
 
-    async def upload_and_extract(self, file_bytes: bytes, filename: str, permit_type: str = "hot_work") -> dict:
-        """Upload PDF → MinerU → LLM extract → structured data (not saved yet)."""
 
-        # 1) Save to temp file for MinerU
-        suffix = Path(filename).suffix or ".pdf"
+    async def _extract_from_image(self, image_bytes: bytes, filename: str, permit_type: str) -> dict:
+        """Extract structured data from image using vision LLM."""
+        ext = Path(filename).suffix.lower()
+        mime_map = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
+        mime = mime_map.get(ext, "image/jpeg")
+        b64 = base64.b64encode(image_bytes).decode()
+        logger.info(f"Vision LLM extracting from image: {filename}, size={len(image_bytes)}, mime={mime}")
+
+        prompt = _load_prompt(permit_type, "extract_image")
+        messages = [
+            SystemMessage(content=prompt),
+            HumanMessage(content=[
+                {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{b64}"}},
+                {"type": "text", "text": "请从这张作业票图片中提取所有结构化数据，输出 JSON。"},
+            ]),
+        ]
+        resp = await self._vision_llm.ainvoke(messages)
+        raw = extract_llm_content(resp)
+        raw = strip_code_fences(raw)
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError:
+            logger.error(f"Vision LLM returned non-JSON: {raw[:500]}")
+            return {"permit_code": "", "raw_llm_output": raw}
+
+    async def upload_and_extract(self, file_bytes: bytes, filename: str, permit_type: str = "hot_work") -> dict:
+        """Upload PDF/Image → extract → structured data (not saved yet)."""
+
+        ext = Path(filename).suffix.lower()
+
+        # Image path: vision LLM directly
+        if ext in (".jpg", ".jpeg", ".png"):
+            logger.info(f"Image upload detected: {filename}")
+            extracted = await self._extract_from_image(file_bytes, filename, permit_type)
+            gas_data = extracted.pop("gas_analyses", [])
+            safety_data = extracted.pop("safety_checks", [])
+            for k in ("related_permit_ids", "related_permits"):
+                if k in extracted and isinstance(extracted[k], list):
+                    extracted[k] = ", ".join(str(x) for x in extracted[k])
+            code_key = "permit_code" if "permit_code" in extracted else "ticket_code"
+            if not extracted.get(code_key):
+                extracted[code_key] = Path(filename).stem
+            if "work_id" in extracted and not extracted.get("work_id"):
+                extracted["work_id"] = extracted.get(code_key, Path(filename).stem)
+            return {
+                "permit_type": permit_type,
+                "permit": {k: v for k, v in extracted.items() if v is not None},
+                "gas_analyses": gas_data,
+                "safety_checks": safety_data,
+                "raw_md": None,
+            }
+
+        # PDF path: MinerU + LLM
+        suffix = ext or ".pdf"
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             tmp.write(file_bytes)
             tmp_path = tmp.name
 
         try:
             # 2) MinerU parse
+            md_text = None
             if settings.mineru_local_url:
                 logger.info(f"MINERU_LOCAL_URL={settings.mineru_local_url}")
                 logger.info(f"Local MinerU extracting: {filename}")
-                md_text = await self._extract_local_mineru(file_bytes, filename)
-            else:
+                try:
+                    md_text = await self._extract_local_mineru(file_bytes, filename)
+                except (httpx.ConnectError, httpx.TimeoutException, ConnectionError, OSError) as e:
+                    logger.warning(f"Local MinerU unreachable ({e}), falling back to cloud MinerU")
+                    md_text = None
+            if md_text is None:
                 logger.info(f"Cloud MinerU extracting: {filename}")
                 result = await self._mineru.extract(Path(tmp_path))
                 md_text = self._extract_md_from_result(result)
@@ -240,29 +306,28 @@ class PermitsService:
         permit_type: str = "hot_work",
     ) -> list[dict]:
         """调用 LLM 对作业票数据进行合规性审查。"""
-        gb_text = _load_gb_standard()
-        standard_context = f"## GB 30871-2022 标准原文\n\n{gb_text}" if gb_text else ""
+        from services.wiki_search import get_wiki_search
+        wiki = get_wiki_search()
+        standard_context = wiki.get_permit_review_context(
+            permit_type=permit_type,
+            max_chars=6000,
+        )
+        if not standard_context:
+            logger.warning("Wiki returned empty context for permit_type=%s, falling back to local GB file", permit_type)
+            gb_text = _load_gb_standard()
+            standard_context = f"## GB 30871-2022 标准原文\n\n{gb_text}" if gb_text else ""
         user_content = f"{standard_context}\n\n---\n\n## 待审查的作业票数据\n\n{json.dumps(data, ensure_ascii=False, indent=2)}"
         review_prompt = _load_prompt(permit_type, "review")
         messages = [
             SystemMessage(content=review_prompt),
             HumanMessage(content=f"请依据标准原文审查以下作业票数据的合规性：\n\n{user_content}"),
         ]
-        resp = await self._llm.ainvoke(messages)
-        raw = resp.content
-        # qwen3.5-flash thinking model: content may be empty, check reasoning_content
-        if not raw or not raw.strip():
-            reasoning = getattr(resp, 'additional_kwargs', {}).get('reasoning_content', '')
-            if reasoning:
-                logger.info(f"LLM content empty, using reasoning_content (len={len(reasoning)})")
-                raw = reasoning
-        raw = re.sub(r"^```(?:json)?\s*", "", raw.strip())
-        raw = re.sub(r"\s*```$", "", raw.strip())
-        try:
-            return json.loads(raw)
-        except json.JSONDecodeError:
-            logger.error(f"Compliance review returned non-JSON: {raw[:500]}")
+        resp_result = await llm_invoke_json(
+            self._llm, messages, error_context="Compliance review"
+        )
+        if resp_result is None:
             return [{"category": "解析错误", "status": "fail", "issues": ["LLM 返回格式异常"]}]
+        return resp_result
 
     @staticmethod
     def _extract_md_from_result(result: dict) -> str:
@@ -376,22 +441,12 @@ class PermitsService:
             SystemMessage(content=prompt),
             HumanMessage(content=f"请从以下动火作业票文本中提取结构化数据：\n\n{md_text}"),
         ]
-        resp = await self._llm.ainvoke(messages)
-        raw = resp.content
-        # qwen3.5-flash thinking model: content may be empty, check reasoning_content
-        if not raw or not raw.strip():
-            reasoning = getattr(resp, 'additional_kwargs', {}).get('reasoning_content', '')
-            if reasoning:
-                logger.info(f"LLM content empty, using reasoning_content (len={len(reasoning)})")
-                raw = reasoning
-        # Strip markdown code fences if present
-        raw = re.sub(r"^```(?:json)?\s*", "", raw.strip())
-        raw = re.sub(r"\s*```$", "", raw.strip())
-        try:
-            return json.loads(raw)
-        except json.JSONDecodeError:
-            logger.error(f"LLM returned non-JSON: {raw[:500]}")
-            return {"permit_code": "", "raw_llm_output": raw}
+        resp_result = await llm_invoke_json(
+            self._llm, messages, error_context="LLM extraction"
+        )
+        if resp_result is None or not isinstance(resp_result, dict):
+            return {"permit_code": "", "raw_llm_output": str(resp_result)}
+        return resp_result
 
     @staticmethod
     def _to_markdown(content: dict | list) -> str:

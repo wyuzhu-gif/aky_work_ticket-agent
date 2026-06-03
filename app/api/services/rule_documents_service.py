@@ -193,9 +193,9 @@ class RuleDocumentsService:
         return await self.rule_docs_repo.update_rule_document(rule_doc_id, fields)
 
     async def _call_llm_parse(self, text: str) -> List[Dict[str, Any]]:
-        """Call DeepSeek to parse text into structured rules."""
-        from services.lc_pipeline import _init_deepseek_model
-        llm = _init_deepseek_model()
+        """Call LLM to parse text into structured rules."""
+        from services.lc_pipeline import _init_llm_model
+        llm = _init_llm_model()
         parser = PydanticOutputParser(pydantic_object=ParsedRulesOutput)
 
         # Truncate text if too long

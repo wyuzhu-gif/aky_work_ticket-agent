@@ -1,12 +1,13 @@
 import { Route, Routes } from 'react-router-dom'
 import { AppShell } from './components/AppShell'
-import Files from "./pages/files/Files";
-import Review from "./pages/review/Review";
-import RuleLibrary from "./pages/ruleLibrary/RuleLibrary";
-import Report from "./pages/report/Report";
-import TicketDatabase from "./pages/ticketDatabase/TicketDatabase";
-import SmartQuery from "./pages/smartQuery/SmartQuery";
-import SqlAgentAdmin from "./pages/sqlagentAdmin/SqlAgentAdmin";
+import Review from './pages/review/Review'
+import Report from './pages/report/Report'
+import Dashboard from './pages/dashboard/Dashboard'
+import TicketReview from './pages/ticketReview/TicketReview'
+import SmartQuery from './pages/smartQuery/SmartQuery'
+import PromptRules from './pages/rules/RulesPage'
+import RuleDocManage from './pages/ruleDocs/RuleDocsPage'
+import AgentAdmin from './pages/agentAdmin/AgentAdmin'
 import type { ThemeMode } from './theme'
 
 type AppProps = {
@@ -19,21 +20,36 @@ function App({ mode, onToggleMode }: AppProps) {
     <AppShell mode={mode} onToggleMode={onToggleMode}>
       <Pages />
     </AppShell>
-  );
+  )
+}
+
+/** 审核看板 */
+function DashboardPlaceholder() {
+  return <Dashboard />
 }
 
 function Pages() {
   return (
-      <Routes>
-          <Route path="/" element={<Files />} />
-          <Route path="/rule-library" element={<RuleLibrary />} />
-          <Route path="/review" element={<Review />} />
-          <Route path="/report" element={<Report />} />
-          <Route path="/ticket-database" element={<TicketDatabase />} />
-          <Route path="/smart-query" element={<SmartQuery />} />
-          <Route path="/sqlagent-admin" element={<SqlAgentAdmin />} />
-      </Routes>
-  );
+    <Routes>
+      {/* 工作台 */}
+      <Route path="/" element={<DashboardPlaceholder />} />
+
+      {/* 智能审核 */}
+      <Route path="/review" element={<Review />} />
+      <Route path="/review/:docId/report" element={<Report />} />
+      <Route path="/rules" element={<PromptRules />} />
+
+      {/* 作业票管理 */}
+      <Route path="/ticket-review" element={<TicketReview />} />
+
+      {/* 数据分析 */}
+      <Route path="/smart-query" element={<SmartQuery />} />
+
+      {/* 系统管理 */}
+      <Route path="/agent-admin" element={<AgentAdmin />} />
+      <Route path="/rule-docs" element={<RuleDocManage />} />
+    </Routes>
+  )
 }
 
-export default App;
+export default App

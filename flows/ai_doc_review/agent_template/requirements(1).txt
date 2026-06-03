@@ -1,5 +1,0 @@
-azure-ai-formrecognizer==3.3.3
-asttokens==2.4.1
-json5==0.9.5
-openai==1.43.0
-promptflow_typed_llm==0.0.8

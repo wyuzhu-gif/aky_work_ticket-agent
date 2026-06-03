@@ -6,19 +6,23 @@ import {
   tokens,
 } from '@fluentui/react-components'
 import {
-  DocumentBulletListRegular,
+  BoardRegular,
   SearchRegular,
   ShieldCheckmarkRegular,
   BookRegular,
-  DatabaseRegular,
+  ClipboardTaskRegular,
   DataUsageRegular,
-  FolderRegular,
   WeatherMoonRegular,
   WeatherSunnyRegular,
   SettingsRegular,
   BrainCircuitRegular,
+  DocumentTextRegular,
+  ChartMultipleRegular,
+  DocumentRegular,
+  ChevronDown16Regular,
+  ChevronRight16Regular,
 } from '@fluentui/react-icons'
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import type { ThemeMode } from '../theme'
 
@@ -43,6 +47,7 @@ const useStyles = makeStyles({
     borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
     backdropFilter: 'blur(12px)',
     backgroundColor: tokens.colorNeutralBackground2,
+    overflowY: 'auto',
   },
   // ========== BRAND ==========
   brand: {
@@ -94,12 +99,43 @@ const useStyles = makeStyles({
   },
   // ========== NAV ITEMS ==========
   navSectionTitle: {
-    fontSize: '11px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '10px 12px',
+    fontSize: '12px',
     fontWeight: 600,
     color: tokens.colorNeutralForeground3,
-    letterSpacing: '0.05em',
-    textTransform: 'uppercase',
-    margin: '16px 12px 8px',
+    letterSpacing: '0.03em',
+    marginTop: '8px',
+    cursor: 'pointer',
+    userSelect: 'none',
+    borderRadius: '6px',
+    transitionProperty: 'background-color',
+    transitionDuration: '150ms',
+    '&:hover': {
+      backgroundColor: tokens.colorSubtleBackgroundHover,
+    },
+  },
+  navSectionIcon: {
+    fontSize: '14px',
+    color: tokens.colorNeutralForeground3,
+  },
+  navSectionChevron: {
+    fontSize: '12px',
+    marginLeft: 'auto',
+    color: tokens.colorNeutralForeground3,
+    transitionProperty: 'transform',
+    transitionDuration: '200ms',
+  },
+  navSubItems: {
+    overflow: 'hidden',
+    transitionProperty: 'max-height, opacity',
+    transitionDuration: '200ms',
+  },
+  navSubItemsCollapsed: {
+    maxHeight: '0 !important',
+    opacity: 0,
   },
   navSubItem: {
     display: 'flex',
@@ -124,48 +160,8 @@ const useStyles = makeStyles({
     fontWeight: 500,
   },
   navSubItemIcon: {
-    color: tokens.colorBrandForeground1,
     fontSize: '16px',
-  },
-  navItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    padding: '10px 12px',
-    borderRadius: '8px',
-    textDecoration: 'none',
-    color: tokens.colorNeutralForeground2,
-    border: '1px solid transparent',
-    transitionProperty: 'all',
-    transitionDuration: '150ms',
-    '&:hover': {
-      backgroundColor: tokens.colorSubtleBackgroundHover,
-      color: tokens.colorNeutralForeground1,
-    },
-  },
-  navItemActive: {
-    backgroundColor: tokens.colorBrandBackground2,
-    borderTopColor: tokens.colorBrandStroke1,
-    borderRightColor: tokens.colorBrandStroke1,
-    borderBottomColor: tokens.colorBrandStroke1,
-    borderLeftColor: tokens.colorBrandStroke1,
-    color: tokens.colorNeutralForeground1,
-    fontWeight: 500,
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      left: 0,
-      top: '50%',
-      transform: 'translateY(-50%)',
-      width: '3px',
-      height: '20px',
-      borderRadius: '0 2px 2px 0',
-      backgroundColor: tokens.colorBrandBackground,
-    },
-  },
-  navItemIcon: {
     color: tokens.colorBrandForeground1,
-    fontSize: '18px',
   },
   // ========== CONTENT ==========
   content: {
@@ -210,6 +206,56 @@ const useStyles = makeStyles({
     width: '280px',
     maxWidth: '30vw',
   },
+  searchWrapper: {
+    position: 'relative',
+  },
+  searchDropdown: {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    width: '320px',
+    maxHeight: '300px',
+    overflowY: 'auto',
+    backgroundColor: tokens.colorNeutralBackground1,
+    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    borderRadius: '8px',
+    boxShadow: tokens.shadow16,
+    zIndex: 1000,
+    marginTop: '4px',
+  },
+  searchItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '10px 14px',
+    cursor: 'pointer',
+    textDecoration: 'none',
+    color: tokens.colorNeutralForeground1,
+    '&:hover': {
+      backgroundColor: tokens.colorSubtleBackgroundHover,
+    },
+  },
+  searchItemIcon: {
+    fontSize: '16px',
+    color: tokens.colorBrandForeground1,
+    flexShrink: 0,
+  },
+  searchItemName: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    fontSize: '13px',
+  },
+  searchItemHint: {
+    fontSize: '11px',
+    color: tokens.colorNeutralForeground3,
+  },
+  searchEmpty: {
+    padding: '16px',
+    textAlign: 'center',
+    fontSize: '13px',
+    color: tokens.colorNeutralForeground3,
+  },
   // ========== PAGE ==========
   page: {
     padding: '20px',
@@ -218,28 +264,67 @@ const useStyles = makeStyles({
   },
 })
 
-function NavItem({
-  to,
-  label,
-  icon,
-}: {
-  to: string
-  label: string
-  icon: React.ReactNode
-}) {
-  const classes = useStyles()
-  return (
-    <NavLink
-      to={to}
-      className={({ isActive }) =>
-        mergeClasses(classes.navItem, isActive && classes.navItemActive)
-      }
-      style={{ position: 'relative' }}
-    >
-      <span className={classes.navItemIcon}>{icon}</span>
-      <span>{label}</span>
-    </NavLink>
-  )
+/** 导航分区定义 */
+const NAV_SECTIONS = [
+  {
+    title: '工作台',
+    icon: <BoardRegular />,
+    items: [
+      { to: '/', label: '审核看板', icon: <ChartMultipleRegular /> },
+    ],
+  },
+  {
+    title: '智能审核',
+    icon: <ShieldCheckmarkRegular />,
+    items: [
+      { to: '/review', label: '文档审核', icon: <DocumentTextRegular /> },
+      { to: '/rules', label: '规则库', icon: <BookRegular /> },
+    ],
+  },
+  {
+    title: '作业票管理',
+    icon: <ClipboardTaskRegular />,
+    items: [
+      { to: '/ticket-review', label: '作业票审查', icon: <DocumentRegular /> },
+    ],
+  },
+  {
+    title: '数据分析',
+    icon: <DataUsageRegular />,
+    items: [
+      { to: '/smart-query', label: '智能问数', icon: <DataUsageRegular /> },
+    ],
+  },
+  {
+    title: '系统管理',
+    icon: <SettingsRegular />,
+    items: [
+      { to: '/agent-admin', label: '智能体配置', icon: <BrainCircuitRegular /> },
+      { to: '/rule-docs', label: '规则文档管理', icon: <DocumentRegular /> },
+    ],
+  },
+] as const
+
+/** 路径 → 页面标题 映射 */
+const PAGE_TITLES: Record<string, string> = {
+  '/': '审核看板',
+  '/review': '文档审核',
+  '/rules': '规则库',
+  '/ticket-review': '作业票审查',
+  '/smart-query': '智能问数',
+  '/agent-admin': '智能体配置',
+  '/rule-docs': '规则文档管理',
+}
+
+/** 路径 → 所属分区 映射 */
+const PAGE_BREADCRUMBS: Record<string, string> = {
+  '/': '工作台',
+  '/review': '智能审核',
+  '/rules': '智能审核',
+  '/ticket-review': '作业票管理',
+  '/smart-query': '数据分析',
+  '/agent-admin': '系统管理',
+  '/rule-docs': '系统管理',
 }
 
 export function AppShell({ mode, onToggleMode, children }: AppShellProps) {
@@ -247,12 +332,57 @@ export function AppShell({ mode, onToggleMode, children }: AppShellProps) {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const pageTitle = location.pathname === '/review' ? '智能审阅' : location.pathname === '/rule-library' ? '规则库' : location.pathname === '/ticket-database' ? '作业票数据库' : location.pathname === '/smart-query' ? '智能问数' : location.pathname === '/sqlagent-admin' ? '智能问数智能体管理' : '作业票文档库'
+  // 折叠状态：记录每个分区的展开/折叠
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
+
+  const toggleSection = (title: string) => {
+    setCollapsed(prev => ({ ...prev, [title]: !prev[title] }))
+  }
+
+  // 全局搜索状态
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [fileList, setFileList] = useState<string[]>([])
+
+  // 加载文件列表（懒加载，首次聚焦搜索框时获取）
+  const filesLoaded = useRef(false)
+  const loadFiles = useCallback(async () => {
+    if (filesLoaded.current) return
+    try {
+      const API_BASE = import.meta.env.VITE_API_BASE || ''
+      const res = await fetch(`${API_BASE}/api/v1/files`)
+      if (res.ok) {
+        const files: string[] = await res.json()
+        setFileList(files)
+        filesLoaded.current = true
+      }
+    } catch { /* ignore */ }
+  }, [])
+
+  useEffect(() => {
+    if (searchQuery && !filesLoaded.current) loadFiles()
+  }, [searchQuery, loadFiles])
+
+  // 有查询关键词时自动打开下拉
+  useEffect(() => {
+    setSearchOpen(searchQuery.trim().length > 0)
+  }, [searchQuery])
+
+  const filteredFiles = searchQuery.trim()
+    ? fileList.filter(f => f.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 8)
+    : []
+
+  const basePath = '/' + location.pathname.split('/').filter(Boolean)[0] || '/'
+  const pageTitle = PAGE_TITLES[basePath] || PAGE_TITLES[location.pathname] || 'AI 文档审核'
+  const breadcrumb = PAGE_BREADCRUMBS[basePath] || PAGE_BREADCRUMBS[location.pathname] || ''
+
+  const isTopLevel = ['/', '/ticket-review', '/smart-query'].includes(basePath)
 
   return (
     <div className={classes.shell}>
       <div className={classes.layout}>
         <aside className={classes.nav}>
+          {/* Brand */}
           <div className={classes.brand}>
             <div className={classes.brandIcon}>
               <ShieldCheckmarkRegular />
@@ -266,37 +396,45 @@ export function AppShell({ mode, onToggleMode, children }: AppShellProps) {
             </div>
           </div>
 
-          <div className={classes.navItem} style={{ cursor: 'default' }}>
-            <span className={classes.navItemIcon}><FolderRegular /></span>
-            <span>作业票总览中心</span>
-          </div>
-          <NavLink to="/" className={({ isActive }) => mergeClasses(classes.navItem, isActive && classes.navItemActive)} style={{ position: 'relative', paddingLeft: '44px' }}>
-            <span className={classes.navItemIcon}><DocumentBulletListRegular /></span>
-            <span>作业票文档库</span>
-          </NavLink>
-          <NavLink to="/ticket-database" className={({ isActive }) => mergeClasses(classes.navItem, isActive && classes.navItemActive)} style={{ position: 'relative', paddingLeft: '44px' }}>
-            <span className={classes.navItemIcon}><DatabaseRegular /></span>
-            <span>作业票数据库</span>
-          </NavLink>
-          <NavLink to="/smart-query" className={({ isActive }) => mergeClasses(classes.navItem, isActive && classes.navItemActive)} style={{ position: 'relative', paddingLeft: '44px' }}>
-            <span className={classes.navItemIcon}><DataUsageRegular /></span>
-            <span>智能问数</span>
-          </NavLink>
-
-          <div className={classes.navItem} style={{ cursor: 'default', marginTop: '12px' }}>
-            <span className={classes.navItemIcon}><SettingsRegular /></span>
-            <span>系统管理</span>
-          </div>
-          <NavLink to="/sqlagent-admin" className={({ isActive }) => mergeClasses(classes.navItem, isActive && classes.navItemActive)} style={{ position: 'relative', paddingLeft: '44px' }}>
-            <span className={classes.navItemIcon}><BrainCircuitRegular /></span>
-            <span>智能问数智能体管理</span>
-          </NavLink>          <NavItem to="/rule-library" label="规则库" icon={<BookRegular />} />
+          {/* Nav Sections */}
+          {NAV_SECTIONS.map((section) => {
+            const isCollapsed = collapsed[section.title] ?? false
+            return (
+              <div key={section.title}>
+                <div className={classes.navSectionTitle} onClick={() => toggleSection(section.title)}>
+                  <span className={classes.navSectionIcon}>{section.icon}</span>
+                  <span>{section.title}</span>
+                  <span className={classes.navSectionChevron}>
+                    {isCollapsed ? <ChevronRight16Regular /> : <ChevronDown16Regular />}
+                  </span>
+                </div>
+                <div
+                  className={mergeClasses(classes.navSubItems, isCollapsed && classes.navSubItemsCollapsed)}
+                  style={{ maxHeight: isCollapsed ? 0 : `${section.items.length * 48}px` }}
+                >
+                  {section.items.map((item) => (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      end={item.to === '/'}
+                      className={({ isActive }) =>
+                        mergeClasses(classes.navSubItem, isActive && classes.navSubItemActive)
+                      }
+                    >
+                      <span className={classes.navSubItemIcon}>{item.icon}</span>
+                      <span>{item.label}</span>
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
         </aside>
 
         <div className={classes.content}>
           <header className={classes.topbar}>
             <div className={classes.titleSection}>
-              {location.pathname !== '/' && location.pathname !== '/ticket-docs' && location.pathname !== '/ticket-database' && (
+              {!isTopLevel && (
                 <Button
                   appearance="subtle"
                   size="small"
@@ -307,15 +445,46 @@ export function AppShell({ mode, onToggleMode, children }: AppShellProps) {
                 </Button>
               )}
               <span className={classes.pageTitle}>{pageTitle}</span>
-              <span className={classes.breadcrumbs}>/ 合规审阅中心</span>
+              {breadcrumb && (
+                <span className={classes.breadcrumbs}>/ {breadcrumb}</span>
+              )}
             </div>
             <div className={classes.actions}>
-              <Input
-                className={classes.search}
-                size="small"
-                contentBefore={<SearchRegular />}
-                placeholder="搜索文档、问题…"
-              />
+              <div className={classes.searchWrapper}>
+                <Input
+                  className={classes.search}
+                  size="small"
+                  contentBefore={<SearchRegular />}
+                  placeholder="搜索文档…"
+                  value={searchQuery}
+                  onChange={(_e, d) => setSearchQuery(d.value ?? '')}
+                />
+                {searchOpen && searchQuery.trim() && (
+                  <div className={classes.searchDropdown}>
+                    {filteredFiles.length === 0 ? (
+                      <div className={classes.searchEmpty}>未找到匹配文档</div>
+                    ) : (
+                      filteredFiles.map(f => (
+                        <div
+                          key={f}
+                          className={classes.searchItem}
+                          onMouseDown={(e) => {
+                            e.preventDefault() // 阻止 blur
+                            navigate(`/review?document=${encodeURIComponent(f)}`)
+                            setSearchQuery('')
+                          }}
+                        >
+                          <span className={classes.searchItemIcon}><DocumentTextRegular /></span>
+                          <div>
+                            <div className={classes.searchItemName}>{f}</div>
+                            <div className={classes.searchItemHint}>点击审核此文档</div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
               <Button appearance="subtle" size="small" onClick={onToggleMode}>
                 {mode === 'dark' ? (
                   <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
