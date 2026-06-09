@@ -328,6 +328,18 @@ def validate_sql_syntax(sql: str) -> str:
     # === 真实验证: 用 MySQL EXPLAIN 验证语法 (不执行查询, 拿执行计划) ===
     # 直接用 pymysql 调 MySQL (不依赖 vanna, 因为 vanna 需先 connect_to_mysql)
     # 这样 LLM 就能拿到真实错误信息 (语法错/表/列不存在/聚合错)
+    #
+    # 权限错误降级 (1345/1142): 只读账号常无 EXPLAIN 权限,
+    # 这种错应该静默降级到基础验证, 不告诉 LLM "SQL 错了",
+    # 否则 LLM 会以为是 SQL 问题, 一直改 SQL 死循环.
+    PERMISSION_ERRNOS = {
+        1044,  # Access denied for user
+        1045,  # Access denied for user (auth)
+        1142,  # SHOW VIEW command denied
+        1345,  # EXPLAIN/SHOW can not be issued; lacking privileges for underlying table
+        2006,  # MySQL server has gone away (连接断)
+    }
+
     try:
         # 用 ; 分割, 只验证第一条
         sql_clean = re.sub(r'--[^\n]*', '', sql)
@@ -353,13 +365,21 @@ def validate_sql_syntax(sql: str) -> str:
                 # MySQL 8.0 也支持 EXPLAIN <statement>
                 cur.execute(f"EXPLAIN {first_stmt}")
                 rows = cur.fetchall()
-                col_names = [d[0] for d in cur.description]
                 plan_lines = []
                 for row in rows[:5]:  # 只取前 5 行
                     plan_lines.append(str(row))
                 plan_str = '\n'.join(plan_lines)
                 return f"✅ 语法验证通过 (MySQL EXPLAIN 执行计划):\n{plan_str}"
         except pymysql.Error as e:
+            # 关键修复: 区分"权限错"和"真 SQL 错"
+            errno = e.args[0] if e.args else None
+            if errno in PERMISSION_ERRNOS:
+                # 静默降级 - 不告诉 LLM "SQL 错了"
+                logger.info(
+                    f"validate_sql_syntax: EXPLAIN 权限不足 (errno={errno}), "
+                    f"静默降级到基础验证. 实际 SQL 语法需 execute_sql 时验证."
+                )
+                return "⚠️ EXPLAIN 权限不足 (账号无权限验证语法), 已跳过此步。请依赖 execute_sql 的真实执行结果判断 SQL 是否正确。"
             # 真错误: 返回错误信息 (MySQL 解析器报语法/表/列/聚合错)
             err_msg = str(e).strip()
             if len(err_msg) > 500:
