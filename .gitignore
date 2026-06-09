@@ -1,0 +1,70 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual env
+venv/
+venv_*/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Runtime
+.pid
+*.pid
+nohup.out
+
+# Env / 凭证
+.env
+.env.local
+.env.*.local
+*.bak
+*.bak.*
+
+# Data (本机跑时产生的)
+api/app/data/app.db
+api/app/data/app.db-*
+api/app/data/documents/*
+api/app/data/mineru/*
+api/app/data/rule_docs/*
+!api/app/data/documents/.gitkeep
+!api/app/data/mineru/.gitkeep
+!api/app/data/rule_docs/.gitkeep
+
+# Frontend build
+api/www/_*/
+api/www/node_modules/
+
+# Compile artifacts
+._____temp/
+_build/
+
+# 训练数据缓存 (Milvus 实际跑容器,本地不缓存)
+milvus.db
+api/milvus.db
+
+# 测试
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Misc
+*.tmp
+*.bak
+*~

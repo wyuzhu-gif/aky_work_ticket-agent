@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>作业票智能审查系统</title>
+    <script type="module" crossorigin src="/assets/index-BxUfRIww.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CAAgnnNt.css">
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script>
+      // === 智能问数 - 强制显示会话历史删除按钮 ===
+      // 策略: 找 session item 容器 (3 个子元素: title + time + delete button)
+      //      用 childNodes[2] (第 3 个) 当 delete button
+      (function() {
+        // session item 容器特征:
+        // - children.length === 3
+        // - 包含 SVG button (delete button)
+        // - 文本里有"分钟前"/"小时前"/"天前"/"刚刚" 或 "未命名对话" 之类
+        function isSessionItem(el) {
+          if (!el || el.nodeType !== 1) return false;
+          if (el.children.length !== 3) return false;
+          // 第一个 child 应该是 title 文字
+          // 第二个 child 应该是 time 文字
+          // 第三个 child 应该是 button (delete)
+          const c0 = el.children[0];
+          const c1 = el.children[1];
+          const c2 = el.children[2];
+          if (!c0 || !c1 || !c2) return false;
+          if (c2.tagName !== 'BUTTON') return false;
+          if (!c2.querySelector('svg')) return false;
+          // textContent 至少包含时间标识
+          const text = (el.textContent || '').slice(0, 200);
+          return /(\d+\s*分钟前|\d+\s*小时前|\d+\s*天前|刚刚|未命名对话)/.test(text);
+        }
+
+        function forceShow() {
+          // 找所有符合 session item 特征的容器
+          const all = document.querySelectorAll('div, li');
+          let count = 0;
+          for (const el of all) {
+            if (!isSessionItem(el)) continue;
+            const delBtn = el.children[2];
+            if (delBtn.dataset.fixed === '1') continue;
+            // 强制显示 - 缩小一半 (24 → 12)
+            delBtn.style.opacity = '1';
+            delBtn.style.background = '#dc2626';
+            delBtn.style.color = '#fff';
+            delBtn.style.borderRadius = '3px';
+            delBtn.style.padding = '0';
+            delBtn.style.minWidth = '12px';
+            delBtn.style.minHeight = '12px';
+            delBtn.style.width = '12px';
+            delBtn.style.height = '12px';
+            delBtn.style.fontSize = '10px';
+            // 缩小 SVG 内的图标
+            const svg = delBtn.querySelector('svg');
+            if (svg) {
+              svg.setAttribute('width', '10');
+              svg.setAttribute('height', '10');
+              svg.style.width = '10px';
+              svg.style.height = '10px';
+            }
+            delBtn.dataset.fixed = '1';
+            count++;
+          }
+          return count;
+        }
+
+        // === 拦截删除按钮点击, 加二次确认 ===
+        document.addEventListener('click', function(e) {
+          const btn = e.target.closest('button');
+          if (!btn || btn.dataset.fixed !== '1') return;
+          // 弹确认框
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          // 找所在 session item 的 title
+          const sessionItem = btn.parentElement;
+          const titleEl = sessionItem ? sessionItem.children[0] : null;
+          const title = titleEl ? titleEl.textContent.trim() : '这个会话';
+          if (!confirm(`确定要删除会话 "${title}" 吗?\n\n此操作不可恢复!`)) {
+            return;
+          }
+          // 确认删除: 转发给 React 原 onClick
+          // 找到 button 的 React fiber 上的原 onClick
+          const keys = Object.keys(btn);
+          const reactPropsKey = keys.find(k => k.startsWith('__reactProps'));
+          if (reactPropsKey) {
+            const props = btn[reactPropsKey];
+            if (props && props.onClick) {
+              // 合成 event 对象, 因为 onClick 会调 e.stopPropagation() 不会真发
+              // React 19 的 onClick 实际是 ref.current 转发
+              // 但如果原 onClick 是直接的, 我们直接调用
+              try {
+                // 触发原生 click 让 React 接管
+                // 但 React 19 ref 模式 onClick 是 (...n)=>{const r=t.current;return r(...n)} 形式
+                // 这种情况下 r 是原 onClick 引用, 调它就行
+                const fakeEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+                Object.defineProperty(fakeEvent, 'target', { value: btn });
+                Object.defineProperty(fakeEvent, 'currentTarget', { value: btn });
+                props.onClick(fakeEvent);
+              } catch (err) {
+                console.error('Failed to invoke React onClick:', err);
+              }
+            }
+          }
+        }, true);  // capture phase, 在 React 之前拦截
+
+        // MutationObserver 监听 DOM 变化
+        const observer = new MutationObserver(forceShow);
+        observer.observe(document.body, { childList: true, subtree: true });
+        // 立即执行多次 (React 异步渲染)
+        setTimeout(forceShow, 300);
+        setTimeout(forceShow, 1000);
+        setTimeout(forceShow, 2500);
+        setTimeout(forceShow, 5000);
+      })();
+    </script>
+  </body>
+</html>
