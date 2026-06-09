@@ -108,9 +108,9 @@ async def get_rule_documents_service() -> RuleDocumentsService:
         return _rule_docs_service
 
 
-# ──────────── Permits Service (PostgreSQL) ────────────
+# ──────────── Permits Service (MySQL) ────────────
 
-from database.pg_client import PgClient
+from database.mysql_client import MysqlClient
 from database.permits_repository import PermitsRepository
 from services.permits_service import PermitsService
 
@@ -130,12 +130,16 @@ async def get_permits_service() -> PermitsService:
             return _permits_service
 
         from config.config import settings
-        dsn = (
-            f"postgresql://{settings.pg_user}:{settings.pg_password}"
-            f"@{settings.pg_host}:{settings.pg_port}/{settings.pg_database}"
+        # MySQL 8.0 连接 (utf8mb4 支持中文)
+        from database.mysql_client import MysqlClient
+        mysql = MysqlClient(
+            host=settings.db_host,
+            port=settings.db_port,
+            user=settings.db_user,
+            password=settings.db_password,
+            database=settings.db_database,
         )
-        pg = PgClient(dsn)
-        await pg.init()
-        repo = PermitsRepository(pg)
+        await mysql.init()
+        repo = PermitsRepository(mysql)
         _permits_service = PermitsService(repo)
         return _permits_service

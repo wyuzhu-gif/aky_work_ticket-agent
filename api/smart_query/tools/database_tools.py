@@ -33,50 +33,48 @@ def get_all_tables_info() -> str:
     vn = get_vanna_client()
     try:
         # 获取当前数据库名
-        db_query = "SELECT current_database()"
+        # MySQL 8.0 用 DATABASE() 替代 PG 的 current_database()
+        db_query = "SELECT DATABASE()"
         db_result = vn.run_sql(db_query)
-        db_name = db_result.iloc[0, 0]
-        
-        # 查询所有表的详细信息
+        db_name = db_result.iloc[0, 0] or "(未选库)"
+
+        # 查询所有表的详细信息 (MySQL 信息架构)
+        #   * table_schema 用 DATABASE() (PG 用 'public')
+        #   * 表注释用 information_schema.tables.TABLE_COMMENT (PG 用 obj_description())
         tables_query = """
         SELECT
             t.table_name,
-            obj_description(c.oid) as table_comment
+            t.table_comment
         FROM information_schema.tables t
-        LEFT JOIN pg_catalog.pg_class c ON c.relname = t.table_name
-        LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace AND n.nspname = 'public'
-        WHERE t.table_schema = 'public'
+        WHERE t.table_schema = DATABASE()
         ORDER BY t.table_name
         """
-        
+
         tables_df = vn.run_sql(tables_query)
-        
+
         if tables_df.empty:
             return f"Database {db_name} has no tables"
-        
+
         result_parts = [f"数据库: {db_name}"]
         result_parts.append(f"表数量: {len(tables_df)}\n")
-        
+
         # 遍历每个表，获取列信息
         for _, table_row in tables_df.iterrows():
             table_name = table_row['table_name']
             table_comment = table_row['table_comment'] or '无描述'
-            
-            # 获取表的列信息
+
+            # 获取表的列信息 (MySQL 信息架构)
+            #   * 列注释用 information_schema.columns.COLUMN_COMMENT (PG 用 col_description())
+            #   * ordinal_position 列在 MySQL 8.0 才有
             columns_query = f"""
             SELECT
                 column_name,
                 data_type,
                 is_nullable,
                 column_default,
-                col_description(
-                    (SELECT c.oid FROM pg_catalog.pg_class c
-                     JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-                     WHERE c.relname = '{table_name}' AND n.nspname = 'public'),
-                    ordinal_position
-                ) as column_comment
+                column_comment
             FROM information_schema.columns
-            WHERE table_schema = 'public'
+            WHERE table_schema = DATABASE()
               AND table_name = '{table_name}'
             ORDER BY ordinal_position
             """
@@ -327,8 +325,8 @@ def validate_sql_syntax(sql: str) -> str:
     if sql.count('(') != sql.count(')'):
         return "括号不匹配"
 
-    # === 真实验证: 用 PG EXPLAIN 验证语法 (不执行查询, 拿执行计划) ===
-    # 直接用 psycopg2 调 PG (不依赖 vanna, 因为 vanna 需先 connect_to_postgres)
+    # === 真实验证: 用 MySQL EXPLAIN 验证语法 (不执行查询, 拿执行计划) ===
+    # 直接用 pymysql 调 MySQL (不依赖 vanna, 因为 vanna 需先 connect_to_mysql)
     # 这样 LLM 就能拿到真实错误信息 (语法错/表/列不存在/聚合错)
     try:
         # 用 ; 分割, 只验证第一条
@@ -337,34 +335,36 @@ def validate_sql_syntax(sql: str) -> str:
         if not first_stmt:
             return "SQL为空 (无第一条语句)"
 
-        # 同步用 psycopg2 (不依赖 vanna)
-        import psycopg2
+        # 同步用 pymysql (不依赖 vanna)
+        import pymysql
         from config.config import settings
-        conn = psycopg2.connect(
-            host=settings.pg_host,
-            port=settings.pg_port,
-            dbname=settings.pg_database,
-            user=settings.pg_user,
-            password=settings.pg_password,
+        conn = pymysql.connect(
+            host=settings.db_host,
+            port=settings.db_port,
+            db=settings.db_database,
+            user=settings.db_user,
+            password=settings.db_password,
+            charset="utf8mb4",
             connect_timeout=5,
         )
         try:
             with conn.cursor() as cur:
                 # EXPLAIN 不真执行, 只解析 + 拿执行计划
+                # MySQL 8.0 也支持 EXPLAIN <statement>
                 cur.execute(f"EXPLAIN {first_stmt}")
                 rows = cur.fetchall()
                 col_names = [d[0] for d in cur.description]
                 plan_lines = []
                 for row in rows[:5]:  # 只取前 5 行
-                    plan_lines.append(str(row[0]))
+                    plan_lines.append(str(row))
                 plan_str = '\n'.join(plan_lines)
-                return f"✅ 语法验证通过 (PG EXPLAIN 执行计划):\n{plan_str}"
-        except psycopg2.Error as e:
-            # 真错误: 返回错误信息 (PG 解析器报语法/表/列/聚合错)
+                return f"✅ 语法验证通过 (MySQL EXPLAIN 执行计划):\n{plan_str}"
+        except pymysql.Error as e:
+            # 真错误: 返回错误信息 (MySQL 解析器报语法/表/列/聚合错)
             err_msg = str(e).strip()
             if len(err_msg) > 500:
                 err_msg = err_msg[:500] + "..."
-            return f"❌ 语法验证失败 (PG EXPLAIN 报错):\n{err_msg}\n\n请检查:\n1. SQL 语法 (全角逗号/括号/引号)\n2. 表名/列名是否正确 (参考 get_table_schema 返回的 DDL)\n3. 聚合/GROUP BY 是否完整\n4. 不要使用 -- 注释"
+            return f"❌ 语法验证失败 (MySQL EXPLAIN 报错):\n{err_msg}\n\n请检查:\n1. SQL 语法 (全角逗号/括号/引号)\n2. 表名/列名是否正确 (参考 get_table_schema 返回的 DDL)\n3. 聚合/GROUP BY 是否完整\n4. 不要使用 -- 注释"
         finally:
             conn.close()
     except Exception as e:

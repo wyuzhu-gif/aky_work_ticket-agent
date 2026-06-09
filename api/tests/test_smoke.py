@@ -63,24 +63,25 @@ def test_chat_session_create():
 
 
 # =============================================================================
-# 4. PostgreSQL 连接
+# 4. MySQL 连接
 # =============================================================================
-def test_pg_connection():
-    """PostgreSQL 可达且 7 张表存在"""
-    import psycopg2
+def test_mysql_connection():
+    """MySQL 8.0 可达且 7 张表存在"""
+    import pymysql
     from config.config import settings
-    conn = psycopg2.connect(
-        host=settings.pg_host,
-        port=settings.pg_port,
-        user=settings.pg_user,
-        password=settings.pg_password,
-        dbname=settings.pg_database,
+    conn = pymysql.connect(
+        host=settings.db_host,
+        port=settings.db_port,
+        user=settings.db_user,
+        password=settings.db_password,
+        database=settings.db_database,
+        charset="utf8mb4",
         connect_timeout=5,
     )
     cur = conn.cursor()
     cur.execute("""
         SELECT table_name FROM information_schema.tables
-        WHERE table_schema = 'public' ORDER BY table_name
+        WHERE table_schema = DATABASE() ORDER BY table_name
     """)
     tables = [r[0] for r in cur.fetchall()]
     conn.close()
@@ -91,7 +92,7 @@ def test_pg_connection():
         'work_safety_checks', 'safety_check_items',
     }
     missing = expected - set(tables)
-    assert not missing, f'PG 缺表: {missing}'
+    assert not missing, f'MySQL 缺表: {missing}'
 
 
 # =============================================================================
@@ -141,7 +142,7 @@ def _run_all():
         ('test_api_health', test_api_health),
         ('test_frontend_static', test_frontend_static),
         ('test_chat_session_create', test_chat_session_create),
-        ('test_pg_connection', test_pg_connection),
+        ('test_mysql_connection', test_mysql_connection),
         ('test_wiki_files', test_wiki_files),
         ('test_milvus_training_data', test_milvus_training_data),
     ]

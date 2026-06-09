@@ -14,3 +14,7 @@ pymupdf==1.24.14
 common==0.1.0
 asyncpg==0.30.0
 jieba==0.42.1
+# MySQL 8.0 (替代原 PostgreSQL, 2026-06 切换)
+aiomysql==0.2.0       # 异步驱动 (permits_repository 用)
+pymysql==1.1.1        # 同步驱动 (EXPLAIN 验证 / db-test 用)
+SQLAlchemy==2.0.30    # Vanna fallback 连接 + pandas.read_sql 底层

@@ -23,7 +23,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 
 from config.config import settings
 from common.llm_utils import build_llm
-from database.pg_client import PgClient
+from database.mysql_client import MysqlClient
 from database.permits_repository import PermitsRepository
 from services.mineru_client import MinerUClient
 from services.permit_types import get_permit_type, list_permit_types

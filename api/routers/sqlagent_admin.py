@@ -115,13 +115,13 @@ async def get_db_config():
 
     # 回退到 settings
     return {
-        "configured": bool(settings.pg_host and settings.pg_host != "localhost"),
-        "db_type": "postgresql",
-        "host": settings.pg_host,
-        "port": settings.pg_port,
-        "dbname": settings.pg_database,
-        "username": settings.pg_user,
-        "password": "******" if settings.pg_password else "",
+        "configured": bool(settings.db_host and settings.db_host != "localhost"),
+        "db_type": "mysql",
+        "host": settings.db_host,
+        "port": settings.db_port,
+        "dbname": settings.db_database,
+        "username": settings.db_user,
+        "password": "******" if settings.db_password else "",
     }
 
 
@@ -146,11 +146,11 @@ async def set_db_config(request: Request):
         try:
             from smart_query.service import reconnect_db
             reconnect_db(
-                pg_host=settings.pg_host,
-                pg_port=settings.pg_port,
-                pg_database=settings.pg_database,
-                pg_user=settings.pg_user,
-                pg_password=settings.pg_password,
+                pg_host=settings.db_host,
+                pg_port=settings.db_port,
+                pg_database=settings.db_database,
+                pg_user=settings.db_user,
+                pg_password=settings.db_password,
             )
         except Exception as e:
             logger.error(f"DB hot-reconnect failed: {e}")
@@ -164,23 +164,24 @@ async def test_db(request: Request):
     """测试数据库连接（使用前端提交的参数）"""
     body = await request.json()
     try:
-        import psycopg2
+        import pymysql
         from config.config import settings
 
-        host = body.get("host") or settings.pg_host
-        port = body.get("port") or settings.pg_port
-        user = body.get("username") or settings.pg_user
-        password = body.get("password") or settings.pg_password
-        dbname = body.get("dbname") or settings.pg_database
+        host = body.get("host") or settings.db_host
+        port = body.get("port") or settings.db_port
+        user = body.get("username") or settings.db_user
+        password = body.get("password") or settings.db_password
+        dbname = body.get("dbname") or settings.db_database
 
         # 密码脱敏时回退到 settings
         if password == "******":
-            password = settings.pg_password
+            password = settings.db_password
 
-        connection = psycopg2.connect(
+        connection = pymysql.connect(
             host=host, port=int(port),
             user=user, password=password,
-            dbname=dbname,
+            db=dbname,
+            charset="utf8mb4",
             connect_timeout=5,
         )
         connection.close()

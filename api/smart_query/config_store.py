@@ -28,11 +28,11 @@ CREATE TABLE IF NOT EXISTS sq_config (
 # ─── 字段映射 ───
 # 前端字段 -> 内部 settings 字段
 DB_FIELD_MAP = {
-    "host":     "pg_host",
-    "port":     "pg_port",
-    "dbname":   "pg_database",
-    "username": "pg_user",
-    "password": "pg_password",
+    "host":     "db_host",
+    "port":     "db_port",
+    "dbname":   "db_database",
+    "username": "db_user",
+    "password": "db_password",
 }
 
 LLM_FIELD_MAP = {

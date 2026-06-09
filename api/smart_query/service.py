@@ -82,11 +82,11 @@ def initialize_smartquery(settings) -> None:
     embedding_api_key = settings.sq_embedding_api_key or settings.llm_api_key
     embedding_model_name = settings.sq_embedding_model_name
     metric_type = settings.sq_milvus_metric_type
-    pg_host = settings.pg_host
-    pg_port = settings.pg_port
-    pg_database = settings.pg_database
-    pg_user = settings.pg_user
-    pg_password = settings.pg_password
+    pg_host = settings.db_host
+    pg_port = settings.db_port
+    pg_database = settings.db_database
+    pg_user = settings.db_user
+    pg_password = settings.db_password
     llm_temperature = settings.sq_llm_temperature
     llm_max_tokens = settings.sq_llm_max_tokens
 
@@ -136,12 +136,15 @@ def initialize_smartquery(settings) -> None:
         logger.info("SmartQuery: PostgreSQL connected via Vanna (Milvus mode)")
     except Exception as e:
         logger.warning(f"Vanna/Milvus initialization failed: {e}")
-        logger.info("SmartQuery: falling back to direct PG connection (no Milvus)")
-        # 创建一个轻量级的 PG 连接，供 database_tools 使用
+        logger.info("SmartQuery: falling back to direct MySQL connection (no Milvus)")
+        # 创建一个轻量级的 MySQL 连接，供 database_tools 使用
         import pandas as pd
         import sqlalchemy
-        pg_url = f"postgresql+psycopg2://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{pg_database}?connect_timeout=5"
-        engine = sqlalchemy.create_engine(pg_url)
+        mysql_url = (
+            f"mysql+pymysql://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{pg_database}"
+            f"?charset=utf8mb4&connect_timeout=5"
+        )
+        engine = sqlalchemy.create_engine(mysql_url)
 
         class _FallbackVanna:
             """Minimal Vanna-like interface that only provides run_sql via direct PG"""
@@ -231,11 +234,14 @@ def reconnect_db(pg_host: str, pg_port: int, pg_database: str,
         logger.info("SmartQuery: DB reconnected via Vanna (Milvus mode)")
     except Exception as e:
         logger.warning(f"Vanna/Milvus reconnection failed: {e}")
-        # Fallback：直接 PG 连接
+        # Fallback：直接 MySQL 连接
         import pandas as pd
         import sqlalchemy
-        pg_url = f"postgresql+psycopg2://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{pg_database}?connect_timeout=5"
-        engine = sqlalchemy.create_engine(pg_url)
+        mysql_url = (
+            f"mysql+pymysql://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{pg_database}"
+            f"?charset=utf8mb4&connect_timeout=5"
+        )
+        engine = sqlalchemy.create_engine(mysql_url)
 
         class _FallbackVanna:
             def run_sql(self, sql: str):

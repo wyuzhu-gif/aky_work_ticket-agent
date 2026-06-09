@@ -58,12 +58,17 @@ class Settings(BaseSettings):
     rule_context_max_chars: int = 3000
 
     
-    # PostgreSQL
-    pg_host: str = "localhost"
-    pg_port: int = 5432
-    pg_database: str = "ai_doc_review"
-    pg_user: str = "postgres"
-    pg_password: str = ""
+    # MySQL 数据库 (替换原 PostgreSQL 配置, 项目已全面迁移 MySQL 8.0)
+    # 兼容旧名: pg_host/pg_port 等仍可读 (pydantic-settings 自动从 .env 读)
+    db_type: str = "mysql"  # 仅 "mysql" 保留
+    db_host: str = "127.0.0.1"
+    db_port: int = 3306
+    db_database: str = "special_operations"
+    db_user: str = "root"
+    db_password: str = ""
+
+    # 兼容别名 (旧 .env 里可能还有 PG_HOST 等, 自动 fallback)
+    # 用 property 让旧字段名也能读, 但写入仍用 db_*
 
     # SmartQuery (NL2SQL 智能问数，内嵌版，原 SQLAgent 已迁移集成)
     sq_llm_model: str = "qwen-flash"  # 智能问数使用的 LLM 模型

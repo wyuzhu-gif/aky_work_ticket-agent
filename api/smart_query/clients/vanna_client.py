@@ -286,6 +286,69 @@ class MyVanna(Milvus_VectorStore, OpenAI_Chat):
             return False
 
 
+# ==================== 数据库连接 (MySQL 8.0) ====================
+
+    def connect_to_mysql(
+        self,
+        host: str,
+        dbname: str,
+        user: str,
+        password: str,
+        port: int = 3306,
+        **kwargs,
+    ) -> None:
+        """
+        Connect to MySQL 8.0 via SQLAlchemy + PyMySQL.
+
+        用 SQLAlchemy 抽象层:
+          - run_sql() 用 pandas.read_sql, 跟 PG 走同一路径
+          - DDL/Doc/SQL 训练数据走 Milvus (不依赖此连接)
+          - 同接口形状, 跟原 connect_to_postgres 保持一致
+
+        Args:
+            host: MySQL host (e.g. '10.8.0.100')
+            dbname: 数据库名 (e.g. 'special_operations')
+            user: 数据库用户
+            password: 数据库密码
+            port: 端口 (默认 3306)
+        """
+        import sqlalchemy
+        # 注意: charset 必须 utf8mb4 支持中文/表情
+        url = (
+            f"mysql+pymysql://{user}:{password}@{host}:{port}/{dbname}"
+            f"?charset=utf8mb4&connect_timeout=5"
+        )
+        engine = sqlalchemy.create_engine(url)
+
+        # 替换原 PG 的 connect_to_postgres: 把 engine 挂到 self 上
+        self.engine = engine
+        self.dialect = "MySQL"
+        logger.info(f"Connected to MySQL: {host}:{port}/{dbname}")
+
+    def connect_to_postgres(self, *args, **kwargs):
+        """
+        兼容旧接口: 项目已经全面迁到 MySQL, 此方法 fallback 到 MySQL 连接.
+        保留是为了不破坏可能存在的旧调用.
+        """
+        logger.warning("connect_to_postgres is deprecated, calling connect_to_mysql instead")
+        return self.connect_to_mysql(*args, **kwargs)
+
+    def run_sql(self, sql: str, **kwargs):
+        """
+        执行 SQL, 返回 DataFrame.
+
+        兼容 Vanna 旧接口, 同时给智能问数工具调用使用.
+        """
+        import pandas as pd
+        try:
+            if hasattr(self, "engine") and self.engine is not None:
+                return pd.read_sql(sql, self.engine)
+            raise RuntimeError("No engine configured - call connect_to_mysql() first")
+        except Exception as e:
+            logger.error(f"run_sql failed: {e}")
+            raise
+
+
 # ==================== 客户端工厂函数 ====================
 def create_vanna_client(
     # 必填参数：LLM 配置
@@ -306,7 +369,7 @@ def create_vanna_client(
     temperature: float = 0.2,
     max_tokens: int = 14000,
     # 可选参数：SQL 方言和语言
-    dialect: str = "PostgreSQL",
+    dialect: str = "MySQL",
     language: str = "zh-CN",
 ) -> MyVanna:
     """创建 Vanna 客户端实例"""
