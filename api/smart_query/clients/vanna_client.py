@@ -28,6 +28,27 @@ os.environ['ANONYMIZED_TELEMETRY'] = 'False'
 os.environ['CHROMA_TELEMETRY'] = 'False'
 
 
+# ==================== pymysql % 格式化 bug 修复 (2026-06-10) ====================
+# 背景: pymysql.cursors.Cursor.execute() 内部走 mogrify(query, args) -> query % self._escape_args(args, conn)
+#       当 SQL 含中文 + % 通配符 (例如 "LIKE '%博航%'") 时, Python 把 % 当成字符串格式化符号,
+#       "博" (0x535a) 被误识别为 format char, 抛 ValueError "unsupported format character"
+# 修法: monkey-patch Cursor.mogrify, 如果 args 为空/None, 直接 query.encode() 返回, 跳过 % 格式化
+#       (args 不空时才走原 mogrify, %s / %d 等 placeholder 仍正常工作)
+import pymysql.cursors as _pymysql_cursors
+_orig_pymysql_mogrify = _pymysql_cursors.Cursor.mogrify
+
+def _safe_pymysql_mogrify(self, query, args=None):
+    """pymysql Cursor.mogrify 的 safe 版本: args 为空时跳过 % 格式化"""
+    if not args:
+        # 没 args -> 直接 bytes(query) 返回, 不走 % 格式化
+        # 原 Cursor.mogrify 返 str, 这里返 bytes (execute 接受 str 或 bytes)
+        return query.encode() if isinstance(query, str) else query
+    return _orig_pymysql_mogrify(self, query, args)
+
+_pymysql_cursors.Cursor.mogrify = _safe_pymysql_mogrify
+logger.info("pymysql.cursors.Cursor.mogrify monkey-patched to skip % formatting when args is empty")
+
+
 # ==================== 优化版 Vanna 客户端 ====================
 
 class MyVanna(Milvus_VectorStore, OpenAI_Chat):

@@ -77,7 +77,9 @@ def generate_chat_stream(
     consecutive_execute_sql = 0  # 新增: 连续 execute_sql 次数 (避免 LLM 拿到数据后继续查询)
     MAX_CONSECUTIVE_EMPTY = 3
     MAX_CONSECUTIVE_SQL_FAILURES = 3  # 连续 3 次 SQL 失败就停 (避免 LLM 死循环拼错 SQL)
-    MAX_CONSECUTIVE_EXECUTE_SQL = 2  # 连续 2 次 execute_sql 就停 (避免 LLM 拿到数据后继续查询)
+    MAX_CONSECUTIVE_EXECUTE_SQL = 3  # 连续 3 次 execute_sql 就停
+                                       # 反查 + 主统计 = 2 次, 留 1 次缓冲 (口语化字段 2 步强制)
+                                       # ⚠️ 之前是 2, 改 3 是为了让 LLM 走"反查+主统计"2 步流程不被掐断
     MAX_TOTAL_STEPS = 15  # 新增: 总步骤数硬上限 (超过强制跳出 stream 进入 report gen)
 
     try:
