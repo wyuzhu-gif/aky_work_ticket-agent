@@ -264,6 +264,16 @@ def generate_chat_stream(
                 }
                 yield f"data: {json.dumps(data_event, ensure_ascii=False)}\n\n"
 
+                # 🔔 过渡提示: execute_sql 出结果后, 到报告生成前, 推送 info 事件
+                #    前端可拿来弹 toast / 顶部条幅. 5-15 秒等待里给用户明确反馈.
+                info_event = {
+                    'type': 'info',
+                    'level': 'info',
+                    'message': f'✅ 已获取 {len(query_data)} 行查询数据, 正在生成分析报告 (5-15 秒)',
+                    'icon': '⏳',
+                }
+                yield f"data: {json.dumps(info_event, ensure_ascii=False)}\n\n"
+
             # 提取最终答案
             for msg in reversed(messages):
                 if getattr(msg, 'type', '') == 'ai':
@@ -289,11 +299,14 @@ def generate_chat_stream(
                         from common.llm_utils import build_llm
 
                         # 推 step: 开始生成报告
+                        # ⏳ 用户感知: execute_sql 数据已就绪 -> 进入报告生成阶段
+                        #    此步骤会调第二次 LLM (5-15 秒), 必须给前端明确的"正在生成"状态, 避免用户以为卡死
                         step_data = {
                             'type': 'step',
-                            'action': '生成数据分析报告 (chartconfig + 3 段分析)',
+                            'action': '⏳ 分析结果生成中, 请稍候...',
                             'tool_name': 'generate_report',
                             'status': 'running',
+                            'description': '已获取查询数据, 正在生成数据分析报告 + 可视化图表, 预计 5-15 秒',
                         }
                         yield f"data: {json.dumps(step_data, ensure_ascii=False)}\n\n"
 
@@ -355,9 +368,10 @@ def generate_chat_stream(
                 # 推 step: 报告生成完成
                 step_data = {
                     'type': 'step',
-                    'action': '生成数据分析报告',
+                    'action': '✅ 分析报告生成完成',
                     'tool_name': 'generate_report',
                     'status': 'completed',
+                    'update': True,  # ⚠️ 跟前面的 running 配对, 前端 findLastIndex 找同 tool_name 更新状态
                 }
                 yield f"data: {json.dumps(step_data, ensure_ascii=False)}\n\n"
 
