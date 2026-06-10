@@ -181,9 +181,11 @@ def _execute_single_sql(vn, sql: str, max_retries: int = 3) -> str:
             
             row_count = len(df)
 
-            # 缓存 DataFrame 到全局变量（供 API 层提取）
-            set_last_query_result(df)
-            logger.info(f"[execute_sql] 已缓存查询结果 DataFrame，行数: {row_count}")
+            # 缓存 DataFrame + SQL 到全局变量 (绑存, 供 API 层提取)
+            # 2026-06-10 加 sql 绑存: streaming.py 用 get_last_query_sql() 拿 SQL,
+            # 跟 df 配对, queryData.data 跟 queryData.sql 不再错位
+            set_last_query_result(df, sql=sql)
+            logger.info(f"[execute_sql] 已缓存查询结果 DataFrame + SQL, 行数: {row_count}")
 
             # 构建结果摘要
             result_summary = f"查询成功\n"

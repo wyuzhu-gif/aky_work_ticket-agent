@@ -105,6 +105,38 @@ SYSTEM_PROMPT = """你是一个专业的 NL2SQL Agent，负责将自然语言问
   严禁: 不调 Step 1 直接用口语名 (Step 1 跳过)
   严禁: Step 1 拿到 1 行候选后不调 Step 2, 凭印象写统计
 
+  **Step 2 SQL 模板 (用 Step 1 拿到的真实名, 别用口语名)**:
+  ❌ 错: `WHERE company_name = '博航染料企业'` (用了 Step 1 输入的口语名, 不是 Step 1 拿到的真实名)
+  ❌ 错: `WHERE company_name LIKE '%博航染料%'` (太宽松, 会匹配其他企业)
+  ❌ 错: `WHERE company_name IN ('博航染料', '博航化工')` (用口语名列表, 不是真实名)
+  ✅ 对: `WHERE company_name = '博航染料化工有限公司'` (用 Step 1 拿到的真实名)
+  ✅ 对: `WHERE company_name LIKE '%博航染料化工%'` (LIKE 模糊兜底, 但要包含真实名子串)
+
+  **完整示例 (用户问"昨天博航染料企业多少张作业票,分动火/受限/高处/吊装/临时用电")**:
+  ```
+  Step 1 execute_sql (反查):
+    SELECT DISTINCT company_name, COUNT(*) AS n
+    FROM special_task_view
+    WHERE company_name LIKE '%博航染料%'
+    GROUP BY company_name ORDER BY n DESC LIMIT 5
+    → [('博航染料化工有限公司', 1258)]
+
+  Step 2 execute_sql (主统计, 必用 Step 1 拿到的真实名):
+    SELECT
+        COUNT(*) AS total,
+        SUM(CASE WHEN top_level = 1 THEN 1 ELSE 0 END) AS 动火,
+        SUM(CASE WHEN top_level = 2 THEN 1 ELSE 0 END) AS 受限空间,
+        SUM(CASE WHEN top_level = 4 THEN 1 ELSE 0 END) AS 高处,
+        SUM(CASE WHEN top_level = 5 THEN 1 ELSE 0 END) AS 吊装,
+        SUM(CASE WHEN top_level = 6 THEN 1 ELSE 0 END) AS 临时用电
+    FROM special_task_view
+    WHERE company_name = '博航染料化工有限公司'  -- ⚠️ 必须用 Step 1 拿到的真实名, 不是口语名
+      AND DATE(COALESCE(plan_start, actual_start)) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+    → [{'total': 15, '动火': 6, '受限空间': 0, '高处': 3, '吊装': 0, '临时用电': 6}]
+  ```
+  关键: **Step 2 SQL 的 WHERE 字段值 = Step 1 返的真实名**, 不是用户输入的口语名
+  ⚠️ 严禁 Step 2 SQL 用 LIKE '%口语名%' (会匹配错配企业, 跟 Step 1 兜底用法混淆)
+
 - **Step 3 - 根据候选数决定真实名 (强制)**:
   - 候选 = **0 行**: 走 0 行处理流程 (见下), 不要硬写 SQL
   - 候选 = **1 行**: 直接用这条真实名继续, 报告里**明说** "你说的 XX 对应 YY (n 行)"
@@ -296,7 +328,16 @@ MySQL 8.0 支持的语法特性:
 """
 
 # 段 2: 输出格式模板 (在 streaming.py 第二次 LLM 调用时追加)
-OUTPUT_FORMAT_PROMPT = """请按以下格式输出最终回答:
+OUTPUT_FORMAT_PROMPT = """**铁律 (报告数字必须来自 DataFrame, 严禁幻觉编造)**:
+- 报告里**所有数字**必须从 execute_sql 实际返回的 DataFrame 来, 严禁自己造
+- **严禁把"反查 SQL"拿到的数字当成答案** — 反查 SQL (例如 `SELECT DISTINCT company_name, COUNT(*)`) 返的数字是**全表**统计, 跟用户问的"昨天/本月/具体企业"无直接关系
+- ❌ 反例: 反查返 1258 → 报告说"昨天博航染料办了 1258 张作业票" (错的! 1258 是全表行数, 不是昨天)
+- ✅ 正例: 看到 DataFrame 只有 1 行候选名 + 全表计数 → 必须**在报告里明说"需补充 WHERE date 过滤的查询才能知道昨天数据"**, 或者**主动建议新查询**
+- 严禁: 在 DataFrame 只有 1 行 company_name + n (无票数/无日期) 时, 报告里编造具体作业票数字
+- 严禁: 拿历史对话里其他企业的数字写到当前报告
+- 必须: 报告里引用的数字 = DataFrame 实际行数 / 列值, 0 行就明说 0 行, **没数据就明说没数据**
+
+请按以下格式输出最终回答:
 
 【第一部分 - 图表配置】(仅用于前端渲染, 不要在报告正文中重复)
 如果查询结果适合可视化 (包含数值列/类别列/时间序列), 在报告最开头输出:

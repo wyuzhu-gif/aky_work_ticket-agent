@@ -23,6 +23,7 @@ from .context import (
     get_llm_instance,
     set_last_query_result,
     get_last_query_result,
+    get_last_query_sql,  # 2026-06-10 跟 df 配对的 SQL
     clear_last_query_result,
 )
 
@@ -42,5 +43,6 @@ __all__ = [
     'get_llm_instance',
     'set_last_query_result',
     'get_last_query_result',
+    'get_last_query_sql',
     'clear_last_query_result',
 ]

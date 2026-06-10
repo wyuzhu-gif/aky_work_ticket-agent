@@ -67,7 +67,7 @@ def generate_chat_stream(
         vanna_client: Vanna 客户端（enable_training=True 时需要）
         recursion_limit: Agent 递归限制
     """
-    from .clients import get_last_query_result, clear_last_query_result
+    from .clients import get_last_query_result, get_last_query_sql, clear_last_query_result
     from .agent import PostTrainingProcessor
     from .sessions import add_message
 
@@ -77,9 +77,7 @@ def generate_chat_stream(
     consecutive_execute_sql = 0  # 新增: 连续 execute_sql 次数 (避免 LLM 拿到数据后继续查询)
     MAX_CONSECUTIVE_EMPTY = 3
     MAX_CONSECUTIVE_SQL_FAILURES = 3  # 连续 3 次 SQL 失败就停 (避免 LLM 死循环拼错 SQL)
-    MAX_CONSECUTIVE_EXECUTE_SQL = 3  # 连续 3 次 execute_sql 就停
-                                       # 反查 + 主统计 = 2 次, 留 1 次缓冲 (口语化字段 2 步强制)
-                                       # ⚠️ 之前是 2, 改 3 是为了让 LLM 走"反查+主统计"2 步流程不被掐断
+    MAX_CONSECUTIVE_EXECUTE_SQL = 3  # 连续 3 次 execute_sql 就停 (避免 LLM 拿到数据后继续查询)
     MAX_TOTAL_STEPS = 15  # 新增: 总步骤数硬上限 (超过强制跳出 stream 进入 report gen)
 
     try:
@@ -238,23 +236,32 @@ def generate_chat_stream(
                 query_data = df.to_dict('records')
                 query_data = convert_decimals(query_data)
                 logger.info(f"[Data Extraction] Retrieved query data, rows: {len(query_data)}")
-                clear_last_query_result()
+                # ⚠️ clear 必须放在 get_last_query_sql() 之后, 否则 sql 也被清了
             else:
                 logger.warning("[Data Extraction] No query result in cache")
 
             # 提取执行的 SQL
-            # ⚠️ 跟 get_last_query_result() 配对: 取**最后一个** execute_sql tool_call 的 SQL
-            #    (避免 SQL 跟 df 不匹配 — 之前正序遍历取的是对话里最早那个, df 是最后那个)
-            for msg in reversed(messages):
-                if getattr(msg, 'type', '') == 'ai' and hasattr(msg, 'tool_calls') and msg.tool_calls:
-                    for tool_call in reversed(msg.tool_calls):
-                        if tool_call.get('name') == 'execute_sql':
-                            args = tool_call.get('args', {})
-                            sql_query = args.get('sql', '')
-                            if sql_query:
-                                break
-                    if sql_query:
-                        break
+            # ⚠️ 2026-06-10 改: 优先用 get_last_query_sql() 拿跟 df 绑存的 SQL
+            #    之前倒序遍历 tool_calls 是"软匹配" (对话里最早/最晚都可能, 不准)
+            #    现在 _last_query_sql 跟 _last_query_result 在 set_last_query_result 绑存,
+            #    100% 跟 df 配对, 不再错位
+            sql_query = get_last_query_sql()
+            if not sql_query:
+                # 兜底: 倒序遍历 tool_calls (老逻辑, 兼容没绑存的场景)
+                logger.warning("[SQL Extraction] get_last_query_sql() empty, fallback to tool_calls scan")
+                for msg in reversed(messages):
+                    if getattr(msg, 'type', '') == 'ai' and hasattr(msg, 'tool_calls') and msg.tool_calls:
+                        for tool_call in reversed(msg.tool_calls):
+                            if tool_call.get('name') == 'execute_sql':
+                                args = tool_call.get('args', {})
+                                sql_query = args.get('sql', '')
+                                if sql_query:
+                                    break
+                        if sql_query:
+                            break
+
+            # ⚠️ 拿完 df + sql 后, 清 cache
+            clear_last_query_result()
 
             # 推送查询数据
             if query_data:

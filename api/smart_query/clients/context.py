@@ -19,6 +19,7 @@ _llm_instance: Optional[any] = None
 # 查询结果缓存 — 使用模块级全局变量 + 线程锁
 # （ContextVar 无法跨 LangGraph 内部线程池同步，改用全局变量）
 _last_query_result = None
+_last_query_sql = None  # ⚠️ 2026-06-10 绑存: 跟 df 配对, 避免 streaming.py 拿错 SQL
 _last_query_lock = threading.Lock()
 
 
@@ -64,21 +65,38 @@ def get_llm_instance():
 
 # ==================== 查询结果缓存 ====================
 
-def set_last_query_result(df):
-    """缓存查询结果 DataFrame（线程安全）"""
-    global _last_query_result
+def set_last_query_result(df, sql: Optional[str] = None):
+    """缓存查询结果 DataFrame + 对应 SQL (线程安全).
+
+    2026-06-10 加 sql 绑存: streaming.py 不再倒序遍历 tool_calls 找 SQL,
+    直接从绑存的 _last_query_sql 拿, 保证 queryData.data 跟 queryData.sql 配对.
+    """
+    global _last_query_result, _last_query_sql
     with _last_query_lock:
         _last_query_result = df
+        if sql is not None:
+            _last_query_sql = sql
 
 
 def get_last_query_result():
-    """获取缓存的查询结果（线程安全）"""
+    """获取缓存的查询结果 DataFrame (线程安全)"""
     with _last_query_lock:
         return _last_query_result
 
 
+def get_last_query_sql() -> Optional[str]:
+    """获取缓存的最近一次 SQL 字符串 (线程安全). 跟 df 配对.
+
+    Returns:
+        sql 字符串, 或 None (如果没绑存).
+    """
+    with _last_query_lock:
+        return _last_query_sql
+
+
 def clear_last_query_result():
-    """清除缓存的查询结果（线程安全）"""
-    global _last_query_result
+    """清除缓存的查询结果 + SQL (线程安全)"""
+    global _last_query_result, _last_query_sql
     with _last_query_lock:
         _last_query_result = None
+        _last_query_sql = None
