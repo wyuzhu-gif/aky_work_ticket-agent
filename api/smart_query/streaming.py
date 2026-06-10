@@ -144,9 +144,22 @@ def generate_chat_stream(
 
                 # 检测工具执行结果
                 elif msg_type == 'tool' and last_tool:
-                    # 检测连续空结果
+                    # 检测工具执行结果
                     tool_content = getattr(last_msg, 'content', '')
-                    if last_tool == 'execute_sql' and '查询结果为空' in tool_content:
+                    if last_tool == 'execute_sql' and '❌ SQL 包含对' in tool_content and '反查' in tool_content:
+                        # ⚠️ 口语化字段两步强制拦截 (2026-06-10 commit da09a59 强化)
+                        #    execute_sql 工具检测到 LLM 没先 DISTINCT 反查就 WHERE, 拒绝执行
+                        #    推一个 info event 提示前端 + LLM 看到 tool 错误会重写 SQL
+                        logger.warning(f"[oral_resolve] 拦截: LLM 跳过 DISTINCT 反查")
+                        intercept_event = {
+                            'type': 'info',
+                            'level': 'warning',
+                            'message': '⚠️ 检测到您的问题含口语化字段 (如企业名/部门名), 需先反查真实名再统计. 正在自动重试...',
+                            'icon': '🔍',
+                        }
+                        yield f"data: {json.dumps(intercept_event, ensure_ascii=False)}\n\n"
+                        # 拦截不算空结果也不算 SQL 失败, 计数不动
+                    elif last_tool == 'execute_sql' and '查询结果为空' in tool_content:
                         consecutive_empty_results += 1
                         logger.warning(f"[Loop Guard] Consecutive empty results: {consecutive_empty_results}")
                         if consecutive_empty_results >= MAX_CONSECUTIVE_EMPTY:
