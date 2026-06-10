@@ -425,6 +425,17 @@ async def llm_invoke_json(
     except json.JSONDecodeError as e:
         logger.error(f"{error_context} direct json.loads failed: {e}")
 
+    # 1.5) LaTeX escape 修复: LLM 22GB qwen3.6:35b 80% 概率用 Unicode 原字符, 20% 概率写 `$\square$` 漏转义
+    #      处理: 把 `$\\w+$` 替换成 Unicode 原字符 (从 MinerU markdown 提取的 LaTeX 公式) 后再 parse
+    latex_fixed = _try_fix_latex_escape(raw)
+    if latex_fixed is not None:
+        try:
+            obj = json.loads(latex_fixed)
+            logger.warning(f"{error_context} LaTeX escape fixed, parsed OK ({len(raw)}->{len(latex_fixed)} chars)")
+            return obj
+        except json.JSONDecodeError as e:
+            logger.error(f"{error_context} LaTeX-fix also failed: {e}")
+
     # 2) 截断修复: 找到最外层 { ... } 或 [ ... ], 补全缺失的闭合括号
     fixed = _try_fix_truncated_json(raw)
     if fixed is not None:
@@ -444,6 +455,77 @@ async def llm_invoke_json(
     except Exception as dump_err:
         logger.error(f"{error_context} failed to dump raw: {dump_err}")
     return None
+
+
+def _try_fix_latex_escape(raw: str) -> str | None:
+    """
+    修复 LLM 输出 JSON 里的 LaTeX escape 错误.
+
+    背景: MinerU 提取 PDF 时把 Unicode 方框 (□, ☐) 转成 LaTeX 公式 (如 `$\\square$`).
+         22GB qwen3.6:35b 拿到 markdown 后写 JSON 时, 80% 概率用 Unicode 原字符, 20% 概率
+         直接搬 `$\\square$` 进 JSON 字符串, **不**做 escape. JSON 解析器不认 `\\s` `\\q` 之类
+         (只认 `\\n` `\\t` `\\r` `\\"` `\\\\` `\\/` `\\u1234` 等), 抛 `Invalid \\escape`.
+
+    修法: 把 `$\\w+$` 整段 LaTeX 公式替换成 Unicode 原字符 (从 LaTeX 命令反查字符).
+         仅处理 MinerU 常用的几个, 不做通用 LaTeX 解析.
+
+    Args:
+        raw: LLM 原始输出 (未 escape 的 LaTeX 公式混在 JSON string 里)
+
+    Returns:
+        修复后的字符串, 如果没找到 LaTeX 公式就返 None (调用方继续 fallback 到截断修复)
+    """
+    # 常见 LaTeX -> Unicode 映射 (MinerU 作业票 PDF 出现频率高的)
+    latex_to_unicode = [
+        (r'\square', '□'),        # U+25A1 白方块
+        (r'\Box', '□'),           # 同上
+        (r'\blacksquare', '■'),   # U+25A0 黑方块
+        (r'\triangle', '△'),      # U+25B3 白三角
+        (r'\Delta', '△'),
+        (r'\circ', '○'),          # U+25CB 白圆
+        (r'\bigcirc', '○'),
+        (r'\bullet', '•'),        # U+2022 圆点
+        (r'\times', '×'),         # U+00D7 乘号
+        (r'\div', '÷'),           # U+00F7 除号
+        (r'\pm', '±'),            # U+00B1 加减
+        (r'\le', '≤'),            # U+2264 小于等于
+        (r'\ge', '≥'),            # U+2265 大于等于
+        (r'\ne', '≠'),            # U+2260 不等于
+        (r'\rightarrow', '→'),    # U+2192
+        (r'\to', '→'),
+        (r'\leftarrow', '←'),
+        (r'\gets', '←'),
+        (r'\checkmark', '✓'),     # U+2713 对号
+    ]
+
+    # 检测: 是否有未转义的 $\X$ (X 是任何非空白字符, 包括 \square, \%, \&, \$ 等)
+    if not re.search(r'\$\\[^\s$]', raw):
+        return None
+
+    fixed = raw
+    for latex_cmd, unicode_char in latex_to_unicode:
+        # 匹配 $\square$ 形式 (整个 LaTeX 公式 $...$ 整体替换)
+        # 容忍 $ 之间有空格: $ \square 15$ 也认
+        pattern = r'\$\s*' + re.escape(latex_cmd) + r'(?:\s+\d+)?\s*\$'
+        fixed = re.sub(pattern, unicode_char, fixed)
+
+    # 兜底 1: 处理 $...$ 里有不识别的 LaTeX 命令 (字母形式), 整个 $...$ 段删成 '□'
+    # 例: $ \unknown $ -> □
+    fixed = re.sub(r'\$\s*\\[A-Za-z]+(?:\s+\d+)?\s*\$', '□', fixed)
+
+    # 兜底 2: 处理 $...$ 里有非字母 LaTeX 字符 (\% \& \$ \# \! 等), 整个 $...$ 段删成 '□'
+    # 例: $\%s$ -> □    $ \& 5$ -> □
+    fixed = re.sub(r'\$\s*\\[^A-Za-z\s$]+(?:\s+\d+)?\s*\$', '□', fixed)
+
+    # 兜底 3: 处理 $...$ 里没 \, 整个 $...$ 段删成 '□' (LLM 偶尔写 $30m$ 也算)
+    # 范围: $ 跟 $ 之间有任何非换行字符
+    # 注意: 不能太激进, 避免误伤 JSON 里其他 $ 字符 (极少出现)
+    # 规则: 只在 $...$ 长度 < 50 时 (短数学公式)
+    def _replace_math_dollar(m):
+        return '□' if len(m.group(0)) < 50 else m.group(0)
+    fixed = re.sub(r'\$[^$\n]{0,49}\$', _replace_math_dollar, fixed)
+
+    return fixed
 
 
 def _try_fix_truncated_json(raw: str) -> str | None:
