@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 import threading
 import time
 import re
-from typing import Optional
 import pandas as pd
 from langchain.tools import tool  # type: ignore
 
@@ -21,137 +20,6 @@ from ..clients import get_vanna_client, set_last_query_result
 
 # 全局互斥锁，防止并发执行 SQL
 _sql_execution_lock = threading.Lock()
-
-
-# ==================== 口语化字段两步强制 (two-step resolve) ====================
-# 用户口语化简写 "博航染料企业" 跟真实库 "博航染料化工有限公司" 不匹配, 直接
-# WHERE company_name = 'X' 返 0 行. 强制 LLM 先 SELECT DISTINCT 反查真实名, 再用真实名
-# 写统计 SQL. (2026-06-10 强化 commit)
-ORAL_FIELDS = {
-    'company_name',         # 企业名 (带"化工/有限公司/集团"后缀)
-    'task_part',            # 作业部门 (数字编码或简写)
-    'homework_content',     # 作业内容 ("焊接" 对应 "电焊作业/氩弧焊")
-    'ticket_position',      # 作业位置 ("3 号车间" 实际 "3 号车间北侧")
-    'name_of_guardian',     # 监护人
-    'task_supervisor',      # 作业负责人
-    'construction_workers_name',  # 作业人员
-}
-
-# thread-local cache: 每个 LangChain agent 调用一个 thread, 共享反查结果
-# 跨 session 隔离 (threading.get_ident 区分不同请求)
-_oral_cache = threading.local()
-
-
-def _get_oral_cache() -> dict:
-    """获取当前线程的口语化字段 cache (按 field_name -> 真实名候选列表)"""
-    if not hasattr(_oral_cache, 'data'):
-        _oral_cache.data = {}
-    return _oral_cache.data
-
-
-def _clear_oral_cache() -> None:
-    """清空当前线程 cache (供测试/reset 用)"""
-    if hasattr(_oral_cache, 'data'):
-        _oral_cache.data = {}
-
-
-def _is_distinct_resolve_sql(sql: str) -> bool:
-    """判断 SQL 是否是反查模式 (SELECT DISTINCT 字段 ... LIKE/INSTR/REGEXP ...)"""
-    sql_l = sql.lower()
-    if 'select distinct' not in sql_l:
-        return False
-    if not any(op in sql_l for op in (' like ', ' instr(', ' regexp ', ' rlike ')):
-        return False
-    return True
-
-
-def _extract_oral_field_filters(sql: str) -> list:
-    """从 SQL 提取口语化字段的 WHERE 过滤 (field_name, op, value).
-
-    只扫顶层 WHERE, 不进 CTE/子查询. 容忍表别名.
-    跳过 SELECT DISTINCT 反查本身 (那是合法操作).
-    """
-    # 反查 SQL 自身不视为"过滤", 放行
-    if _is_distinct_resolve_sql(sql):
-        return []
-    sql_l = sql.lower()
-    hits = []
-    for f in ORAL_FIELDS:
-        # 匹配 field_name (=|<>|!=|LIKE|REGEXP|RLIKE) 'value'
-        # IN 操作符: field IN ('a', 'b', 'c') - 取第一个作为代表
-        # 容忍任意空白
-        # 普通形式: =/LIKE/REGEXP/RLIKE
-        pattern_simple = rf"\b{f}\b\s*(=|<>|!=|like|regexp|rlike)\s*(['\"])([^'\"]+)\2"
-        for m in re.finditer(pattern_simple, sql_l):
-            op = m.group(1).upper()
-            value = m.group(3)
-            hits.append((f, op, value))
-        # IN 形式: field IN ('a', 'b', 'c')
-        pattern_in = rf"\b{f}\b\s*\bin\b\s*\(([^)]+)\)"
-        for m in re.finditer(pattern_in, sql_l):
-            in_list = m.group(1)
-            # 提取第一个字符串值
-            vm = re.search(r"['\"]([^'\"]+)['\"]", in_list)
-            if vm:
-                hits.append((f, 'IN', vm.group(1)))
-    return hits
-
-
-def _check_oral_field_resolved(sql: str) -> Optional[str]:
-    """检查 SQL 里口语化字段过滤是否已先 DISTINCT 反查过.
-
-    Returns:
-        None = OK, 通过
-        str = 拦截错误信息, LLM 收到后会重写 SQL
-    """
-    filters = _extract_oral_field_filters(sql)
-    if not filters:
-        return None  # 没口语化字段过滤, 放行
-
-    cache = _get_oral_cache()
-    for field, op, value in filters:
-        cached = cache.get(field, [])
-        if not cached:
-            return (
-                f"❌ SQL 包含对 '{field}' 字段的 {op} 过滤 ('{value}'), "
-                f"但本会话尚未对该字段做 SELECT DISTINCT 反查.\n\n"
-                f"⚠️ 真实库 {field} 带'化工/有限公司/集团'等后缀, 用户口语化简写会 0 行.\n\n"
-                f"👉 必须先调一次 execute_sql 跑反查 SQL, 例如:\n"
-                f"   SELECT DISTINCT {field}, COUNT(*) AS n "
-                f"FROM special_task_view WHERE {field} LIKE '%{value}%' "
-                f"GROUP BY {field} ORDER BY n DESC LIMIT 5\n\n"
-                f"反查拿到真实名后, 再用真实名改写本 SQL 重试."
-            )
-        # SQL 用 = 过滤时, value 必须是 cache 里的真实名 (或子串)
-        if op == '=' and not any(value in c or c in value for c in cached):
-            return (
-                f"❌ SQL 写的是 `WHERE {field} = '{value}'`, "
-                f"但本会话已反查出真实名候选: {cached[:5]}\n"
-                f"必须用真实名 (或 LIKE '%真实名子串%') 重写, 不要再用原始口语化简写."
-            )
-    return None  # 全部通过
-
-
-def _record_oral_resolve(sql: str, df) -> None:
-    """从反查 SQL 的 DataFrame 提取真实名候选, 写 cache.
-
-    只在 SQL 是 SELECT DISTINCT + LIKE/INSTR/REGEXP 模式时触发.
-    """
-    if not _is_distinct_resolve_sql(sql):
-        return
-    if df is None or len(df) == 0:
-        return
-    sql_l = sql.lower()
-    cache = _get_oral_cache()
-    for f in ORAL_FIELDS:
-        if f not in sql_l:
-            continue
-        if f not in df.columns:
-            continue
-        candidates = [str(v) for v in df[f].dropna().tolist()]
-        if candidates:
-            cache[f] = candidates
-            logger.info(f"[oral_resolve] {f} cache updated: {candidates[:3]}{'...' if len(candidates) > 3 else ''}")
 
 
 @tool
@@ -292,16 +160,7 @@ def execute_sql(sql: str) -> str:
 def _execute_single_sql(vn, sql: str, max_retries: int = 3) -> str:
     """执行单条 SQL（内部函数）"""
     retry_delay = 1  # 秒
-
-    # ⚠️ 口语化字段两步强制拦截 (2026-06-10 commit da09a59 强化)
-    #    用户口语化简写 "博航染料企业" 直接 WHERE company_name = 'X' 会 0 行
-    #    强制 LLM 先 SELECT DISTINCT 反查真实名, 再用真实名写统计 SQL
-    sql_clean = re.sub(r'--[^\n]*', '', sql)  # 去注释
-    intercept_err = _check_oral_field_resolved(sql_clean)
-    if intercept_err:
-        logger.warning(f"[oral_resolve] 拦截 LLM 跳过 DISTINCT 的 SQL: {sql[:200]}")
-        return intercept_err
-
+    
     for attempt in range(max_retries):
         try:
             df = vn.run_sql(sql)
@@ -325,9 +184,6 @@ def _execute_single_sql(vn, sql: str, max_retries: int = 3) -> str:
             # 缓存 DataFrame 到全局变量（供 API 层提取）
             set_last_query_result(df)
             logger.info(f"[execute_sql] 已缓存查询结果 DataFrame，行数: {row_count}")
-
-            # ⚠️ 口语化字段 cache: 如果是 SELECT DISTINCT 反查, 提取真实名候选
-            _record_oral_resolve(sql, df)
 
             # 构建结果摘要
             result_summary = f"查询成功\n"
