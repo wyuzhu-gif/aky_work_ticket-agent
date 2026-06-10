@@ -241,9 +241,11 @@ def generate_chat_stream(
                 logger.warning("[Data Extraction] No query result in cache")
 
             # 提取执行的 SQL
-            for msg in messages:
+            # ⚠️ 跟 get_last_query_result() 配对: 取**最后一个** execute_sql tool_call 的 SQL
+            #    (避免 SQL 跟 df 不匹配 — 之前正序遍历取的是对话里最早那个, df 是最后那个)
+            for msg in reversed(messages):
                 if getattr(msg, 'type', '') == 'ai' and hasattr(msg, 'tool_calls') and msg.tool_calls:
-                    for tool_call in msg.tool_calls:
+                    for tool_call in reversed(msg.tool_calls):
                         if tool_call.get('name') == 'execute_sql':
                             args = tool_call.get('args', {})
                             sql_query = args.get('sql', '')
