@@ -225,22 +225,28 @@ async def get_training(training_type: Optional[str] = None):
         df['training_data_type'] = df.apply(extract_data_type, axis=1)
 
         # 为 SQL 类型数据补充 sql 字段（Milvus 返回的 content 即 SQL 语句）
-        if 'training_data_type' in df.columns:
+        # ⚠️ 兼容 content 列可能不存在 (FallbackVanna / 旧版) 的场景
+        if 'training_data_type' in df.columns and 'content' in df.columns:
             mask = df['training_data_type'] == 'sql'
             if 'sql' not in df.columns:
                 df['sql'] = None
-            df.loc[mask & df['content'].notna() & df['sql'].isna(), 'sql'] = df.loc[mask & df['content'].notna() & df['sql'].isna(), 'content']
+            sel = mask & df['content'].notna() & df['sql'].isna()
+            df.loc[sel, 'sql'] = df.loc[sel, 'content']
 
         if training_type:
+            # 兼容两种 id 风格:
+            #   - uuid-{sql|ddl|doc}  (add_question_sql/add_ddl/add_documentation)
+            #   - {md5_hash}-hash     (add_question_sql/_get_content_hash dedup 后的批量)
             suffix_map = {
-                'sql': '-sql',
-                'ddl': '-ddl',
-                'doc': '-doc',
-                'documentation': '-doc',
+                'sql': ['-sql', '-hash'],       # hash 后缀的也是 SQL (跟 ddl/doc 同源)
+                'ddl': ['-ddl', '-hash'],
+                'doc': ['-doc', '-hash'],
+                'documentation': ['-doc', '-hash'],
             }
-            suffix = suffix_map.get(training_type.lower())
-            if suffix:
-                df = df[df['id'].astype(str).str.endswith(suffix)]
+            suffixes = suffix_map.get(training_type.lower())
+            if suffixes:
+                mask = df['id'].astype(str).str.endswith(tuple(suffixes))
+                df = df[mask]
 
         # 返回前端期望的字段：training_data_type, question, content, sql
         out_cols = ['id', 'training_data_type', 'question', 'content', 'sql']

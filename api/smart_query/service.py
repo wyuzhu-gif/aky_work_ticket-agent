@@ -110,9 +110,21 @@ def initialize_smartquery(settings) -> None:
     # 导入并创建 Vanna 客户端
     from .clients import create_vanna_client, set_vanna_client, set_api_key, set_llm_instance
 
+    # ⚠️ LLM_API_KEY 缺失时, 仍要把 Vanna+Milvus 装起来 (训练数据管理不依赖 LLM)
+    #    只有 LLM/Agent 才需要 api_key; Vanna 客户端本身只需要 OpenAI/embedding 服务可达
+    #    兼容 .env 模板里 "EMPTY"/"NONE"/"PLACEHOLDER" 等占位符
+    _PLACEHOLDER_KEYS = {"", "EMPTY", "NONE", "PLACEHOLDER", "DUMMY", "XXX", "TODO"}
+    if not api_key or (isinstance(api_key, str) and api_key.strip().upper() in _PLACEHOLDER_KEYS):
+        api_key = ""  # 统一成空串, 后面用 'or "dummy"' 替换
+        logger.warning("LLM_API_KEY is empty/placeholder: Vanna+Milvus will still init for training-data CRUD, "
+                       "but LLM agent features (chat/nl2sql) will be unavailable")
+        # OpenAI_Chat.__init__ 会从 env 读 OPENAI_API_KEY; 给个 dummy 让 client 构造过
+        #    (真要用 chat 时会 fail, 跟现有 except 走 Fallback 一样)
+        os.environ.setdefault("OPENAI_API_KEY", "dummy-vanna-init-placeholder")
+
     try:
         _vn = create_vanna_client(
-            openai_api_key=api_key,
+            openai_api_key=api_key or "dummy",  # Milvus 训练数据向量化走 embedding_api_url, 不需要这个
             openai_base_url=base_url,
             model=llm_model,
             max_tokens=llm_max_tokens,
@@ -124,18 +136,30 @@ def initialize_smartquery(settings) -> None:
             metric_type=metric_type,
         )
 
-        # 连接数据库
-        _vn.connect_to_postgres(
-            host=pg_host,
-            dbname=pg_database,
-            user=pg_user,
-            password=pg_password,
-            port=pg_port,
-            connect_timeout=5,
-        )
-        logger.info("SmartQuery: PostgreSQL connected via Vanna (Milvus mode)")
+        # 连接数据库: 根据 db_type 决定走 MySQL 还是 PG
+        if settings.db_type == "mysql":
+            _vn.connect_to_mysql(
+                host=pg_host,
+                dbname=pg_database,
+                user=pg_user,
+                password=pg_password,
+                port=pg_port,
+                connect_timeout=5,
+            )
+            logger.info(f"SmartQuery: MySQL connected via Vanna (Milvus mode) -> {pg_host}:{pg_port}/{pg_database}")
+        else:
+            _vn.connect_to_postgres(
+                host=pg_host,
+                dbname=pg_database,
+                user=pg_user,
+                password=pg_password,
+                port=pg_port,
+                connect_timeout=5,
+            )
+            logger.info(f"SmartQuery: PostgreSQL connected via Vanna (Milvus mode) -> {pg_host}:{pg_port}/{pg_database}")
     except Exception as e:
-        logger.warning(f"Vanna/Milvus initialization failed: {e}")
+        import traceback
+        logger.warning(f"Vanna/Milvus initialization failed: {e}\n{traceback.format_exc()}")
         logger.info("SmartQuery: falling back to direct MySQL connection (no Milvus)")
         # 创建一个轻量级的 MySQL 连接，供 database_tools 使用
         import pandas as pd
