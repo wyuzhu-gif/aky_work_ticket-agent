@@ -396,7 +396,7 @@ kill <PID>
 | MINERU_LOCAL_URL | - | 本地 MinerU | 否 |
 | MINERU_BASE_URL | mineru.net | 云端 MinerU | 否 |
 | MINERU_API_KEY | - | MinerU Key | 否 |
-| SQ_LLM_MODEL | qwen-flash | 智能问数 LLM | 否 |
+| SQ_LLM_MODEL | qwen3.6:35b | 智能问数 LLM (本地 ollama, 内网部署避免云端) | 否 |
 | SQ_EMBEDDING_PROVIDER | jina | Embedding 提供商 | 否 |
 | SQ_EMBEDDING_API_URL | - | Embedding 地址 | 否 |
 | SQ_MILVUS_URI | - | Milvus 地址 | 否 |

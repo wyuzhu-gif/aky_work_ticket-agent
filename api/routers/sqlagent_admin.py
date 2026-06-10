@@ -79,7 +79,7 @@ async def test_llm(request: Request):
         from langchain_openai import ChatOpenAI
         api_key = body.get("api_key", "")
         base_url = body.get("base_url", "")
-        model = body.get("model_name", "qwen-flash")
+        model = body.get("model_name", "qwen3.6:35b")  # 默认本地 ollama 模型, 内网部署不用 qwen-flash (云端)
 
         # 如果 api_key 是脱敏的，用当前 settings 的
         if not api_key or api_key == "******":

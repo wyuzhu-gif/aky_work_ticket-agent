@@ -71,7 +71,7 @@ class Settings(BaseSettings):
     # 用 property 让旧字段名也能读, 但写入仍用 db_*
 
     # SmartQuery (NL2SQL 智能问数，内嵌版，原 SQLAgent 已迁移集成)
-    sq_llm_model: str = "qwen-flash"  # 智能问数使用的 LLM 模型
+    sq_llm_model: str = "qwen3.6:35b"  # 智能问数使用的 LLM 模型 (默认本地 ollama, 内网部署避免用云端 qwen-flash)
     sq_llm_temperature: float = 0.2
     sq_llm_max_tokens: int = 14000
     sq_embedding_provider: str = "jina"  # jina | qwen | bge
