@@ -45,7 +45,7 @@ class OllamaChat:
         temperature: float = 0.2,
         max_tokens: int = 200,
         think: bool = False,  # 关键: 真的禁掉思考 (nothink 模型的 chat_template 强制 false)
-        timeout: float = 60.0,
+        timeout: float = 180.0,  # ⚠️ 2026-06-10 改 60.0 -> 180.0: 作业票审查 PDF 路径 MinerU 30s 跑完, 第二阶段 LLM 结构化 22GB qwen3.6:35b 处理 6471 字符 markdown 60s 不够
     ):
         self.base_url = base_url.rstrip("/")
         self.model = model
