@@ -109,11 +109,15 @@ class OllamaChat:
         new._tools = ollama_tools
         logger.info(f"OllamaChat.bind_tools: {len(ollama_tools)} tools -> {[t['function']['name'] for t in ollama_tools]}")
         return new
-
     def _convert_messages(self, messages):
-        """把 langchain 消息列表转 ollama 格式
-        关键: AIMessage 的 tool_calls 字段必须保留, ToolMessage 必须标记 tool_call_id
         """
+        把 langchain 消息列表转 ollama 格式
+        关键: AIMessage 的 tool_calls 字段必须保留, ToolMessage 必须标记 tool_call_id
+        关键: HumanMessage 的 content 可能是 [{type: image_url, ...}, {type: text, ...}] 列表
+              (vision LLM 调用). 要把 image_url 拆出 base64 放到 ollama 的 images 字段, 文本部分放 content
+              不支持 OpenAI image_url 风格的 glm-ocr/qwen3-vl 等模型 (RENDERER glm-ocr 只认 images=[b64])
+        """
+        import re as _re
         result = []
         for msg in messages:
             if isinstance(msg, HumanMessage):
@@ -133,8 +137,36 @@ class OllamaChat:
                 continue
             else:
                 role = "assistant"
-            content = msg.content if isinstance(msg.content, str) else str(msg.content)
+
+            # ⚠️ 关键: HumanMessage 的 content 可能是 list (vision LLM 多模态)
+            # 如果是 list, 拆出 image_url 跟 text 两部分
+            images = []
+            if isinstance(msg.content, list):
+                text_parts = []
+                for part in msg.content:
+                    if isinstance(part, dict):
+                        ptype = part.get('type', '')
+                        if ptype == 'image_url':
+                            # OpenAI 风格: {"type": "image_url", "image_url": {"url": "data:image/png;base64,..."}}
+                            url = part.get('image_url', {}).get('url', '')
+                            # 抽 base64 部分
+                            m = _re.match(r'data:image/[^;]+;base64,(.+)', url, _re.DOTALL)
+                            if m:
+                                images.append(m.group(1))
+                        elif ptype == 'text':
+                            text_parts.append(part.get('text', ''))
+                        elif ptype == 'image':
+                            # 备用: 直接传 base64
+                            img_data = part.get('image', '')
+                            if img_data:
+                                images.append(img_data)
+                content = '\n'.join(text_parts) if text_parts else ''
+            else:
+                content = msg.content if isinstance(msg.content, str) else str(msg.content)
+
             ollama_msg = {"role": role, "content": content}
+            if images:
+                ollama_msg["images"] = images
             # 关键: AIMessage 的 tool_calls 必须传给 ollama
             if role == "assistant" and hasattr(msg, 'tool_calls') and msg.tool_calls:
                 ollama_msg["tool_calls"] = []
@@ -331,7 +363,10 @@ def build_llm(
             temperature=temperature,
             max_tokens=max_tokens,
             think=False,  # 强制禁掉思考
-            timeout=60.0,
+            timeout=300.0,  # ⚠️ 2026-06-10 改 60.0 -> 180.0 -> 300.0:
+                              #   - 60s: 22GB qwen3.6:35b 结构化 + qwen3-vl 视觉都不够
+                              #   - 180s: qwen3-vl 5.7GB 处理 2MB 图还差 30s (实测 391s 才 timeout)
+                              #   - 300s: glm-ocr 1.1B 冷启动 + 推理 200-280s, 留 20s 缓冲
         )
         logger.info(f"build_llm: provider=ollama, using native /api/chat, model={_model}, max_tokens={max_tokens}, think=False")
         return llm

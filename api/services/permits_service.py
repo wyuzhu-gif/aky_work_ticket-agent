@@ -16,7 +16,14 @@ import shutil
 import tempfile
 import time
 import uuid
+from io import BytesIO
 from pathlib import Path
+
+try:
+    from PIL import Image
+    HAS_PIL = True
+except ImportError:
+    HAS_PIL = False
 
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
@@ -271,29 +278,173 @@ class PermitsService:
 
 
     async def _extract_from_image(self, image_bytes: bytes, filename: str, permit_type: str) -> dict:
-        """Extract structured data from image using vision LLM."""
+        """
+        提取结构化数据 from 图片 (OCR + LLM 双层).
+
+        流程 (2026-06-10 新加):
+          [1] PIL 压图 2MB → 500KB (防 glm-ocr vision encoder 慢)
+          [2] glm-ocr OCR 跑图 → 纯文本 markdown
+          [3] qwen3.6:35b 拿 OCR 文本 + per-type extract 模板 → JSON
+
+        之前是 vision LLM 单层 (qwen3-vl 5.7B), 2MB 图要 200-300s 超时
+        现在 OCR + LLM 双层, 200KB 图 glm-ocr 5-30s, LLM 10-30s, 总 15-60s
+        """
         ext = Path(filename).suffix.lower()
         mime_map = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
         mime = mime_map.get(ext, "image/jpeg")
-        b64 = base64.b64encode(image_bytes).decode()
-        logger.info(f"Vision LLM extracting from image: {filename}, size={len(image_bytes)}, mime={mime}")
+        logger.info(f"Image extract start: {filename}, size={len(image_bytes)}, mime={mime}, permit_type={permit_type}")
 
-        prompt = _load_prompt(permit_type, "extract_image")
-        messages = [
-            SystemMessage(content=prompt),
+        # [1] 压图 (防 glm-ocr 编码慢, 2MB→500KB)
+        compressed_bytes, compressed_mime = self._compress_image_for_ocr(image_bytes, mime, max_size_kb=500)
+        logger.info(f"Image compressed: {len(image_bytes)} -> {len(compressed_bytes)} bytes ({(len(compressed_bytes) / max(len(image_bytes), 1) * 100):.0f}%)")
+
+        # [2] glm-ocr OCR 跑图 → 纯文本 markdown
+        b64 = base64.b64encode(compressed_bytes).decode()
+        ocr_prompt = (
+            "你是一个专业的 OCR 助手。请仔细识别图片中所有文字内容 (包括标题、表格、签名、印章、勾选框等), "
+            "保留原始的层级和布局, 用 markdown 表格 + 列表形式输出。\n"
+            "重要要求:\n"
+            "1. 表格用 markdown 表格语法 (|---|) 保留行列结构\n"
+            "2. 勾选框用 [✓] 表示已勾选, [ ] 表示未勾选\n"
+            "3. 签名栏直接写出可见的姓名文字 (看不清写 null)\n"
+            "4. 印章内容用 [印章: XXX] 表示\n"
+            "5. 不要做任何总结或解释, 只输出 OCR 识别出的原文"
+        )
+        ocr_messages = [
+            SystemMessage(content=ocr_prompt),
             HumanMessage(content=[
-                {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{b64}"}},
-                {"type": "text", "text": "请从这张作业票图片中提取所有结构化数据，输出 JSON。"},
+                {"type": "image_url", "image_url": {"url": f"data:{compressed_mime};base64,{b64}"}},
+                {"type": "text", "text": "请 OCR 识别这张图片。"},
             ]),
         ]
-        resp = await self._vision_llm.ainvoke(messages)
-        raw = extract_llm_content(resp)
-        raw = strip_code_fences(raw)
         try:
+            ocr_resp = await self._vision_llm.ainvoke(ocr_messages)
+            ocr_text = extract_llm_content(ocr_resp)
+            logger.info(f"OCR done: {len(ocr_text)} chars")
+        except Exception as e:
+            logger.error(f"OCR failed: {e}")
+            ocr_text = ""
+
+        # [3] qwen3.6:35b 拿 OCR 文本 + per-type extract 模板 → JSON
+        if not ocr_text or len(ocr_text) < 20:
+            # OCR 失败 / 太短, 走 vision LLM 单层 fallback
+            logger.warning("OCR result too short, falling back to vision LLM direct")
+            return await self._extract_from_image_vision_fallback(compressed_bytes, compressed_mime, permit_type)
+
+        extract_prompt = _load_prompt(permit_type, "extract_image")
+        # 模板说"图片", 但 LLM 实际拿到 OCR 文本, 替换说明
+        extract_prompt = extract_prompt.replace("【图片】", "【OCR 文本】")
+        extract_prompt = extract_prompt.replace("【图片】", "【OCR 文本】")  # 双重保险
+        # 加 OCR 文本作为上下文
+        full_prompt = f"{extract_prompt}\n\n## OCR 识别出的作业票文本 (markdown 格式)\n\n{ocr_text}"
+        struct_messages = [
+            SystemMessage(content=full_prompt),
+            HumanMessage(content="请从上述 OCR 文本中提取所有结构化数据, 输出严格的 JSON。"),
+        ]
+        try:
+            resp = await self._llm.ainvoke(struct_messages)
+            raw = extract_llm_content(resp)
+            raw = strip_code_fences(raw)
+            return json.loads(raw)
+        except json.JSONDecodeError as e:
+            logger.error(f"LLM extraction json parse failed: {e}, raw[:500]={raw[:500]}")
+            # LaTeX 容错 (_try_fix_latex_escape 在 common.llm_utils)
+            try:
+                from common.llm_utils import _try_fix_latex_escape
+                fixed = _try_fix_latex_escape(raw)
+                if fixed:
+                    obj = json.loads(fixed)
+                    logger.info(f"After LaTeX fix, parsed OK")
+                    return obj
+            except Exception:
+                pass
+            return {"permit_code": Path(filename).stem, "raw_llm_output": raw}
+        except Exception as e:
+            logger.error(f"LLM extraction failed: {e}")
+            return {"permit_code": Path(filename).stem, "raw_llm_output": str(e)}
+
+    async def _extract_from_image_vision_fallback(self, image_bytes: bytes, mime: str, permit_type: str) -> dict:
+        """
+        OCR 失败时的 fallback: 直接调 vision LLM (qwen3-vl 5.7B), 用 extract 模板
+        比 OCR+LLM 慢 5-10x, 但 OCR 失败时不至于 0 数据
+        """
+        logger.warning(f"Using vision LLM fallback, mime={mime}")
+        b64 = base64.b64encode(image_bytes).decode()
+        extract_prompt = _load_prompt(permit_type, "extract")
+        full_prompt = f"{extract_prompt}\n\n## 输入\n作业票图片 OCR 文本 (空, 走 vision LLM 模式): 本图通过 vision LLM 直接看图提取, 不依赖 OCR 预处理。"
+        messages = [
+            SystemMessage(content=full_prompt),
+            HumanMessage(content=[
+                {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{b64}"}},
+                {"type": "text", "text": "请从这张作业票图片中提取所有结构化数据, 输出 JSON。"},
+            ]),
+        ]
+        try:
+            resp = await self._vision_llm.ainvoke(messages)
+            raw = extract_llm_content(resp)
+            raw = strip_code_fences(raw)
             return json.loads(raw)
         except json.JSONDecodeError:
-            logger.error(f"Vision LLM returned non-JSON: {raw[:500]}")
-            return {"permit_code": "", "raw_llm_output": raw}
+            return {"permit_code": "", "raw_llm_output": raw[:500]}
+        except Exception as e:
+            logger.error(f"Vision LLM fallback failed: {e}")
+            return {"permit_code": "", "raw_llm_output": str(e)}
+
+    def _compress_image_for_ocr(self, image_bytes: bytes, mime: str, max_size_kb: int = 200) -> tuple[bytes, str]:
+        """
+        压图给 OCR 用, 防 glm-ocr vision encoder 编码慢.
+
+        经验 (实测 2026-06-10):
+          - 130KB (512 像素) 编码 24s, 总 42.9s ✅
+          - 406KB (1024 像素) 编码 304s (5分钟), 总 > 5min 🐌
+          - 2MB (1968x2796 像素) 编码 339s, 总 > 5min 🐌
+          编码时间跟像素数 强相关, 不是文件大小
+
+        修法: 强制压到 512 像素长边, JPEG quality 70, 目标 ≤ 200KB
+
+        Args:
+            image_bytes: 原图字节
+            mime: 原图 mime ('image/png' / 'image/jpeg')
+            max_size_kb: 目标大小上限 (KB)
+
+        Returns:
+            (compressed_bytes, output_mime)
+        """
+        if not HAS_PIL:
+            logger.warning("PIL not available, skip compression")
+            return image_bytes, mime
+
+        try:
+            img = Image.open(BytesIO(image_bytes))
+            # 转 RGB (PNG 含 alpha 通道时, JPEG 没法存)
+            if img.mode in ('RGBA', 'LA', 'P'):
+                img = img.convert('RGB')
+            out_mime = 'image/jpeg'
+
+            # 关键: 强制缩到 512 像素长边 (实测 1024 编码慢 12 倍)
+            # ⚠️ 之前用 2048 错了, 1024 编码 304s, 512 编码 24s
+            img.thumbnail((512, 512), Image.LANCZOS)
+
+            # 质量迭代降低直到 < max_size_kb
+            quality = 80
+            while quality >= 30:
+                buf = BytesIO()
+                img.save(buf, 'JPEG', quality=quality, optimize=True)
+                size = buf.tell()
+                if size <= max_size_kb * 1024:
+                    logger.info(f"Compressed to {size} bytes (quality={quality}, size=512px)")
+                    return buf.getvalue(), out_mime
+                quality -= 10
+
+            # 30 还是超, 进一步压
+            img.thumbnail((384, 384), Image.LANCZOS)
+            buf = BytesIO()
+            img.save(buf, 'JPEG', quality=50, optimize=True)
+            logger.info(f"Compressed to {buf.tell()} bytes (quality=50, size=384px)")
+            return buf.getvalue(), out_mime
+        except Exception as e:
+            logger.warning(f"Image compression failed: {e}, use original")
+            return image_bytes, mime
 
     async def upload_and_extract(self, file_bytes: bytes, filename: str, permit_type: str = "hot_work") -> dict:
         """Upload PDF/Image → extract → structured data (not saved yet)."""
