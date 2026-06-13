@@ -43,8 +43,8 @@ async def upload_and_extract(
     service: PermitsService = Depends(get_permits_service),
 ):
     ext = Path(file.filename).suffix.lower() if file.filename else ""
-    if ext not in {".pdf", ".jpg", ".jpeg", ".png"}:
-        raise HTTPException(status_code=400, detail="仅支持 PDF、JPG、PNG 文件")
+    if ext not in {".pdf", ".jpg", ".jpeg", ".png", ".json"}:
+        raise HTTPException(status_code=400, detail="仅支持 PDF、JPG、PNG、JSON 文件")
     # Validate type
     try:
         get_permit_type(permit_type)

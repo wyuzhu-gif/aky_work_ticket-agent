@@ -26,11 +26,41 @@ PERMIT_TYPES = {
         "has_gas_analyses": False,
         "has_safety_checks": False,
     },
-    # "高处作业": {"label": "高处作业", "table": "", "gas_table": None, "has_gas_analyses": False, "has_safety_checks": False},
-    # "临时用电": {"label": "临时用电", "table": "", "gas_table": None, "has_gas_analyses": False, "has_safety_checks": False},
-    # "吊装":    {"label": "吊装作业", "table": "", "gas_table": None, "has_gas_analyses": False, "has_safety_checks": False},
-    # "动土":    {"label": "动土作业", "table": "", "gas_table": None, "has_gas_analyses": False, "has_safety_checks": False},
-    # "断路":    {"label": "断路作业", "table": "", "gas_table": None, "has_gas_analyses": False, "has_safety_checks": False},
+    "height": {
+        "label": "高处作业",
+        "table": "height_permits",
+        "gas_table": None,
+        "has_gas_analyses": False,
+        "has_safety_checks": True,
+    },
+    "lifting": {
+        "label": "吊装作业",
+        "table": "lifting_permits",
+        "gas_table": None,
+        "has_gas_analyses": False,
+        "has_safety_checks": True,
+    },
+    "temp_electric": {
+        "label": "临时用电",
+        "table": "temp_electric_permits",
+        "gas_table": "temp_electric_gas_analysis",
+        "has_gas_analyses": True,   # 临时用电涉及可燃气体环境时需检测
+        "has_safety_checks": True,
+    },
+    "excavation": {
+        "label": "动土作业",
+        "table": "excavation_permits",
+        "gas_table": None,
+        "has_gas_analyses": False,
+        "has_safety_checks": True,
+    },
+    "road_breaking": {
+        "label": "断路作业",
+        "table": "road_breaking_permits",
+        "gas_table": None,
+        "has_gas_analyses": False,
+        "has_safety_checks": True,
+    },
 }
 
 

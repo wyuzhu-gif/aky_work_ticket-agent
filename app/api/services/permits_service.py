@@ -32,6 +32,13 @@ from common.llm_utils import extract_llm_content, strip_code_fences, llm_invoke_
 
 logger = get_logger(__name__)
 
+# ─────────────── 存库开关（客户只读部署：不存库） ───────────────
+# 客户服务器只给只读权限，作业票不进数据库。
+# 关闭后：list/get 返回空，save/delete 直接返回 200 不实际写入。
+# upload_and_extract 和 compliance_review 仍正常工作（这两个是核心功能）。
+DB_DISABLED = os.getenv("DISABLE_PERMIT_STORAGE", "true").lower() in ("1", "true", "yes")
+
+
 # ─────────────── LLM 提取 prompt ───────────────
 
 
@@ -152,10 +159,63 @@ class PermitsService:
             logger.error(f"Vision LLM returned non-JSON: {raw[:500]}")
             return {"permit_code": "", "raw_llm_output": raw}
 
+    async def _extract_from_json(self, file_bytes: bytes, filename: str, permit_type_query: str) -> dict:
+        """JSON 透传：直接解析前端/客户系统上传的结构化数据，跳过 MinerU/LLM。
+
+        Q2=C 双支持：JSON 里的 permit_type 字段优先，缺则用 query 参数。
+        Q1=B 宽松模式：Pydantic 默认 extra='ignore'，多余字段自动忽略，缺字段用 None。
+        Q4=B 顶层支持 gas_analyses / safety_checks 数组。
+        """
+        try:
+            data = json.loads(file_bytes.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as e:
+            raise ValueError(f"JSON 解析失败: {e}") from e
+        if not isinstance(data, dict):
+            raise ValueError(f"JSON 必须是对象类型，实际为 {type(data).__name__}")
+
+        # permit_type 双支持
+        actual_type = data.get("permit_type") or permit_type_query
+        try:
+            get_permit_type(actual_type)
+        except ValueError as e:
+            raise ValueError(str(e)) from e
+
+        # 提取子表（缺则空列表）
+        gas_data = data.pop("gas_analyses", [])
+        safety_data = data.pop("safety_checks", [])
+        # 移除已用过的 permit_type 字段，避免污染主表
+        data.pop("permit_type", None)
+
+        # 列表字段逗号拼接（与 PDF/Image 路径保持一致）
+        for k in ("related_permit_ids", "related_permits"):
+            if k in data and isinstance(data[k], list):
+                data[k] = ", ".join(str(x) for x in data[k])
+
+        # code_key 默认值
+        code_key = "permit_code" if "permit_code" in data else "ticket_code"
+        if not data.get(code_key):
+            data[code_key] = Path(filename).stem
+        if "work_id" in data and not data.get("work_id"):
+            data["work_id"] = data.get(code_key, Path(filename).stem)
+
+        return {
+            "permit_type": actual_type,
+            "permit": {k: v for k, v in data.items() if v is not None},
+            "gas_analyses": gas_data if isinstance(gas_data, list) else [],
+            "safety_checks": safety_data if isinstance(safety_data, list) else [],
+            "raw_md": None,
+            "source": "json",
+        }
+
     async def upload_and_extract(self, file_bytes: bytes, filename: str, permit_type: str = "hot_work") -> dict:
-        """Upload PDF/Image → extract → structured data (not saved yet)."""
+        """Upload PDF/Image/JSON → extract → structured data (not saved yet)."""
 
         ext = Path(filename).suffix.lower()
+
+        # JSON 透传路径（Q3=A：跳过 LLM）
+        if ext == ".json":
+            logger.info(f"JSON upload detected: {filename}")
+            return await self._extract_from_json(file_bytes, filename, permit_type)
 
         # Image path: vision LLM directly
         if ext in (".jpg", ".jpeg", ".png"):
@@ -240,6 +300,10 @@ class PermitsService:
         safety_checks: list[ExtractedSafetyCheck] | None = None,
     ) -> HotWorkPermit:
         """Save or update permit. Uses UPDATE if permit.id exists (draft re-save)."""
+        if DB_DISABLED:
+            logger.info("[DB_DISABLED] 跳过 hot_work 入库")
+            permit.id = None
+            return permit
         is_update = permit.id is not None
         if is_update:
             saved = await self._repo.update_permit(permit)
@@ -353,6 +417,15 @@ class PermitsService:
                                    gas_analyses: list[dict] | None = None,
                                    safety_checks: list[dict] | None = None) -> dict:
         """Save a permit to the correct table based on type."""
+        if DB_DISABLED:
+            logger.info(f"[DB_DISABLED] 跳过入库 permit_type={permit_type} (客户只读部署)")
+            permit_data.pop("id", None)
+            return {
+                **permit_data,
+                "id": None,
+                "_db_disabled": True,
+                "_message": "数据库禁用模式：作业票未持久化，仅返回前端回显",
+            }
         cfg = get_permit_type(permit_type)
         table = cfg["table"]
 
@@ -408,11 +481,15 @@ class PermitsService:
 
     async def list_permits_typed(self, permit_type: str) -> list[dict]:
         """List permits from the correct table."""
+        if DB_DISABLED:
+            return []
         cfg = get_permit_type(permit_type)
         return await self._repo.generic_list(cfg["table"])
 
     async def get_permit_typed(self, permit_type: str, permit_id: int) -> dict | None:
         """Get a permit with gas analyses from the correct tables."""
+        if DB_DISABLED:
+            return None
         cfg = get_permit_type(permit_type)
         permit = await self._repo.generic_get(cfg["table"], permit_id)
         if not permit:
@@ -426,6 +503,8 @@ class PermitsService:
 
     async def delete_permit_typed(self, permit_type: str, permit_id: int) -> bool:
         """Delete a permit from the correct table."""
+        if DB_DISABLED:
+            return True
         cfg = get_permit_type(permit_type)
         # Delete gas analyses first
         if cfg.get("gas_table"):

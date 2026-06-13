@@ -209,3 +209,8 @@ highlight_pdf.py
 # SQLite databases (anywhere)
 **/app.db
 **/app.db-journal
+
+# Stale build dirs
+app/api/www_lite_new/
+app/ui-lite/dist/
+
