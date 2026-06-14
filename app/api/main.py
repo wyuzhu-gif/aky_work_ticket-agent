@@ -21,7 +21,7 @@ from config.config import settings
 from fastapi.staticfiles import StaticFiles
 from middleware.logging import LoggingMiddleware, setup_logging
 from routers import issues
-from routers import review_external, files, rules, rule_documents, permits, chat
+from routers import review_external, files, rules, rule_documents, permits, chat, audit_router
 from routers import sqlagent_admin
 from routers import dashboard
 
@@ -69,6 +69,7 @@ app.add_middleware(
 # Include routers
 app.include_router(issues.router)
 app.include_router(review_external.router)
+app.include_router(audit_router.router)
 app.include_router(files.router)
 app.include_router(rules.router)
 app.include_router(rule_documents.router)
@@ -102,6 +103,12 @@ if settings.serve_static:
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     logging.error(f"HTTPException occurred: {exc.detail}")
+    # 422 (Pydantic RequestValidationError) 透传 detail 数组
+    if exc.status_code == 422:
+        return JSONResponse(
+            status_code=422,
+            content={"detail": exc.detail},
+        )
     return JSONResponse(
         status_code=exc.status_code,
         content={"error": "HTTPException", "message": exc.detail},

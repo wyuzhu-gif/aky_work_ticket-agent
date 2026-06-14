@@ -75,7 +75,11 @@ class Settings(BaseSettings):
     # CORS
     cors_origins: str = "*"  # comma-separated, e.g. "http://localhost:35173,http://192.168.1.100:35173"
 
-model_config = SettingsConfigDict(env_file=str(Path(__file__).resolve().parent.parent / ".env"), case_sensitive=False, extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=str(Path(__file__).resolve().parent.parent / ".env"),
+        case_sensitive=False,
+        extra="ignore",
+    )
 
 
 settings = Settings()

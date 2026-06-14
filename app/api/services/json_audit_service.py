@@ -118,13 +118,17 @@ class JsonAuditService:
         self.wiki = get_wiki_search()
 
     def _init_llm(self) -> ChatOpenAI:
-        """复用 settings，temperature=0.1 保证审查稳定"""
+        """复用 settings，temperature=0.1 保证审查稳定
+
+        注意：不传 extra_body（qwen3.5-flash 默认不开启 thinking，传了反而可能让
+        openai 客户端走不同 endpoint 触发 ConnectError）。
+        """
         return ChatOpenAI(
             api_key=settings.llm_api_key,
             base_url=settings.llm_base_url,
             model=settings.llm_model,
             temperature=0.1,
-            extra_body={"enable_thinking": False},
+            timeout=60,
         )
 
     # ───── 主入口 ─────
