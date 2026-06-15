@@ -264,23 +264,8 @@ const useStyles = makeStyles({
   },
 })
 
-/** 导航分区定义 */
+/** 导航分区定义 (2026-06-12 简化为 3 大功能) */
 const NAV_SECTIONS = [
-  {
-    title: '工作台',
-    icon: <BoardRegular />,
-    items: [
-      { to: '/', label: '审核看板', icon: <ChartMultipleRegular /> },
-    ],
-  },
-  {
-    title: '智能审核',
-    icon: <ShieldCheckmarkRegular />,
-    items: [
-      { to: '/review', label: '文档审核', icon: <DocumentTextRegular /> },
-      { to: '/rules', label: '规则库', icon: <BookRegular /> },
-    ],
-  },
   {
     title: '作业票管理',
     icon: <ClipboardTaskRegular />,
@@ -300,31 +285,22 @@ const NAV_SECTIONS = [
     icon: <SettingsRegular />,
     items: [
       { to: '/agent-admin', label: '智能体配置', icon: <BrainCircuitRegular /> },
-      { to: '/rule-docs', label: '规则文档管理', icon: <DocumentRegular /> },
     ],
   },
 ] as const
 
 /** 路径 → 页面标题 映射 */
 const PAGE_TITLES: Record<string, string> = {
-  '/': '审核看板',
-  '/review': '文档审核',
-  '/rules': '规则库',
   '/ticket-review': '作业票审查',
   '/smart-query': '智能问数',
   '/agent-admin': '智能体配置',
-  '/rule-docs': '规则文档管理',
 }
 
 /** 路径 → 所属分区 映射 */
 const PAGE_BREADCRUMBS: Record<string, string> = {
-  '/': '工作台',
-  '/review': '智能审核',
-  '/rules': '智能审核',
   '/ticket-review': '作业票管理',
   '/smart-query': '数据分析',
   '/agent-admin': '系统管理',
-  '/rule-docs': '系统管理',
 }
 
 export function AppShell({ mode, onToggleMode, children }: AppShellProps) {
@@ -376,7 +352,7 @@ export function AppShell({ mode, onToggleMode, children }: AppShellProps) {
   const pageTitle = PAGE_TITLES[basePath] || PAGE_TITLES[location.pathname] || 'AI 文档审核'
   const breadcrumb = PAGE_BREADCRUMBS[basePath] || PAGE_BREADCRUMBS[location.pathname] || ''
 
-  const isTopLevel = ['/', '/ticket-review', '/smart-query'].includes(basePath)
+  const isTopLevel = ['/ticket-review', '/smart-query', '/agent-admin'].includes(basePath)
 
   return (
     <div className={classes.shell}>
@@ -390,7 +366,7 @@ export function AppShell({ mode, onToggleMode, children }: AppShellProps) {
             <div className={classes.brandInfo}>
               <div className={classes.statusRow}>
                 <span className={classes.statusDot} />
-                <span className={classes.brandTitle}>AI 文档审核</span>
+                <span className={classes.brandTitle}>作业票审查系统</span>
               </div>
               <span className={classes.brandSub}>智能审阅 · 风险识别</span>
             </div>

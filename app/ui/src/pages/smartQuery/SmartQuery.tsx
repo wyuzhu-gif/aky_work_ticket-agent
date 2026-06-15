@@ -636,6 +636,7 @@ export default function SmartQuery() {
                   appearance="subtle"
                   size="small"
                   icon={<DeleteRegular />}
+                  title="删除会话"
                   onClick={(e) => handleDeleteSession(e, s.id)}
                 />
               </div>

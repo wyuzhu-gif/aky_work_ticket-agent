@@ -1,12 +1,7 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from './components/AppShell'
-import Review from './pages/review/Review'
-import Report from './pages/report/Report'
-import Dashboard from './pages/dashboard/Dashboard'
 import TicketReview from './pages/ticketReview/TicketReview'
 import SmartQuery from './pages/smartQuery/SmartQuery'
-import PromptRules from './pages/rules/RulesPage'
-import RuleDocManage from './pages/ruleDocs/RuleDocsPage'
 import AgentAdmin from './pages/agentAdmin/AgentAdmin'
 import type { ThemeMode } from './theme'
 
@@ -23,21 +18,11 @@ function App({ mode, onToggleMode }: AppProps) {
   )
 }
 
-/** 审核看板 */
-function DashboardPlaceholder() {
-  return <Dashboard />
-}
-
 function Pages() {
   return (
     <Routes>
-      {/* 工作台 */}
-      <Route path="/" element={<DashboardPlaceholder />} />
-
-      {/* 智能审核 */}
-      <Route path="/review" element={<Review />} />
-      <Route path="/review/:docId/report" element={<Report />} />
-      <Route path="/rules" element={<PromptRules />} />
+      {/* 默认跳到作业票审查 (2026-06-12 简化为 3 大功能) */}
+      <Route path="/" element={<Navigate to="/ticket-review" replace />} />
 
       {/* 作业票管理 */}
       <Route path="/ticket-review" element={<TicketReview />} />
@@ -47,7 +32,6 @@ function Pages() {
 
       {/* 系统管理 */}
       <Route path="/agent-admin" element={<AgentAdmin />} />
-      <Route path="/rule-docs" element={<RuleDocManage />} />
     </Routes>
   )
 }
