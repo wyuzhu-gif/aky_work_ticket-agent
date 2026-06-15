@@ -9,7 +9,7 @@
   "apply_unit": "作业申请单位",
   "apply_time": "申请时间 (YYYY-MM-DD HH:MM 格式，无法解析则原样保留)",
   "work_content": "作业内容",
-  "work_location": "动火地点",
+  "work_location": "作业地点",
   "work_level": "高处作业级别",
   "work_height": "作业高度",
   "work_unit": "作业单位",

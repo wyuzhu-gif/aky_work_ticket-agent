@@ -26,11 +26,41 @@ PERMIT_TYPES = {
         "has_gas_analyses": False,
         "has_safety_checks": False,
     },
-    # "高处作业": {"label": "高处作业", "table": "", "gas_table": None, "has_gas_analyses": False, "has_safety_checks": False},
-    # "临时用电": {"label": "临时用电", "table": "", "gas_table": None, "has_gas_analyses": False, "has_safety_checks": False},
-    # "吊装":    {"label": "吊装作业", "table": "", "gas_table": None, "has_gas_analyses": False, "has_safety_checks": False},
-    # "动土":    {"label": "动土作业", "table": "", "gas_table": None, "has_gas_analyses": False, "has_safety_checks": False},
-    # "断路":    {"label": "断路作业", "table": "", "gas_table": None, "has_gas_analyses": False, "has_safety_checks": False},
+    "high_above": {
+        "label": "高处作业",
+        "table": "high_above_permits",
+        "gas_table": None,
+        "has_gas_analyses": False,
+        "has_safety_checks": True,
+    },
+    "temp_power": {
+        "label": "临时用电",
+        "table": "temp_power_permits",
+        "gas_table": None,
+        "has_gas_analyses": False,
+        "has_safety_checks": True,
+    },
+    "lifting": {
+        "label": "吊装作业",
+        "table": "lifting_permits",
+        "gas_table": None,
+        "has_gas_analyses": False,
+        "has_safety_checks": True,
+    },
+    "earthwork": {
+        "label": "动土作业",
+        "table": "earthwork_permits",
+        "gas_table": None,
+        "has_gas_analyses": False,
+        "has_safety_checks": True,
+    },
+    "road_closure": {
+        "label": "断路作业",
+        "table": "road_closure_permits",
+        "gas_table": None,
+        "has_gas_analyses": False,
+        "has_safety_checks": True,
+    },
 }
 
 
