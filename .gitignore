@@ -47,6 +47,7 @@ api/app/data/rule_docs/*
 !api/app/data/rule_docs/.gitkeep
 
 # Frontend build
+api/www/
 api/www/_*/
 api/www/node_modules/
 

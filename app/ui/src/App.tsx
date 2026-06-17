@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from './components/AppShell'
 import TicketReview from './pages/ticketReview/TicketReview'
+import TicketReviewV2 from './pages/ticketReviewV2/TicketReviewV2'
 import SmartQuery from './pages/smartQuery/SmartQuery'
 import AgentAdmin from './pages/agentAdmin/AgentAdmin'
 import type { ThemeMode } from './theme'
@@ -26,6 +27,7 @@ function Pages() {
 
       {/* 作业票管理 */}
       <Route path="/ticket-review" element={<TicketReview />} />
+      <Route path="/ticket-review-v2" element={<TicketReviewV2 />} />
 
       {/* 数据分析 */}
       <Route path="/smart-query" element={<SmartQuery />} />

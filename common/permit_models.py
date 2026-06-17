@@ -137,6 +137,9 @@ class PermitUploadResponse(BaseModel):
     gas_analyses: list[HotWorkGasAnalysis] = []
     safety_checks: list[ExtractedSafetyCheck] = []
     raw_md: str = ""
+    # 2026-06-17 新增: 从 OCR 文本直接 regex 提取的"标签: 值"对
+    # 不受 schema 限制, 识别到什么就有什么 (e.g. {"风险因素": "火灾,中毒", "作业票种类": "受限空间"})
+    raw_fields: dict[str, str] = {}
 
 
 class ComplianceReviewRequest(BaseModel):

@@ -147,6 +147,7 @@ const useStyles = makeStyles({
   },
   issueText: { fontSize: '13px', color: tokens.colorNeutralForeground1, lineHeight: '20px' },
   issueSuggestion: { fontSize: '12px', color: tokens.colorBrandForeground1, marginTop: '4px', lineHeight: '18px' },
+  issueClause: { fontSize: '11px', color: tokens.colorNeutralForeground3, marginTop: '4px', lineHeight: '16px', fontStyle: 'italic' },
   issueFieldTag: {
     display: 'inline-block',
     fontSize: '11px',
@@ -1079,6 +1080,9 @@ export default function TicketReview() {
                       <div className={classes.issueText}>{issue.text}</div>
                       {issue.suggestion && (
                         <div className={classes.issueSuggestion}>建议：{issue.suggestion}</div>
+                      )}
+                      {issue.clause && (
+                        <div className={classes.issueClause}>📖 {issue.clause}</div>
                       )}
                       <div className={classes.issueFieldTag}>{issue.field_key}</div>
                     </div>

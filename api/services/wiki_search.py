@@ -345,12 +345,24 @@ class WikiSearch:
         results.sort(key=priority)
 
         sections = []
-        # 限制最多 3 个文档（每个文档截断到 8000 字符），避免单个大文档占满 context
+        # 关键设计: 跳过"前言/目录", 直接读具体条款章节
+        # 之前 800 字符只装下"目录", LLM 看不到任何条款, 导致编造"第 X.X 条"
+        # 现在: 对每个文档, 找到第一个 "## 5" 或 "## 4.6" 这种章节标题, 从那里开始读
         MAX_DOCS = 3
-        PER_DOC_CHARS = 8000
+        PER_DOC_CHARS = 6000
+
         for r in results[:MAX_DOCS]:
-            content = self.get_page(r["filepath"])
+            content = self.get_page(r["filepath"])  # 全文
             if content:
+                # 跳过"前言/目录"段 (GB 30871 用一级 # 标题)
+                # 找第一个包含数字章节号的标题行, 从那里开始
+                # 例如: "# 4 通用要求" / "# 5 动火作业"
+                import re
+                # 找第一个 "# 数字" 的标题位置 (不是 # 前言/目次)
+                m = re.search(r'^# \d+\s+\S+', content, re.M)
+                if m:
+                    content = content[m.start():]
+                # 单文档截断
                 if len(content) > PER_DOC_CHARS:
                     content = content[:PER_DOC_CHARS] + "\n\n[...文档已截断]"
                 title = r.get("title") or Path(r["filepath"]).stem

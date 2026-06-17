@@ -191,6 +191,7 @@ export interface ComplianceReviewIssue {
   text: string
   field_key: string
   suggestion: string
+  clause?: string  // 法规条款 (GB 30871-2022 第 X.X 条), 可能为空
 }
 
 export interface ComplianceReviewItem {
