@@ -55,18 +55,18 @@ COMMON_DIR = os.path.join(SCRIPT_DIR, 'common')
 VENV_PYTHON = os.path.join(API_DIR, 'venv', 'bin', 'python')
 
 SKIP_DIRS = {'venv', 'venv_old_x86', '__pycache__', '_build', 'www', 'www_lite',
-             '.git', 'node_modules', 'app'}
+             '.git', 'node_modules', 'app', 'site-packages'}
+skip_dirs = SKIP_DIRS | {'site-packages', '.git', 'node_modules'}
 
 def collect_py(root_dir):
-    """收集目录下所有 .py 文件"""
+    """收集目录下所有 .py 文件（排除 venv/__pycache__/site-packages）"""
     files = []
     for dirpath, dirnames, filenames in os.walk(root_dir):
+        # Exclude site-packages to avoid compiling third-party packages
         dirnames[:] = [d for d in dirnames
-                       if d not in SKIP_DIRS and not d.startswith('.')]
-        for f in filenames:
-            if f.endswith('.py'):
-                files.append(os.path.join(dirpath, f))
-    return files
+                       if d not in SKIP_DIRS and d not in skip_dirs and not d.startswith('.')]
+
+
 
 def compile_dir(root_dir, name):
     """编译一个目录下的所有 .py"""

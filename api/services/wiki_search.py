@@ -48,38 +48,30 @@ def _segment(text: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# 票种 → wiki 页面映射（硬编码的检索策略，确保必查项不遗漏）
+# 票种 → 检索关键词映射（新 wiki 库适配版，无硬编码文件路径）
 # ---------------------------------------------------------------------------
+PERMIT_TYPE_KEYWORDS = {
+    "hot_work": [
+        "动火作业 安全措施 审批 气体检测",
+        "GB 30871 动火",
+        "动火作业许可证",
+    ],
+    "confined_space": [
+        "受限空间 安全措施 气体检测 审批",
+        "GB 30871 受限空间",
+        "受限空间作业许可证",
+    ],
+    "blind_plate": [
+        "盲板抽堵 安全措施 审批 管道隔离",
+        "GB 30871 盲板",
+        "盲板抽堵作业许可证",
+    ],
+}
+
+# 兼容旧 PERMIT_TYPE_PAGES 接口（如有其他代码引用）
 PERMIT_TYPE_PAGES = {
-    "hot_work": {
-        "entity": "entities/gb30871-2022-hot-work.md",
-        "concepts": [
-            "concepts/动火作业安全措施.md",
-            "concepts/气体检测要求.md",
-            "concepts/动火作业审批要求.md",
-            "concepts/管道隔离要求.md",
-        ],
-        "general": "entities/gb30871-2022-general.md",
-    },
-    "confined_space": {
-        "entity": "entities/gb30871-2022-confined-space.md",
-        "concepts": [
-            "concepts/受限空间安全措施.md",
-            "concepts/气体检测要求.md",
-            "concepts/受限空间作业审批要求.md",
-            "concepts/管道隔离要求.md",
-        ],
-        "general": "entities/gb30871-2022-general.md",
-    },
-    "blind_plate": {
-        "entity": "entities/gb30871-2022-blind-plate.md",
-        "concepts": [
-            "concepts/盲板抽堵安全措施.md",
-            "concepts/盲板抽堵审批要求.md",
-            "concepts/管道隔离要求.md",
-        ],
-        "general": "entities/gb30871-2022-general.md",
-    },
+    pt: {"entity": None, "concepts": [], "general": None}
+    for pt in PERMIT_TYPE_KEYWORDS
 }
 
 
@@ -108,7 +100,7 @@ class WikiSearch:
         page_type: Optional[str] = None,
     ) -> list[dict]:
         """
-        FTS5 全文检索。
+        搜索 Wiki（基于 LIKE 模糊匹配，兼容 rebuild_index.py 建的 sections 表）。
 
         Args:
             query: 自然语言查询（中文）
@@ -123,15 +115,120 @@ class WikiSearch:
             return []
 
         limit = limit or self.search_limit
-
-        # Segment query for FTS5
-        seg_q = _segment(query)
-        # Use OR for broad recall (Chinese terms are often multi-word)
-        fts_query = " OR ".join(seg_q.split())
+        # 多取一些以备过滤
+        fetch_limit = limit * 3
 
         conn = sqlite3.connect(str(self.db_path))
         try:
-            # FTS5 virtual table: search for segmented terms
+            # 检测表结构
+            tables = [r[0] for r in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()]
+
+            if 'sections' in tables and 'pages' not in tables:
+                # rebuild_index.py schema: sections(path, title, content)
+                # 用 jieba 分词后 OR 匹配（任一词命中即可），提高召回率
+                jieba_lib = _get_jieba()
+                # 分词 + 去停用词 + 去标点 + 去单字
+                stopwords = {'的', '了', '是', '在', '和', '与', '或', '及', '等', '为',
+                             '我', '你', '他', '她', '它', '们', '这', '那', '个', '中',
+                             '上', '下', '不', '有', '没', '对', '到', '把', '被', '从',
+                             '请', '问', '一下', '告诉', '说', '要', '能', '会', '可以'}
+                raw_terms = [w.strip() for w in jieba_lib.cut(query) if w.strip()]
+                terms = [t for t in raw_terms if t not in stopwords and len(t) > 1]
+                # 至少一个 term；terms 为空时退回整句匹配
+                if not terms:
+                    terms = [query]
+
+                # 构造动态 WHERE: (title LIKE ? OR content LIKE ?) 对每个 term
+                where_clauses = []
+                params = []
+                for t in terms:
+                    like_t = f"%{t}%"
+                    where_clauses.append("(title LIKE ? OR content LIKE ?)")
+                    params.extend([like_t, like_t])
+                where_sql = " OR ".join(where_clauses)
+
+                # ORDER BY: 命中 term 数越多越靠前，title 命中权重更高
+                # title 命中计 2 分, content 命中计 1 分
+                hit_expr = " + ".join(
+                    f"(CASE WHEN title LIKE ? THEN 2 ELSE 0 END + CASE WHEN content LIKE ? THEN 1 ELSE 0 END)"
+                    for _ in terms
+                )
+                hit_params = []
+                for t in terms:
+                    like_t = f"%{t}%"
+                    hit_params.extend([like_t, like_t])
+
+                sql = f"""
+                    SELECT path, title, content,
+                           ({hit_expr}) AS hit_count
+                    FROM sections
+                    WHERE {where_sql}
+                    ORDER BY hit_count DESC, length(title) ASC
+                    LIMIT ?
+                """
+                rows = conn.execute(sql, (*hit_params, *params, fetch_limit)).fetchall()
+
+                output = []
+                for row in rows:
+                    filepath, title, content, hit_count = row
+                    # 推断 page_type（从路径）
+                    rel = filepath
+                    if "/entities/" in rel:
+                        ptype = "entity"
+                    elif "/concepts/" in rel:
+                        ptype = "concept"
+                    elif "/comparisons/" in rel:
+                        ptype = "comparison"
+                    elif "/queries/" in rel:
+                        ptype = "query"
+                    elif "/raw/" in rel:
+                        ptype = "raw"
+                    else:
+                        ptype = "other"
+
+                    if page_type and ptype != page_type:
+                        continue
+
+                    # snippet: 找到第一个 term 出现的位置，取前后字符
+                    snippet = ""
+                    if content:
+                        first_idx = -1
+                        first_term = ""
+                        for t in terms:
+                            idx = content.find(t)
+                            if idx >= 0 and (first_idx < 0 or idx < first_idx):
+                                first_idx = idx
+                                first_term = t
+                        if first_idx >= 0:
+                            start = max(0, first_idx - 30)
+                            end = min(len(content), first_idx + 60)
+                            snippet = ("..." if start > 0 else "") + \
+                                content[start:end].replace("\n", " ") + \
+                                ("..." if end < len(content) else "")
+                        else:
+                            snippet = content[:80].replace("\n", " ") + "..."
+
+                    # 相对路径
+                    try:
+                        rel_path = str(Path(filepath).relative_to(self.wiki_path))
+                    except ValueError:
+                        rel_path = filepath
+
+                    output.append({
+                        "filepath": rel_path,
+                        "title": title or Path(filepath).stem,
+                        "page_type": ptype,
+                        "snippet": snippet,
+                    })
+                    if len(output) >= limit:
+                        break
+                return output
+
+            # 旧 FTS5 schema（pages + page_meta）
+            seg_q = _segment(query)
+            fts_query = " OR ".join(seg_q.split())
             rows = conn.execute(
                 """
                 SELECT filepath, snippet(pages, 1, '>>>', '<<<', '...', 15) as snippet
@@ -140,12 +237,11 @@ class WikiSearch:
                 ORDER BY rank
                 LIMIT ?
                 """,
-                (fts_query, limit * 2),  # fetch extra for filtering
+                (fts_query, limit * 2),
             ).fetchall()
 
             output = []
             for filepath, snippet in rows:
-                # Get metadata from page_meta (real table, supports any query)
                 meta = conn.execute(
                     "SELECT title, page_type FROM page_meta WHERE filepath=?",
                     (filepath,),
@@ -155,17 +251,14 @@ class WikiSearch:
                 orig_title, ptype = meta
                 if page_type and ptype != page_type:
                     continue
-                output.append(
-                    {
-                        "filepath": filepath,
-                        "title": orig_title,
-                        "page_type": ptype,
-                        "snippet": snippet.replace(">>>", "").replace("<<<", ""),
-                    }
-                )
+                output.append({
+                    "filepath": filepath,
+                    "title": orig_title,
+                    "page_type": ptype,
+                    "snippet": snippet.replace(">>>", "").replace("<<<", ""),
+                })
                 if len(output) >= limit:
                     break
-
             return output
         except Exception as e:
             logger.error("Wiki search error: %s", e)
@@ -178,8 +271,12 @@ class WikiSearch:
     # ------------------------------------------------------------------
 
     def get_page(self, relative_path: str) -> Optional[str]:
-        """读取 wiki 页面全文（去除 frontmatter）"""
-        full_path = self.wiki_path / relative_path
+        """读取 wiki 页面全文（去除 frontmatter）。同时支持相对路径和绝对路径。"""
+        # 兼容绝对路径（rebuild_index.py 存的）
+        if Path(relative_path).is_absolute():
+            full_path = Path(relative_path)
+        else:
+            full_path = self.wiki_path / relative_path
         if not full_path.exists():
             logger.warning("Wiki page not found: %s", full_path)
             return None
@@ -201,16 +298,17 @@ class WikiSearch:
     def get_permit_review_context(
         self,
         permit_type: str,
-        max_chars: int = 6000,
+        max_chars: int = 30000,
     ) -> str:
         """
-        合规审查专用：按票种返回完整的审查法规上下文。
+        合规审查专用：按票种从新 wiki 库检索相关文档，拼接成 LLM 上下文。
 
-        检索策略（写在 purpose.md 中，此处硬编码执行）：
-          1. 读取该票种的实体页（对应法规章节原文）
-          2. 读取关联概念页（安全措施、审批要求等）
-          3. 读取通用要求章节
-          4. 总长度控制在 max_chars 以内
+        检索策略（适配新 wiki 库，无硬编码文件路径）：
+          1. 用 PERMIT_TYPE_KEYWORDS 里该票种的多组关键词分别 search
+          2. 去重合并结果
+          3. 优先保留 GB 30871 文档
+          4. 逐个 get_page 读全文，拼接成 context
+          5. 总长度控制在 max_chars 以内
 
         Args:
             permit_type: 'hot_work' | 'confined_space' | 'blind_plate'
@@ -219,36 +317,63 @@ class WikiSearch:
         Returns:
             拼接的法规上下文文本
         """
-        pages_config = PERMIT_TYPE_PAGES.get(permit_type)
-        if not pages_config:
-            logger.warning("Unknown permit_type: %s", permit_type)
-            # Fallback: search by keyword
-            return self._search_fallback(permit_type, max_chars)
+        queries = PERMIT_TYPE_KEYWORDS.get(permit_type)
+        if not queries:
+            logger.warning("Unknown permit_type: %s, falling back to generic search", permit_type)
+            queries = [f"{permit_type} 安全措施 审批"]
+
+        # 多组 query 去重收集 filepath
+        seen_paths = set()
+        results = []
+        for q in queries:
+            hits = self.search(q, limit=5)
+            for r in hits:
+                fp = r["filepath"]
+                if fp not in seen_paths:
+                    seen_paths.add(fp)
+                    results.append(r)
+
+        # 优先把 GB 30871 排到前面（最相关）
+        def priority(r):
+            fp = r.get("filepath", "")
+            title = r.get("title", "")
+            if "30871" in fp or "30871" in title:
+                return 0
+            if "特殊作业" in title or "动火" in title or "受限空间" in title or "盲板" in title:
+                return 1
+            return 2
+        results.sort(key=priority)
 
         sections = []
-
-        # 1. Entity page (regulation chapter)
-        entity_content = self.get_page(pages_config["entity"])
-        if entity_content:
-            sections.append(f"## 法规原文\n\n{entity_content}")
-
-        # 2. Concept pages (safety measures, approval requirements, etc.)
-        for concept_path in pages_config["concepts"]:
-            content = self.get_page(concept_path)
+        # 限制最多 3 个文档（每个文档截断到 8000 字符），避免单个大文档占满 context
+        MAX_DOCS = 3
+        PER_DOC_CHARS = 8000
+        for r in results[:MAX_DOCS]:
+            content = self.get_page(r["filepath"])
             if content:
-                title = Path(concept_path).stem
-                sections.append(f"## {title}\n\n{content}")
+                if len(content) > PER_DOC_CHARS:
+                    content = content[:PER_DOC_CHARS] + "\n\n[...文档已截断]"
+                title = r.get("title") or Path(r["filepath"]).stem
+                fp = r["filepath"]
+                sections.append(f"## {title}（{fp}）\n\n{content}")
 
-        # 3. General requirements
-        general_content = self.get_page(pages_config["general"])
-        if general_content:
-            sections.append(f"## 通用要求\n\n{general_content}")
+        if not sections:
+            logger.warning(
+                f"[PERMIT_REVIEW] permit_type={permit_type} 在新 wiki 库 0 条结果, "
+                f"queries={queries}, 索引库={self.db_path}"
+            )
+            return ""
 
-        # Combine and truncate
+        # 拼接 + 截断
         full_context = "\n\n---\n\n".join(sections)
-        if len(full_context) > max_chars:
+        truncated = len(full_context) > max_chars
+        if truncated:
             full_context = full_context[:max_chars] + "\n\n[...已截断]"
 
+        logger.info(
+            f"[PERMIT_REVIEW] permit_type={permit_type} 用 {len(queries)} 组 query 搜到 "
+            f"{len(sections)} 个文档, 总字符={len(full_context)}{'(已截断)' if truncated else ''}"
+        )
         return full_context
 
     def _search_fallback(self, permit_type: str, max_chars: int) -> str:

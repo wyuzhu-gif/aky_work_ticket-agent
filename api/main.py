@@ -16,14 +16,13 @@ from common.logger import get_logger
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from middleware.logging import LoggingMiddleware
-from config.config import settings
 from fastapi.staticfiles import StaticFiles
 from middleware.logging import LoggingMiddleware, setup_logging
+from config.config import settings
 from routers import issues
 from routers import review_external, files, rules, rule_documents, permits, chat
 from routers import sqlagent_admin
-from routers import dashboard
+from routers import dashboard, wiki_router
 
 # Set up logging configuration
 setup_logging()
@@ -76,6 +75,7 @@ app.include_router(permits.router)
 app.include_router(chat.router)
 app.include_router(sqlagent_admin.router)
 app.include_router(dashboard.router)
+app.include_router(wiki_router.router)
 
 
 # Health check endpoint

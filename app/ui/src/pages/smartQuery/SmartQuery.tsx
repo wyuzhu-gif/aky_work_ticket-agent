@@ -26,6 +26,9 @@ import {
   DeleteRegular,
   ChatRegular,
   NavigationRegular,
+  BookRegular,
+  ChevronDownRegular,
+  ChevronUpRegular,
 } from '@fluentui/react-icons'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -58,6 +61,14 @@ interface QueryData {
   sql: string
 }
 
+/** 知识引用：每个页面返回 filepath/title/snippet/content */
+interface WikiRef {
+  filepath: string
+  title: string
+  snippet: string
+  content?: string     // 展开时加载全文
+}
+
 interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
@@ -65,6 +76,7 @@ interface ChatMessage {
   thinkingSteps?: ThinkingStep[]
   queryData?: QueryData
   chartConfig?: Record<string, unknown>
+  wikiResults?: WikiRef[]
 }
 
 const useStyles = makeStyles({
@@ -342,6 +354,41 @@ function AnswerDisplay({ content }: { content: string }) {
   )
 }
 
+/** 知识引用折叠面板组件 */
+function KnowledgeReference({ results }: { results: WikiRef[] }) {
+  const [expanded, setExpanded] = useState(false)
+  const classes = useStyles()
+
+  return (
+    <div style={{ marginTop: '8px', border: `1px solid ${tokens.colorNeutralStroke2}`, borderRadius: '8px', backgroundColor: tokens.colorNeutralBackground3 }}>
+      <div
+        onClick={() => setExpanded(!expanded)}
+        style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 12px', cursor: 'pointer', fontSize: '12px', fontWeight: 600, color: tokens.colorBrandForeground1, borderBottom: expanded ? `1px solid ${tokens.colorNeutralStroke3}` : 'none' }}
+      >
+        {expanded ? <ChevronUpRegular style={{ fontSize: 14 }} /> : <ChevronDownRegular style={{ fontSize: 14 }} />}
+        <BookRegular style={{ fontSize: 14 }} />
+        <span>安全知识引用（{results.length}条）</span>
+      </div>
+      {expanded && (
+        <div style={{ maxHeight: '50vh', overflowY: 'auto', padding: '8px 12px' }}>
+          {results.map((ref, idx) => (
+            <div key={idx} style={{ marginBottom: '8px', paddingBottom: idx < results.length - 1 ? '8px' : 0, borderBottom: idx < results.length - 1 ? `1px solid ${tokens.colorNeutralStroke3}` : 'none' }}>
+              <div style={{ fontSize: '12px', fontWeight: 600, marginBottom: '4px', color: tokens.colorNeutralForeground1 }}>{ref.title || ref.filepath}</div>
+              {ref.content ? (
+                <div style={{ fontSize: '11px', lineHeight: 1.5, opacity: 0.85, whiteSpace: 'pre-wrap' }}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{ref.content}</ReactMarkdown>
+                </div>
+              ) : (
+                <div style={{ fontSize: '11px', lineHeight: 1.5, opacity: 0.85 }}>{ref.snippet || ''}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 /** 把后端 SessionMessage 转为前端 ChatMessage */
 function sessionMessageToChat(sm: SessionMessage): ChatMessage {
   return {
@@ -389,6 +436,9 @@ export default function SmartQuery() {
   const scrollToBottom = useCallback(() => {
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
   }, [])
+
+  // 追踪最后一条用户问题，用于 wiki 检索
+  const lastQuery = useRef<string>('')
 
   useEffect(() => { scrollToBottom() }, [messages, scrollToBottom])
 
@@ -449,6 +499,7 @@ export default function SmartQuery() {
   const handleSend = useCallback(async () => {
     const q = input.trim()
     if (!q || streaming) return
+    lastQuery.current = q  // 记录用户问题，供 wiki 检索使用
     setInput('')
     setError(null)
     setStreaming(true)
@@ -569,6 +620,28 @@ export default function SmartQuery() {
             return next
           })
         } catch { /* ignore */ }
+      }
+
+      // streaming 完成，自动查询知识引用
+      const query = lastQuery.current
+      if (query) {
+        try {
+          const res = await fetch(`/api/wiki?q=${encodeURIComponent(query)}`)
+          const json = await res.json()
+          if (json.results?.length > 0) {
+            setMessages(prev => {
+              const next = [...prev]
+              const last = next[next.length - 1]
+              if (last.role === 'assistant') {
+                last.wikiResults = json.results as WikiRef[]
+                next[next.length - 1] = last
+              }
+              return next
+            })
+          }
+        } catch (eWiki) {
+          console.warn('Wiki reference fetch failed:', eWiki)
+        }
       }
 
       // 刷新会话列表（标题可能已更新）
@@ -719,6 +792,11 @@ export default function SmartQuery() {
 
                 {msg.role === 'assistant' && msg.content && (
                   <AnswerDisplay content={msg.content} />
+                )}
+
+                {/* knowledge refs: 仅在非 streaming、有结果时展示 */}
+                {msg.role === 'assistant' && !msg.isStreaming && msg.wikiResults && msg.wikiResults.length > 0 && (
+                  <KnowledgeReference results={msg.wikiResults} />
                 )}
 
                 {msg.role === 'assistant' && msg.isStreaming && !msg.content && !msg.queryData && !msg.chartConfig && msg.thinkingSteps && msg.thinkingSteps.length > 0 && (

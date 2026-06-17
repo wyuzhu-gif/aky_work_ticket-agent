@@ -89,7 +89,17 @@ def save_db_config(frontend_data: dict) -> dict:
     for frontend_key, settings_key in DB_FIELD_MAP.items():
         if frontend_key in frontend_data:
             kv[settings_key] = frontend_data[frontend_key]
-    set_many(kv)
+    if not kv:
+        return kv
+    conn = _get_conn()
+    applied = []
+    try:
+        for k, v in kv.items():
+            conn.execute("INSERT INTO sq_config (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", (k, json.dumps(v)))
+            applied.append((k, v))
+        conn.commit()
+    finally:
+        conn.close()
     return kv
 
 
@@ -119,7 +129,17 @@ def save_llm_config(frontend_data: dict) -> dict:
             if frontend_key == "api_key" and (val == "******" or not val):
                 continue
             kv[settings_key] = val
-    set_many(kv)
+    if not kv:
+        return kv
+    conn = _get_conn()
+    applied = []
+    try:
+        for k, v in kv.items():
+            conn.execute("INSERT INTO sq_config (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", (k, json.dumps(v)))
+            applied.append((k, v))
+        conn.commit()
+    finally:
+        conn.close()
     return kv
 
 

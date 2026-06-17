@@ -306,6 +306,7 @@ def generate_chat_stream(
                         from .config import OUTPUT_FORMAT_PROMPT
                         from langchain_core.messages import SystemMessage, HumanMessage
                         from common.llm_utils import build_llm
+                        from services.wiki_search import get_wiki_search
 
                         # 推 step: 开始生成报告
                         # ⏳ 用户感知: execute_sql 数据已就绪 -> 进入报告生成阶段
@@ -323,6 +324,46 @@ def generate_chat_stream(
                         # 用 build_llm 直接调 (不走 agent, 不需要 tools, 只要 content)
                         report_llm = build_llm(max_tokens=2000)  # 报告可能长, 加大
 
+                        # ⭐ 在报告生成前注入 wiki 法规依据（GB 30871 / AQ 等）
+                        # 这样 LLM 写报告时能直接引用具体条款, 给出专业建议
+                        wiki_context_block = ""
+                        try:
+                            wiki = get_wiki_search()
+                            wiki_hits = wiki.search(question, limit=3)
+                            if wiki_hits:
+                                # 按 title 去重（同一文档可能 entity/raw 各一份）
+                                seen_titles = set()
+                                deduped = []
+                                for h in wiki_hits:
+                                    title_key = h.get("title", "").strip()
+                                    if title_key and title_key not in seen_titles:
+                                        seen_titles.add(title_key)
+                                        deduped.append(h)
+
+                                wiki_parts = []
+                                for h in deduped:
+                                    content = wiki.get_page(h["filepath"])
+                                    if content:
+                                        # 截断单文档到 1500 字符, 避免塞爆 prompt
+                                        if len(content) > 1500:
+                                            content = content[:1500] + "\n[...截断]"
+                                        wiki_parts.append(
+                                            f"### {h.get('title', h['filepath'])}\n"
+                                            f"来源: {h['filepath']}\n\n"
+                                            f"{content}"
+                                        )
+                                wiki_context_block = (
+                                    "\n\n【相关法规/标准依据】(写报告时必须引用具体条款, 并据此提出建议)\n"
+                                    + "\n\n---\n\n".join(wiki_parts)
+                                )
+                                logger.info(
+                                    f"[WIKI_RAG] question={question!r} → 注入 {len(deduped)} 个文档到报告 prompt"
+                                )
+                            else:
+                                logger.info(f"[WIKI_RAG] question={question!r} → 0 条 wiki 结果, 不注入")
+                        except Exception as e_wiki:
+                            logger.warning(f"[WIKI_RAG] 注入失败, 不影响主流程: {e_wiki}")
+
                         # 准备 messages: 系统 + 简化历史 + 输出格式 prompt
                         report_messages = [
                             SystemMessage(content="你是数据分析员, 负责根据 SQL 查询结果生成专业报告。"),
@@ -331,7 +372,8 @@ def generate_chat_stream(
                                 f"SQL 查询结果 ({len(query_data)} 行):\n"
                                 f"{json.dumps(query_data, ensure_ascii=False, default=str)[:2000]}\n\n"
                                 f"SQL 语句: {sql_query or 'N/A'}\n\n"
-                                f"{OUTPUT_FORMAT_PROMPT}\n\n"
+                                f"{OUTPUT_FORMAT_PROMPT}"
+                                f"{wiki_context_block}\n\n"  # ⭐ 注入法规依据
                                 f"**重要提醒**: 以上查询结果是真实数据, 请严格基于这些数据写报告, "
                                 f"禁止编造数据, 禁止假设, 禁止使用'估计/大约'等模糊措辞。"
                             )),
