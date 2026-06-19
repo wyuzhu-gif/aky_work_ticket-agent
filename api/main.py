@@ -106,7 +106,7 @@ if settings.serve_static:
             from fastapi import HTTPException
             raise HTTPException(status_code=404)
 
-        for route in ["/smart-query", "/ticket-review", "/ticket-review-v2", "/agent-admin", "/dashboard", "/settings"]:
+        for route in ["/smart-query", "/ticket-review", "/agent-admin", "/dashboard", "/settings"]:
             app.get(route, include_in_schema=False)(spa_fallback_handler)
 
         app.mount("/", StaticFiles(directory=static_dir, html=True))

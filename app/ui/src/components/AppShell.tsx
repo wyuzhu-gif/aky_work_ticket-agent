@@ -270,8 +270,7 @@ const NAV_SECTIONS = [
     title: '作业票管理',
     icon: <ClipboardTaskRegular />,
     items: [
-      { to: '/ticket-review', label: '作业票审查 v1', icon: <DocumentRegular /> },
-      { to: '/ticket-review-v2', label: '作业票审查 v2', icon: <DocumentRegular /> },
+      { to: '/ticket-review', label: '作业票审查', icon: <DocumentRegular /> },
     ],
   },
   {
@@ -292,8 +291,7 @@ const NAV_SECTIONS = [
 
 /** 路径 → 页面标题 映射 */
 const PAGE_TITLES: Record<string, string> = {
-  '/ticket-review': '作业票审查 v1',
-  '/ticket-review-v2': '作业票审查 v2',
+  '/ticket-review': '作业票审查',
   '/smart-query': '智能问数',
   '/agent-admin': '智能体配置',
 }
@@ -301,7 +299,6 @@ const PAGE_TITLES: Record<string, string> = {
 /** 路径 → 所属分区 映射 */
 const PAGE_BREADCRUMBS: Record<string, string> = {
   '/ticket-review': '作业票管理',
-  '/ticket-review-v2': '作业票管理',
   '/smart-query': '数据分析',
   '/agent-admin': '系统管理',
 }

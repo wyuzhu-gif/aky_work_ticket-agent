@@ -136,10 +136,8 @@ class PermitUploadResponse(BaseModel):
     permit: HotWorkPermit
     gas_analyses: list[HotWorkGasAnalysis] = []
     safety_checks: list[ExtractedSafetyCheck] = []
-    raw_md: str = ""
-    # 2026-06-17 新增: 从 OCR 文本直接 regex 提取的"标签: 值"对
-    # 不受 schema 限制, 识别到什么就有什么 (e.g. {"风险因素": "火灾,中毒", "作业票种类": "受限空间"})
-    raw_fields: dict[str, str] = {}
+    raw_md: str | None = None  # PDF 路径: MinerU 原文; 图片路径: None
+    warnings: list[dict] = []  # permit_type mismatch 等 warning 给前端展示
 
 
 class ComplianceReviewRequest(BaseModel):

@@ -87,77 +87,6 @@ def _load_gb_standard() -> str:
     return _GB_STANDARD_TEXT
 
 
-def _extract_raw_fields_from_md(md_text: str) -> dict[str, str]:
-    """
-    从 OCR 出来的 markdown 文本里 regex 抓"标签: 值"对, 不依赖任何 schema.
-    用于 v2 票审查前端"识别到什么显示什么".
-
-    模式 1: 表格行 "| 标签 | 值 |" (MinerU 输出常见)
-    模式 2: 行内 "标签: 值" / "标签：值" (中文冒号)
-    模式 3: 行内 "标签 值" (空格分隔, 只在表格里)
-
-    去除:
-    - 太短的标签 (单字符, e.g. "| a | b |")
-    - 太长的值 (整段文字, 应该是说明不是字段值)
-    - 重复 key (保留先出现的)
-    - 章节标题 (# 开头)
-    """
-    if not md_text or len(md_text) < 10:
-        return {}
-
-    fields: dict[str, str] = {}
-
-    # 模式 1: markdown 表格 "| 标签 | 值 |"
-    # 例: "| 作业申请单位 | 电气工段 |"
-    for line in md_text.splitlines():
-        line = line.strip()
-        if not line.startswith("|"):
-            continue
-        cells = [c.strip() for c in line.split("|") if c.strip()]
-        if len(cells) < 2:
-            continue
-        # 跳过表头分隔行 (|---|---|)
-        if all(set(c) <= set("-: ") for c in cells):
-            continue
-        key, value = cells[0], cells[1]
-        # 过滤太短 / 太长的
-        if len(key) < 2 or len(key) > 30:
-            continue
-        if len(value) < 1 or len(value) > 500:
-            continue
-        # 章节标题跳过
-        if key.startswith("#"):
-            continue
-        if key not in fields:
-            fields[key] = value
-
-    # 模式 2: 行内 "标签: 值" / "标签：值"
-    # 例: "作业申请单位: 电气工段" / "编号：SZ00260401"
-    for line in md_text.splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or line.startswith("|"):
-            continue
-        # 优先匹配中文冒号
-        for sep in ["：", ":"]:
-            if sep in line:
-                key, _, value = line.partition(sep)
-                key = key.strip()
-                value = value.strip()
-                # 过滤
-                if len(key) < 2 or len(key) > 30:
-                    break
-                if len(value) < 1 or len(value) > 200:
-                    break
-                # 跳过明显是标题的 (key 含 "目录" "前言" 等)
-                if any(stop in key for stop in ["目录", "前言", "附 录", "附录"]):
-                    break
-                if key not in fields:
-                    fields[key] = value
-                break  # 一个 line 只取第一个
-
-    return fields
-
-
 class PermitsService:
     def __init__(self, repo: PermitsRepository):
         self._repo = repo
@@ -643,7 +572,6 @@ class PermitsService:
                 "gas_analyses": gas_data,
                 "safety_checks": safety_data,
                 "raw_md": None,
-                "raw_fields": {},  # 图片路径无 OCR 文本, 不提取 raw_fields
                 "warnings": warnings,
             }
 
@@ -697,9 +625,6 @@ class PermitsService:
                 "gas_analyses": gas_data,
                 "safety_checks": safety_data,
                 "raw_md": md_text,
-                # 2026-06-17 新增: 从 OCR markdown 文本 regex 提取所有"标签: 值"对
-                # 不受 LLM schema 限制, 识别到什么就返回什么
-                "raw_fields": _extract_raw_fields_from_md(md_text),
             }
         finally:
             Path(tmp_path).unlink(missing_ok=True)

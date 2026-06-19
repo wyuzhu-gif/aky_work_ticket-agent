@@ -722,6 +722,7 @@ export default function TicketReview() {
 
   const handleLoadLocalDraft = useCallback((draft: typeof drafts[0]) => {
     setExtractedPermitType(draft.permit_type)
+    setPermitType(draft.permit_type)  // 修 bug: 渲染用的是 permitType, 不是 extractedPermitType
     setExtracted({ permit: draft.permit, gas_analyses: draft.gas_analyses || [], safety_checks: draft.safety_checks || [], raw_md: '' } as PermitUploadResponse)
     setPermit(draft.permit)
     setGasAnalyses(draft.gas_analyses || [])
@@ -962,7 +963,8 @@ export default function TicketReview() {
                 <Table size="small" style={{ tableLayout: 'fixed', width: '100%' }}>
                   <TableHeader>
                     <TableRow>
-                      <TableHeaderCell style={{ width: '70%' }}>措施描述</TableHeaderCell>
+                      <TableHeaderCell style={{ width: '6%' }}>序号</TableHeaderCell>
+                      <TableHeaderCell style={{ width: '64%' }}>措施描述</TableHeaderCell>
                       <TableHeaderCell style={{ width: '12%' }}>是否涉及</TableHeaderCell>
                       <TableHeaderCell style={{ width: '18%' }}>确认人</TableHeaderCell>
                     </TableRow>
@@ -970,6 +972,9 @@ export default function TicketReview() {
                   <TableBody>
                     {safetyChecks.map((sc, i) => (
                       <TableRow key={i}>
+                        <TableCell style={{ textAlign: 'center', color: tokens.colorNeutralForeground3, fontWeight: 600 }}>
+                          {i + 1}
+                        </TableCell>
                         <TableCell>
                           <Input size="small" value={sc.description} onChange={(_, d) => updateSafetyCheckDesc(i, d.value)} style={{ width: '100%' }} />
                         </TableCell>
