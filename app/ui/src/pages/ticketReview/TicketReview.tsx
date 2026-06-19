@@ -58,6 +58,9 @@ import {
   getPermit,
   deletePermit,
   complianceReview,
+  hermesReview,
+  hermesWarmup,
+  hermesStatus,
 } from '../../services/permitsApi'
 
 // ──────────────── Styles ────────────────
@@ -141,7 +144,10 @@ const useStyles = makeStyles({
     transitionProperty: 'border-color, background-color',
     transitionDuration: '150ms',
     '&:hover': {
-      borderColor: tokens.colorBrandStroke1,
+      borderTopColor: tokens.colorBrandStroke1,
+      borderRightColor: tokens.colorBrandStroke1,
+      borderBottomColor: tokens.colorBrandStroke1,
+      borderLeftColor: tokens.colorBrandStroke1,
       backgroundColor: tokens.colorBrandBackground2,
     },
   },
@@ -160,7 +166,10 @@ const useStyles = makeStyles({
 
   // Form styles
   uploadZone: {
-    border: `2px dashed ${tokens.colorNeutralStroke2}`,
+    borderTop: `2px dashed ${tokens.colorNeutralStroke2}`,
+    borderRight: `2px dashed ${tokens.colorNeutralStroke2}`,
+    borderBottom: `2px dashed ${tokens.colorNeutralStroke2}`,
+    borderLeft: `2px dashed ${tokens.colorNeutralStroke2}`,
     borderRadius: '12px',
     padding: '40px',
     textAlign: 'center',
@@ -168,7 +177,10 @@ const useStyles = makeStyles({
     transitionProperty: 'border-color, background-color',
     transitionDuration: '200ms',
     '&:hover': {
-      borderColor: tokens.colorBrandStroke1,
+      borderTopColor: tokens.colorBrandStroke1,
+      borderRightColor: tokens.colorBrandStroke1,
+      borderBottomColor: tokens.colorBrandStroke1,
+      borderLeftColor: tokens.colorBrandStroke1,
       backgroundColor: tokens.colorBrandBackground2,
     },
   },
@@ -177,13 +189,19 @@ const useStyles = makeStyles({
 
   formSection: {
     padding: '20px',
-    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
+    borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
+    borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
+    borderLeft: `1px solid ${tokens.colorNeutralStroke2}`,
     borderRadius: '12px',
     transitionProperty: 'border-color, box-shadow',
     transitionDuration: '300ms',
   },
   formSectionHighlight: {
-    borderColor: tokens.colorBrandStroke1,
+    borderTopColor: tokens.colorBrandStroke1,
+    borderRightColor: tokens.colorBrandStroke1,
+    borderBottomColor: tokens.colorBrandStroke1,
+    borderLeftColor: tokens.colorBrandStroke1,
     boxShadow: `0 0 0 2px ${tokens.colorBrandBackground2}`,
   },
   sectionTitle: {
@@ -753,6 +771,37 @@ export default function TicketReview() {
     }
   }, [permit, gasAnalyses, safetyChecks])
 
+  // Hermes AI 审查 - 调 hermes subprocess + llm-wiki
+  const [hermesReviewing, setHermesReviewing] = useState(false)
+  const [hermesElapsed, setHermesElapsed] = useState<number | null>(null)
+  const handleHermesReview = useCallback(async () => {
+    setHermesReviewing(true)
+    setHermesElapsed(null)
+    setReviewResults([])
+    try {
+      // 预热 (后台启动 hermes, 让审查时更快)
+      hermesWarmup().catch(() => { /* 忽略预热失败, 审查时会再试 */ })
+      // 审查
+      const resp = await hermesReview({
+        permit_type: permitType,
+        permit,
+        gas_analyses: gasAnalyses,
+        safety_checks: safetyChecks,
+      })
+      setHermesElapsed(resp.elapsed || 0)
+      if (resp.ok && resp.results) {
+        setReviewResults(resp.results)
+        setReviewFilter(null)
+      } else {
+        setExtractError(`Hermes 审查失败: ${resp.error || '未知错误'}`)
+      }
+    } catch (e: any) {
+      setExtractError(e.message || 'Hermes 审查失败')
+    } finally {
+      setHermesReviewing(false)
+    }
+  }, [permit, gasAnalyses, safetyChecks, permitType])
+
   // Click issue to scroll to field
   const handleIssueClick = useCallback((fieldKey: string) => {
     const sectionId = FIELD_SECTION_MAP[fieldKey]
@@ -837,8 +886,13 @@ export default function TicketReview() {
             accept=".pdf,.jpg,.jpeg,.png"
             style={{ display: 'none' }}
             onChange={e => {
-              handleFileSelect(e.target.files)
+              // 关键: 同步复制 FileList (React 可能复用 input 导致 e.target.files 变 null)
+              const files = e.target.files ? Array.from(e.target.files) : null
+              const fileInput = e.target
+              handleFileSelect(files ? (files as any) : null)
               setUploadDialogOpen(false)
+              // 重置 input, 让同一文件能再次选
+              setTimeout(() => { if (fileInput) fileInput.value = '' }, 0)
             }}
           />
           <div className={classes.uploadZone} onClick={() => setUploadDialogOpen(true)}>
@@ -846,6 +900,9 @@ export default function TicketReview() {
               <>
                 <ProgressBar />
                 <Text className={classes.uploadText}>正在解析文档，请稍候...</Text>
+                <Text className={classes.uploadText} style={{ fontSize: '12px', marginTop: 8, color: tokens.colorNeutralForeground4 }}>
+                  通常需要 30-60 秒 (PDF 解析 + LLM 字段提取)
+                </Text>
               </>
             ) : (
               <>
@@ -893,7 +950,11 @@ export default function TicketReview() {
                   <Button appearance="primary" onClick={() => {
                     setPermitType(pendingPermitType)
                     setUploadDialogOpen(false)
-                    fileInputRef.current?.click()
+                    // 关键: 延迟 100ms click file input, 让 dialog 先完全关闭
+                    // 否则浏览器会忽略 file picker (modal 互斥)
+                    setTimeout(() => {
+                      fileInputRef.current?.click()
+                    }, 100)
                   }}>
                     选择文件
                   </Button>
@@ -1019,9 +1080,14 @@ export default function TicketReview() {
                 {draftSaved ? <CheckmarkRegular style={{ marginRight: 4 }} /> : <ArrowRedoRegular style={{ marginRight: 4 }} />}
                 {draftSaved ? '已暂存 ✓' : '暂存'}
               </Button>
-              <Button appearance="secondary" onClick={handleComplianceReview} disabled={reviewing}>
-                <ShieldCheckmarkRegular style={{ marginRight: 4 }} />
-                {reviewing ? '审查中...' : '合规性审查'}
+              <Button
+                appearance="secondary"
+                onClick={handleHermesReview}
+                disabled={hermesReviewing || reviewing}
+                title="调 hermes subprocess + llm-wiki 查 GB 30871 等标准, 深度审查 (约 30-60s)"
+              >
+                <span style={{ marginRight: 4 }}>🤖</span>
+                {hermesReviewing ? 'AI 审查中...' : 'AI 合规性审查'}
               </Button>
               <Button appearance="primary" onClick={() => { handleSaveDraft(); setTimeout(() => { setExtracted(null); setPermit({} as Permit); setGasAnalyses([]); setSafetyChecks([]); setReviewResults([]); setExtractError(null); }, 500); }} disabled={saving}>
                 <SaveRegular style={{ marginRight: 4 }} />
@@ -1033,7 +1099,7 @@ export default function TicketReview() {
           {/* Right: Review Panel */}
           {hasReview && (
             <div className={classes.reviewPanel} ref={reviewPanelRef}>
-              <Text className={classes.reviewHeader}>合规性审查结果</Text>
+              <Text className={classes.reviewHeader}>AI 合规性审查结果</Text>
               <div className={classes.reviewSummary}>
                 {reviewSummary.pass != null && (
                   <Badge

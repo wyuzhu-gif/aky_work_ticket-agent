@@ -306,80 +306,81 @@ def generate_chat_stream(
                         from .config import OUTPUT_FORMAT_PROMPT
                         from langchain_core.messages import SystemMessage, HumanMessage
                         from common.llm_utils import build_llm
-                        from services.wiki_search import get_wiki_search
+                        from services.hermes_singleton import call_hermes_sync
 
                         # 推 step: 开始生成报告
                         # ⏳ 用户感知: execute_sql 数据已就绪 -> 进入报告生成阶段
                         #    此步骤会调第二次 LLM (5-15 秒), 必须给前端明确的"正在生成"状态, 避免用户以为卡死
                         step_data = {
                             'type': 'step',
-                            'action': '⏳ 分析结果生成中, 请稍候...',
+                            'action': '⏳ AI 报告生成中, 请稍候...',
                             'tool_name': 'generate_report',
                             'status': 'running',
-                            'description': '已获取查询数据, 正在生成数据分析报告 + 可视化图表, 预计 5-15 秒',
+                            'description': '已获取查询数据, 调 hermes + llm-wiki 查 GB 30871 等标准, 生成专业分析报告 (10-30 秒)',
                         }
                         yield f"data: {json.dumps(step_data, ensure_ascii=False)}\n\n"
 
-                        # 调第二次 LLM: system + history (filtered) + OUTPUT_FORMAT_PROMPT
-                        # 用 build_llm 直接调 (不走 agent, 不需要 tools, 只要 content)
-                        report_llm = build_llm(max_tokens=2000)  # 报告可能长, 加大
+                        # ⭐ 调 hermes subprocess + llm-wiki, 让 hermes 查 GB 30871 / AQ 等标准
+                        # 然后基于 SQL 结果 + wiki 内容生成专业分析 + 法规依据 + 改进建议
+                        #
+                        # prompt 设计: 喂 SQL 结果 + 用户问题, 让 hermes 自己决定查哪些 wiki 页
+                        # hermes 会调 llm-wiki skill, 读完整 .md, 给专业建议
+                        wiki_prompt = f"""你是安全管理专家. 用户问了关于作业票数据库的问题, SQL 查询已返回真实数据.
 
-                        # ⭐ 在报告生成前注入 wiki 法规依据（GB 30871 / AQ 等）
-                        # 这样 LLM 写报告时能直接引用具体条款, 给出专业建议
-                        wiki_context_block = ""
+用户问题: {question}
+
+SQL 查询结果 (前 {min(len(query_data), 20)} 行 / 共 {len(query_data)} 行):
+{json.dumps(query_data[:20], ensure_ascii=False, default=str)}
+
+SQL 语句: {sql_query or 'N/A'}
+
+任务:
+1. 用 llm-wiki 查 GB 30871-2022 / AQ 3064 / 相关行业标准 (如果问题涉及作业安全)
+2. 严格基于 SQL 结果分析 (禁止编造, 禁止假设, 禁止"估计/大约")
+3. 给出:
+   a. 数据洞察 (关键的发现/异常/趋势)
+   b. 法规依据 (引用的具体条款, GB 30871 第 X.X 条)
+   c. 改进建议 (具体可执行的措施, 引用法规)
+4. 输出 3 段 markdown 报告 (不要 JSON, 写人话):
+   ### 数据洞察
+   ### 法规依据
+   ### 改进建议
+
+只输出 markdown 报告, 不要 JSON 代码块, 不要寒暄."""
+
+                        wiki_enhancement = ""
                         try:
-                            wiki = get_wiki_search()
-                            wiki_hits = wiki.search(question, limit=3)
-                            if wiki_hits:
-                                # 按 title 去重（同一文档可能 entity/raw 各一份）
-                                seen_titles = set()
-                                deduped = []
-                                for h in wiki_hits:
-                                    title_key = h.get("title", "").strip()
-                                    if title_key and title_key not in seen_titles:
-                                        seen_titles.add(title_key)
-                                        deduped.append(h)
-
-                                wiki_parts = []
-                                for h in deduped:
-                                    content = wiki.get_page(h["filepath"])
-                                    if content:
-                                        # 截断单文档到 1500 字符, 避免塞爆 prompt
-                                        if len(content) > 1500:
-                                            content = content[:1500] + "\n[...截断]"
-                                        wiki_parts.append(
-                                            f"### {h.get('title', h['filepath'])}\n"
-                                            f"来源: {h['filepath']}\n\n"
-                                            f"{content}"
-                                        )
-                                wiki_context_block = (
-                                    "\n\n【相关法规/标准依据】(写报告时必须引用具体条款, 并据此提出建议)\n"
-                                    + "\n\n---\n\n".join(wiki_parts)
-                                )
-                                logger.info(
-                                    f"[WIKI_RAG] question={question!r} → 注入 {len(deduped)} 个文档到报告 prompt"
-                                )
-                            else:
-                                logger.info(f"[WIKI_RAG] question={question!r} → 0 条 wiki 结果, 不注入")
+                            t0 = time.time()
+                            wiki_enhancement = call_hermes_sync(wiki_prompt, timeout=120)
+                            logger.info(f"[Hermes Wiki] {len(wiki_enhancement)} 字符, 耗时 {time.time()-t0:.1f}s")
                         except Exception as e_wiki:
-                            logger.warning(f"[WIKI_RAG] 注入失败, 不影响主流程: {e_wiki}")
+                            logger.warning(f"[Hermes Wiki] 失败, 降级到基础报告: {e_wiki}")
+                            wiki_enhancement = ""
 
-                        # 准备 messages: 系统 + 简化历史 + 输出格式 prompt
+                        # 调第二次 LLM: 用 wiki_enhancement 作为上下文, 让 qwen3.6 合成最终报告
+                        report_llm = build_llm(max_tokens=3000)
+
                         report_messages = [
-                            SystemMessage(content="你是数据分析员, 负责根据 SQL 查询结果生成专业报告。"),
+                            SystemMessage(content=(
+                                "你是数据分析员. "
+                                "严格基于 SQL 结果 + hermes 提供的法规依据, 生成专业报告. "
+                                "禁止编造数据, 禁止假设, 禁止'估计/大约'等模糊措辞."
+                            )),
                             HumanMessage(content=(
                                 f"用户问题: {question}\n\n"
-                                f"SQL 查询结果 ({len(query_data)} 行):\n"
-                                f"{json.dumps(query_data, ensure_ascii=False, default=str)[:2000]}\n\n"
+                                f"SQL 查询结果 ({len(query_data)} 行, 前 20 行):\n"
+                                f"{json.dumps(query_data[:20], ensure_ascii=False, default=str)[:2000]}\n\n"
                                 f"SQL 语句: {sql_query or 'N/A'}\n\n"
-                                f"{OUTPUT_FORMAT_PROMPT}"
-                                f"{wiki_context_block}\n\n"  # ⭐ 注入法规依据
-                                f"**重要提醒**: 以上查询结果是真实数据, 请严格基于这些数据写报告, "
-                                f"禁止编造数据, 禁止假设, 禁止使用'估计/大约'等模糊措辞。"
+                                f"---\n\n"
+                                f"## hermes 通过 llm-wiki 查到的专业分析 + 法规依据\n\n"
+                                f"{wiki_enhancement if wiki_enhancement else '(hermes 调用失败或无结果, 仅基于 SQL 数据分析)'}\n\n"
+                                f"---\n\n"
+                                f"{OUTPUT_FORMAT_PROMPT}\n\n"
+                                f"**重要**: 严格基于 SQL 结果 + hermes 提供的法规依据, 写报告."
                             )),
                         ]
 
-                        logger.info(f"[Report Gen] Calling LLM with OUTPUT_FORMAT_PROMPT ({len(OUTPUT_FORMAT_PROMPT)} chars)")
+                        logger.info(f"[Report Gen] Calling LLM with hermes-enhanced context ({len(wiki_enhancement)} chars from hermes)")
                         t0 = time.time()
                         report_resp = report_llm.invoke(report_messages)
                         logger.info(f"[Report Gen] LLM response in {time.time()-t0:.1f}s, content_len={len(report_resp.content)}")

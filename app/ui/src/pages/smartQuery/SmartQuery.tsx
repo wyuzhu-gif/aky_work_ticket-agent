@@ -32,8 +32,9 @@ import {
 } from '@fluentui/react-icons'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip as ChartTooltip, Legend } from 'chart.js'
+import { Chart as ChartJS, CategoryScale, LinearScale, TimeScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip as ChartTooltip, Legend } from 'chart.js'
 import { Bar, Line, Pie, Scatter } from 'react-chartjs-2'
+import 'chartjs-adapter-date-fns'  // TimeScale 需要日期适配器
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import {
   listSessions,
@@ -44,7 +45,7 @@ import {
   type SessionMessage,
 } from '../../services/sessionApi'
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, ChartTooltip, Legend, ChartDataLabels)
+ChartJS.register(CategoryScale, LinearScale, TimeScale, BarElement, LineElement, PointElement, ArcElement, Title, ChartTooltip, Legend, ChartDataLabels)
 
 interface ThinkingStep {
   action: string
@@ -332,12 +333,12 @@ function AnswerDisplay({ content }: { content: string }) {
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
-            h2: ({ children }) => <h2 style={{ fontSize: 14, fontWeight: 600, color: tokens.colorBrandForeground1, marginTop: 12, marginBottom: 8 }}>{children}</h2>,
-            h3: ({ children }) => <h3 style={{ fontSize: 13, fontWeight: 600, marginTop: 8, marginBottom: 4 }}>{children}</h3>,
-            p: ({ children }) => <p style={{ fontSize: 13, lineHeight: 1.6, marginBottom: 8 }}>{children}</p>,
-            ul: ({ children }) => <ul style={{ fontSize: 13, marginLeft: 16, marginBottom: 8, listStyleType: 'disc' }}>{children}</ul>,
-            ol: ({ children }) => <ol style={{ fontSize: 13, marginLeft: 16, marginBottom: 8 }}>{children}</ol>,
-            li: ({ children }) => <li style={{ marginBottom: 4 }}>{children}</li>,
+            h2: ({ children }) => <h2 style={{ fontSize: 14, fontWeight: 600, color: tokens.colorBrandForeground1, marginTop: 8, marginBottom: 4 }}>{children}</h2>,
+            h3: ({ children }) => <h3 style={{ fontSize: 13, fontWeight: 600, marginTop: 6, marginBottom: 2 }}>{children}</h3>,
+            p: ({ children }) => <p style={{ fontSize: 13, lineHeight: 1.5, marginTop: 0, marginBottom: 4 }}>{children}</p>,
+            ul: ({ children }) => <ul style={{ fontSize: 13, marginLeft: 16, marginTop: 0, marginBottom: 4, listStyleType: 'disc', paddingLeft: 0 }}>{children}</ul>,
+            ol: ({ children }) => <ol style={{ fontSize: 13, marginLeft: 16, marginTop: 0, marginBottom: 4, paddingLeft: 0 }}>{children}</ol>,
+            li: ({ children }) => <li style={{ marginBottom: 2, lineHeight: 1.5 }}>{children}</li>,
             strong: ({ children }) => <strong style={{ color: tokens.colorBrandForeground1, fontWeight: 600 }}>{children}</strong>,
             code: ({ children, className }) => {
               const inline = !className
@@ -345,6 +346,7 @@ function AnswerDisplay({ content }: { content: string }) {
                 ? <code style={{ backgroundColor: tokens.colorNeutralBackground3, padding: '1px 4px', borderRadius: 3, fontSize: 12 }}>{children}</code>
                 : <code style={{ display: 'block', backgroundColor: tokens.colorNeutralBackground3, padding: 8, borderRadius: 4, fontSize: 12, overflowX: 'auto', margin: '8px 0' }}>{children}</code>
             },
+            br: () => <br style={{ lineHeight: 0.5 }} />,
           }}
         >
           {content}

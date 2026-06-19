@@ -69,6 +69,43 @@ export async function complianceReview(data: {
   return parse<ComplianceReviewItem[]>(resp)
 }
 
+/** Hermes AI 审查 (调 hermes subprocess + llm-wiki) */
+export interface HermesReviewResponse {
+  ok: boolean
+  results?: ComplianceReviewItem[]
+  parse_method?: string
+  elapsed?: number
+  raw_output?: string
+  raw_preview?: string
+  error?: string
+}
+
+export async function hermesReview(data: {
+  permit_type: string
+  permit: Record<string, any>
+  gas_analyses?: any[]
+  safety_checks?: any[]
+}): Promise<HermesReviewResponse> {
+  const resp = await fetch(`${BASE}/hermes/review`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  return parse<HermesReviewResponse>(resp)
+}
+
+/** Hermes 预热 (启动 hermes 进程, 提前加载 LLM) */
+export async function hermesWarmup(): Promise<{ status: string; elapsed: number }> {
+  const resp = await fetch(`${BASE}/hermes/warmup`, { method: 'POST' })
+  return parse<{ status: string; elapsed: number }>(resp)
+}
+
+/** Hermes 状态 (前端轮询: 是否可用) */
+export async function hermesStatus(): Promise<{ available: boolean; hermes_bin: string }> {
+  const resp = await fetch(`${BASE}/hermes/status`)
+  return parse<{ available: boolean; hermes_bin: string }>(resp)
+}
+
 /** 删除 */
 export async function deletePermit(id: number, permitType: string = 'hot_work'): Promise<void> {
   await fetch(`${BASE}/${id}?permit_type=${permitType}`, { method: 'DELETE' })
