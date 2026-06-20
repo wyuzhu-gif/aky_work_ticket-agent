@@ -40,14 +40,16 @@ _LOCK = asyncio.Lock()
 async def call_hermes(prompt: str, timeout: int = 120) -> str:
     """
     调 hermes 处理 prompt, 返 stdout
+    
+    重要: hermes -z 是单次模式, 每次新进程都是独立上下文, 不保存记忆.
+    ⚠️ 不用 --resume, 因为:
+      1. 不同用户/不同任务的 prompt 不应该共享上下文
+      2. 作业票审查 和 智能问数 是不同的场景, 记忆会污染
+      3. 之前留的 _LAST_SESSION_ID 是 bug, 已移除
     """
-    global _LAST_SESSION_ID
     
+    # 永远新 session (不用 --resume)
     cmd = [HERMES_BIN, "-z", prompt, "--yolo"]  # --yolo 自动批准 hooks
-    
-    # 续接 session (省 LLM 初始化)
-    if _LAST_SESSION_ID:
-        cmd.extend(["--resume", _LAST_SESSION_ID])
     
     env = os.environ.copy()
     env["HERMES_ACCEPT_HOOKS"] = "1"  # headless 自动批准
@@ -76,17 +78,11 @@ async def call_hermes(prompt: str, timeout: int = 120) -> str:
     if proc.returncode != 0:
         logger.warning("hermes returncode=%d, stderr=%s", proc.returncode, proc.stderr[:500])
     
-    # 尝试提取 session id (hermes --resume 需要)
-    session_id = _extract_session_id(proc.stdout) or _extract_session_id(proc.stderr)
-    if session_id:
-        _LAST_SESSION_ID = session_id
-        logger.debug("捕获 hermes session: %s", session_id)
-    
     return proc.stdout
 
 
 def _extract_session_id(output: str) -> Optional[str]:
-    """hermes 输出可能含 session id, 提取出来续接用"""
+    """hermes 输出可能含 session id (现在不用了, 保留以备未来)"""
     m = re.search(r"session[_\s-]?id[:\s]+([a-zA-Z0-9_-]+)", output, re.IGNORECASE)
     if m:
         return m.group(1)
@@ -152,12 +148,6 @@ def call_hermes_sync(prompt: str, timeout: int = 120) -> str:
 
 
 async def is_hermes_available() -> bool:
-    """检查 hermes 命令是否可用"""
-    try:
-        proc = await asyncio.get_event_loop().run_in_executor(
-            None,
-            lambda: subprocess.run([HERMES_BIN, "--version"], capture_output=True, timeout=5)
-        )
-        return proc.returncode == 0
-    except Exception:
-        return False
+    """检查 hermes 命令是否可用 (不实际调 hermes, 只检查二进制文件存在)"""
+    import os
+    return os.path.isfile(HERMES_BIN) and os.access(HERMES_BIN, os.X_OK)

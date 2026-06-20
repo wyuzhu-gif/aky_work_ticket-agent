@@ -364,7 +364,12 @@ SQL 语句: {sql_query or 'N/A'}
                             SystemMessage(content=(
                                 "你是数据分析员. "
                                 "严格基于 SQL 结果 + hermes 提供的法规依据, 生成专业报告. "
-                                "禁止编造数据, 禁止假设, 禁止'估计/大约'等模糊措辞."
+                                "禁止编造数据, 禁止假设, 禁止'估计/大约'等模糊措辞.\n"
+                                "\n"
+                                "**输出规范 (重要)**:\n"
+                                "- 写给业务用户看的报告, 不要出现英文字段名 (如 plan_start, work_date, top_level, special_task_view 等)\n"
+                                "- 用中文: 计划开始时间 / 日期 / 作业类型大类 / 特殊作业票表\n"
+                                "- 用通俗语言, 避免技术术语"
                             )),
                             HumanMessage(content=(
                                 f"用户问题: {question}\n\n"

@@ -269,24 +269,100 @@ function StepIndicator({ step }: { step: ThinkingStep }) {
 
 function DataTable({ data }: { data: QueryData }) {
   if (!data.columns.length || !data.data.length) return null
+
+  // 翻译字段名为中文 (业务用户可读)
+  const translatedColumns = data.columns.map(c => ({
+    raw: c,
+    label: FIELD_NAME_CN[c] || c,
+  }))
+
   return (
     <Table size="small" style={{ fontSize: 12 }}>
       <TableHeader>
         <TableRow>
-          {data.columns.map(c => <TableHeaderCell key={c}>{c}</TableHeaderCell>)}
+          {translatedColumns.map(c => <TableHeaderCell key={c.raw} title={c.raw}>{c.label}</TableHeaderCell>)}
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data.data.slice(0, 50).map((row, i) => (
+        {data.data.map((row, i) => (
           <TableRow key={i}>
-            {data.columns.map(c => (
-              <TableCell key={c}>{String(row[c] ?? '')}</TableCell>
+            {translatedColumns.map(c => (
+              <TableCell key={c.raw} title={String(row[c.raw] ?? '')}>
+                {String(row[c.raw] ?? '')}
+              </TableCell>
             ))}
           </TableRow>
         ))}
       </TableBody>
     </Table>
   )
+}
+
+// 字段名翻译表 (英文 → 中文)
+// 后端 NL2SQL 生成的 SQL 可能用这些字段名, 翻译给业务用户看
+const FIELD_NAME_CN: Record<string, string> = {
+  // top_level CASE 翻译
+  '作业类型': '作业类型',
+  // 常见统计字段
+  'work_date': '日期',
+  'work_day': '日期',
+  'date': '日期',
+  'ticket_count': '作业票数',
+  'count': '数量',
+  'total': '总数',
+  'total_tickets': '作业票总数',
+  'special_total': '特殊作业票总数',
+  '特殊作业票总数': '特殊作业票总数',
+  // 作业类型统计列
+  '动火作业': '动火作业',
+  '动火': '动火作业',
+  '受限空间': '受限空间作业',
+  '受限空间作业': '受限空间作业',
+  '高处作业': '高处作业',
+  '高处': '高处作业',
+  '吊装作业': '吊装作业',
+  '吊装': '吊装作业',
+  '临时用电': '临时用电',
+  '临时用电作业': '临时用电',
+  '盲板抽堵': '盲板抽堵作业',
+  '盲板抽堵作业': '盲板抽堵作业',
+  '动土作业': '动土作业',
+  '动土': '动土作业',
+  '断路作业': '断路作业',
+  '断路': '断路作业',
+  '设备检维修': '设备检维修',
+  // 作业内容
+  'content': '作业内容',
+  '作业内容': '作业内容',
+  'medium': '介质',
+  'medium_distribution': '介质分布',
+  // 公司
+  'company_name': '企业名称',
+  'company_code': '企业编码',
+  '企业名称': '企业名称',
+  // 时间
+  'plan_start': '计划开始时间',
+  'plan_end': '计划结束时间',
+  'actual_start': '实际开始时间',
+  'complete_time': '完工时间',
+  // 人员
+  'task_manager': '作业负责人',
+  '作业负责人': '作业负责人',
+  'safe_disclose_person': '安全交底人',
+  'normal_operator': '操作员',
+  'holder_operator': '持票人',
+  // 位置/部门
+  'ticket_position': '作业位置',
+  '作业位置': '作业位置',
+  'task_part': '作业部门',
+  '作业部门': '作业部门',
+  // 其他
+  'id': 'ID',
+  'n': '数量',
+  // 作业小类
+  'sub_level': '作业小类',
+  '作业小类代码': '作业小类',
+  'top_level': '作业类型大类',
 }
 
 function ChartDisplay({ config }: { config: Record<string, unknown> }) {
@@ -323,22 +399,63 @@ function ChartDisplay({ config }: { config: Record<string, unknown> }) {
   )
 }
 
+/** SQL 折叠组件 - 默认隐藏, 业务用户不需要看 SQL */
+function SqlFoldable({ sql }: { sql: string }) {
+  const [expanded, setExpanded] = useState(false)
+  return (
+    <div style={{ marginTop: '8px' }}>
+      <Button
+        appearance="subtle"
+        size="small"
+        icon={expanded ? <ChevronUpRegular style={{ fontSize: 12 }} /> : <ChevronDownRegular style={{ fontSize: 12 }} />}
+        onClick={() => setExpanded(!expanded)}
+        style={{ fontSize: '11px' }}
+      >
+        {expanded ? '收起' : '查看'} SQL 语句（{sql.length} 字符）
+      </Button>
+      {expanded && (
+        <pre style={{
+          marginTop: '4px',
+          padding: '8px',
+          backgroundColor: tokens.colorNeutralBackground3,
+          borderRadius: '4px',
+          fontSize: '11px',
+          overflowX: 'auto',
+          fontFamily: 'monospace',
+          color: tokens.colorNeutralForeground2,
+        }}>
+          {sql}
+        </pre>
+      )}
+    </div>
+  )
+}
+
 function AnswerDisplay({ content }: { content: string }) {
   const classes = useStyles()
   if (!content.trim()) return null
+
+  // 压缩空行: 把 3+ 个连续 \n 压缩成 1 个 \n\n, 把段内 \n\n 变成 \n
+  // 这样 LLM 输出 "## ... \n\n\n### ..." 不会出 3 行空白
+  const compact = content
+    // 3+ 空行 → 1 空行
+    .replace(/\n{3,}/g, '\n\n')
+    // 列表项之间的空行去掉 (markdown "- ... \n\n- ..." → "- ...\n- ...")
+    .replace(/(\n- [^\n]+)\n\n(?=- )/g, '$1\n')
+
   return (
     <div className={classes.answerWrap}>
       <div className={classes.answerTitle}>数据分析报告</div>
-      <div style={{ fontSize: 13, lineHeight: 1.6 }}>
+      <div style={{ fontSize: 13, lineHeight: 1.45 }}>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
-            h2: ({ children }) => <h2 style={{ fontSize: 14, fontWeight: 600, color: tokens.colorBrandForeground1, marginTop: 8, marginBottom: 4 }}>{children}</h2>,
-            h3: ({ children }) => <h3 style={{ fontSize: 13, fontWeight: 600, marginTop: 6, marginBottom: 2 }}>{children}</h3>,
-            p: ({ children }) => <p style={{ fontSize: 13, lineHeight: 1.5, marginTop: 0, marginBottom: 4 }}>{children}</p>,
-            ul: ({ children }) => <ul style={{ fontSize: 13, marginLeft: 16, marginTop: 0, marginBottom: 4, listStyleType: 'disc', paddingLeft: 0 }}>{children}</ul>,
-            ol: ({ children }) => <ol style={{ fontSize: 13, marginLeft: 16, marginTop: 0, marginBottom: 4, paddingLeft: 0 }}>{children}</ol>,
-            li: ({ children }) => <li style={{ marginBottom: 2, lineHeight: 1.5 }}>{children}</li>,
+            h2: ({ children }) => <h2 style={{ fontSize: 14, fontWeight: 600, color: tokens.colorBrandForeground1, marginTop: 6, marginBottom: 2 }}>{children}</h2>,
+            h3: ({ children }) => <h3 style={{ fontSize: 13, fontWeight: 600, marginTop: 4, marginBottom: 1 }}>{children}</h3>,
+            p: ({ children }) => <p style={{ fontSize: 13, lineHeight: 1.45, marginTop: 0, marginBottom: 2 }}>{children}</p>,
+            ul: ({ children }) => <ul style={{ fontSize: 13, marginLeft: 16, marginTop: 0, marginBottom: 2, listStyleType: 'disc', paddingLeft: 0 }}>{children}</ul>,
+            ol: ({ children }) => <ol style={{ fontSize: 13, marginLeft: 16, marginTop: 0, marginBottom: 2, paddingLeft: 0 }}>{children}</ol>,
+            li: ({ children }) => <li style={{ marginBottom: 1, lineHeight: 1.45 }}>{children}</li>,
             strong: ({ children }) => <strong style={{ color: tokens.colorBrandForeground1, fontWeight: 600 }}>{children}</strong>,
             code: ({ children, className }) => {
               const inline = !className
@@ -346,10 +463,11 @@ function AnswerDisplay({ content }: { content: string }) {
                 ? <code style={{ backgroundColor: tokens.colorNeutralBackground3, padding: '1px 4px', borderRadius: 3, fontSize: 12 }}>{children}</code>
                 : <code style={{ display: 'block', backgroundColor: tokens.colorNeutralBackground3, padding: 8, borderRadius: 4, fontSize: 12, overflowX: 'auto', margin: '8px 0' }}>{children}</code>
             },
-            br: () => <br style={{ lineHeight: 0.5 }} />,
+            br: () => <br style={{ lineHeight: 0.3 }} />,
+            hr: () => <hr style={{ margin: '4px 0', border: 'none', borderTop: `1px solid ${tokens.colorNeutralStroke3}` }} />,
           }}
         >
-          {content}
+          {compact}
         </ReactMarkdown>
       </div>
     </div>
@@ -783,9 +901,7 @@ export default function SmartQuery() {
                     <Divider style={{ margin: '4px 0' }} />
                     <DataTable data={msg.queryData} />
                     {msg.queryData.sql && (
-                      <div className={classes.sqlTag}>
-                        SQL: {msg.queryData.sql}
-                      </div>
+                      <SqlFoldable sql={msg.queryData.sql} />
                     )}
                   </div>
                 )}
