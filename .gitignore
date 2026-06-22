@@ -39,6 +39,7 @@ nohup.out
 # Data (本机跑时产生的)
 api/app/data/app.db
 api/app/data/app.db-*
+api/app/data/wiki_semantic.db
 api/app/data/documents/*
 api/app/data/mineru/*
 api/app/data/rule_docs/*
