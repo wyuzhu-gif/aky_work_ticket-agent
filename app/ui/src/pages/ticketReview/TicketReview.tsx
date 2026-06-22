@@ -75,94 +75,204 @@ import {
 
 // 字段名翻译表 (英文 → 中文), 业务用户看不懂英文代码
 const FIELD_NAME_CN: Record<string, string> = {
+  // ===== 通用 Permit 字段 (来自 types/permit.ts) =====
+  'id': '编号',
   'permit_code': '作业票编号',
+  'work_id': '作业编号',
+  'apply_unit': '申请单位',
+  'apply_time': '申请时间',
   'work_content': '作业内容',
   'work_location': '作业地点',
-  'work_unit': '作业单位',
-  'apply_unit': '申请单位',
   'work_level': '作业级别',
-  'work_type': '作业类型',
+  'work_method': '作业方式',
+  'work_unit': '作业单位',
+  'work_owner_name': '作业负责人',
+  'work_owner_phone': '负责人电话',
+  'work_height': '作业高度',
+  'fall_protection': '防坠落措施',
+  // 动火
+  'fire_worker_info': '动火作业人员信息',
+  'fire_watcher': '监火人',
+  'fire_watch': '监火人',
+  // 受限空间
+  'space_name': '受限空间名称',
+  'original_medium': '原介质',
+  'worker_names': '作业人员名单',
+  // 盲板抽堵
+  'ticket_code': '票号',
+  'equipment_name': '设备名称',
+  'blind_material': '盲板材质',
+  'blind_spec': '盲板规格',
+  'blocking_purpose': '抽堵目的',
+  'medium_isolation': '介质隔离',
+  // 吊装
+  'lifting_location': '吊装地点',
+  'lifting_object': '吊装物件',
+  'lifting_tool_name': '吊装工具名称',
+  'lifting_method': '吊装方法',
+  'lifting_operator': '吊装操作人员',
+  'command_personnel': '指挥人员',
+  // 临时用电
+  'power_capacity_limit': '电源接入点及许可用电功率',
+  'working_voltage': '作业电压',
+  'equipment_rated_power': '用电设备名称及额定功率',
+  'electrical_operator': '用电人',
+  'work_person': '作业人',
+  'electrician_cert_number': '电工证号',
+  'supervisor_cert_number': '负责人电工证号',
+  'departmental_approval_opinion': '用电单位意见',
+  'departmental_approval_sign': '用电单位签字',
+  'departmental_approval_time': '用电单位签字时间',
+  // 动土
+  'work_scope': '作业范围',
+  'related_explanation_sign': '相关说明签字',
+  'related_explanation_time': '相关签名签字时间',
+  'approval_department_opinion': '多部门会签意见',
+  'approval_department_sign': '多部门会签签字',
+  'approval_department_time': '多部门会签签字时间',
+  // 断路
+  'design_unit': '设计相关单位',
+  'cutting_reason': '断路原因',
+  'cutting_description': '断路地段说明',
+  'approval_fire_safety_opinion': '消防安全部门意见',
+  'approval_fire_safety_sign': '消防部门签字',
+  'approval_fire_safety_time': '消防部门签字时间',
+  // 审批
+  'executive_approval_opinion': '审批部门意见',
+  'executive_approval_sign': '审批部门签字',
+  'executive_approval_time': '审批部门签字时间',
+  'approval_owner_opinion': '作业负责人意见',
+  'approval_owner_sign': '作业负责人签字',
+  'approval_owner_time': '作业负责人签字时间',
+  'approval_unit_opinion': '所在单位意见',
+  'approval_unit_sign': '所在单位签字',
+  'approval_unit_time': '所在单位签字时间',
+  'approval_safety_opinion': '安全管理部门意见',
+  'approval_safety_sign': '安全部门签字',
+  'approval_safety_time': '安全部门签字时间',
+  'approval_fire_leader_opinion': '动火审批人意见',
+  'approval_fire_leader_sign': '动火审批人签字',
+  'approval_fire_leader_time': '动火审批人签字时间',
+  'shift_leader_check_result': '班长验票结果',
+  'shift_leader_sign': '班长签字',
+  'shift_leader_time': '班长签字时间',
+  'completion_acceptance_result': '完工验收结果',
+  'completion_acceptance_sign': '完工验收签字',
+  'completion_acceptance_time': '完工验收时间',
+  // 气体分析
+  'gas_analysis_time': '气体分析时间',
+  'gas_analyst_name': '气体分析人',
+  'gas_analysis_result': '气体分析结果',
+  'gas_analysis': '气体分析',
+  'gas_analyses': '气体分析记录',
+  'o2': '氧气浓度',
+  'ch4': '甲烷浓度',
+  'co': '一氧化碳浓度',
+  'h2s': '硫化氢浓度',
+  'temperature': '温度',
+  'humidity': '湿度',
+  'sample_time': '采样时间',
+  'analysis_round': '分析轮次',
+  'permit_id': '所属作业票',
+  // 关联 + 风险
+  'related_permit_ids': '关联作业票',
+  'risk_identification': '风险识别',
+  'risk_level': '风险等级',
+  // 时间
+  'start_time': '开始时间',
+  'end_time': '结束时间',
   'plan_start': '计划开始时间',
   'plan_end': '计划结束时间',
   'actual_start': '实际开始时间',
   'complete_time': '完工时间',
-  'gas_analysis': '气体分析',
-  'gas_analyses': '气体分析',
-  'safety_measures': '安全措施',
-  'safety_checks': '安全措施',
+  'work_start': '开始时间',
+  'work_end': '结束时间',
+  // 安全交底
+  'safety_disclosure_person': '安全交底人',
+  'safety_disclosure_time': '安全交底时间',
+  'accept_person': '接受交底人',
+  'accept_time': '接受时间',
+  'attendant': '陪同人',
+  // 人员
+  'applicant_name': '申请人',
   'task_manager': '作业负责人',
   'safe_disclose_person': '安全交底人',
   'operator': '作业人员',
   'guardian': '监护人',
-  'fire_watcher': '监火人',
   'approver': '审批人',
-  'permit_type': '作业票类型',
-  'special_task_view': '特殊作业票',
-  'top_level': '作业大类',
-  'sub_level': '作业小类',
-  // 2026-06-22 补: 安全措施 / 气体分析 内部字段
-  // 这些是 ExtractedSafetyCheck / HotWorkGasAnalysis 里的 key,
-  // LLM 审查时拿 key 当描述, 业务人员看不懂
+  // 安全措施
+  'safety_measures': '安全措施',
+  'safety_checks': '安全措施',
   'is_confirmed': '是否确认',
   'confirmed_by': '确认人',
   'description': '措施内容',
   'check_item': '检查项',
   'result': '结果',
   'remark': '备注',
-  'o2': '氧气浓度',
-  'ch4': '甲烷浓度',
-  'co': '一氧化碳浓度',
-  'h2s': '硫化氢浓度',
-  'time': '检测时间',
-  'location': '检测位置',
-  'temperature': '温度',
-  'humidity': '湿度',
-  'applicant_name': '申请人',
-  'work_start': '开始时间',
-  'work_end': '结束时间',
-  'fire_watch': '监火人',
+  // 通用
+  'permit_type': '作业票类型',
+  'special_task_view': '特殊作业票',
+  'top_level': '作业大类',
+  'sub_level': '作业小类',
+  'status': '状态',
+  'create_time': '创建时间',
+  'updated_at': '更新时间',
+  'created_at': '创建时间',
+  'has_review': '已审查',
+  'review_count': '审查条数',
+  'gas_count': '气体记录数',
+  'safety_count': '措施条数',
+  'permit_unit': '作业单位',
+  'permit_location': '作业地点',
+  'permit_job': '作业内容',
+  // 审查结果字段
+  'field': '字段',
+  'field_key': '字段',
+  'issue': '问题',
+  'category': '类别',
+  'severity': '严重程度',
+  'clause': '条款',
+  'clause_content': '条款内容',
+  'suggestion': '建议',
+  'text': '描述',
+  'review_results': '审查结果',
+  'review_type': '审查类型',
+  // 元数据
+  'parse_method': '解析方式',
+  'elapsed': '耗时',
+  'raw_output': '原始输出',
+  'raw_preview': '输出预览',
+  'error': '错误',
+  'ok': '成功',
+  'available': '可用',
+  'hermes_bin': 'hermes 路径',
 }
 
 // 2026-06-22 新增: 把审查文本里嵌入的英文 key 替换成中文
-// 优先级: 单词边界匹配, 避免误伤 (is_confirmed= 不会跟 is_confirmed_other 撞)
-// 顺序: 长的在前 (confirmed_by 优先于 confirmed)
-const FIELD_NAME_REGEX_REPLACEMENTS: Array<[RegExp, string]> = [
-  [/\bconfirmed_by\b/g, '确认人'],
-  [/\bis_confirmed\b/g, '是否确认'],
-  [/\bcheck_item\b/g, '检查项'],
-  [/\bgas_analyses\b/g, '气体分析'],
-  [/\bsafety_checks\b/g, '安全措施'],
-  [/\bwork_content\b/g, '作业内容'],
-  [/\bwork_location\b/g, '作业地点'],
-  [/\bwork_unit\b/g, '作业单位'],
-  [/\bapply_unit\b/g, '申请单位'],
-  [/\bwork_level\b/g, '作业级别'],
-  [/\bwork_type\b/g, '作业类型'],
-  [/\bplan_start\b/g, '计划开始时间'],
-  [/\bplan_end\b/g, '计划结束时间'],
-  [/\bpermit_code\b/g, '作业票编号'],
-  [/\bpermit_type\b/g, '作业票类型'],
-  [/\bspecial_task_view\b/g, '特殊作业票'],
-  [/\btop_level\b/g, '作业大类'],
-  [/\bsub_level\b/g, '作业小类'],
-  [/\boperator\b/g, '作业人员'],
-  [/\bguardian\b/g, '监护人'],
-  [/\bfire_watcher\b/g, '监火人'],
-  [/\bapprover\b/g, '审批人'],
-  [/\btask_manager\b/g, '作业负责人'],
-  [/\bsafe_disclose_person\b/g, '安全交底人'],
-]
+// 策略: 1) 单词边界正则替换 FIELD_NAME_CN 里所有 key (snake_case 英文)
+//       2) 数组下标语法 field[11] 全部清掉 (业务人员不需要看内部下标)
+//       3) 任何未被识别的英文 token 单独处理
+const FIELD_NAME_REGEX_REPLACEMENTS: Array<[RegExp, string]> = Object.keys(FIELD_NAME_CN)
+  .sort((a, b) => b.length - a.length)  // 长的在前 (confirmed_by 优先于 confirmed)
+  .map(key => [new RegExp(`\\b${key}\\b`, 'g'), FIELD_NAME_CN[key]] as [RegExp, string])
 
 /**
  * 2026-06-22 新增: 把审查文本里嵌入的英文字段名替换成中文
  * 例: "is_confirmed=false 与 confirmed_by=韩志良 矛盾" → "是否确认=false 与 确认人=韩志良 矛盾"
+ * 例: "fire_worker_info 缺失, safety_measures[11] 为空" → "动火作业人员信息 缺失, 安全措施[11] 为空"
  */
 function humanizeReviewText(text: string): string {
   if (!text) return text
   let out = text
+  // 1. 翻译表替换
   for (const [re, cn] of FIELD_NAME_REGEX_REPLACEMENTS) {
     out = out.replace(re, cn)
   }
+  // 2. 数组下标语法 field[11] / field[1,2] / field[*] → field (业务人员不需要看内部下标)
+  // 例: "safety_measures[11]" → "安全措施" (前一步已换过, 此步再清残留)
+  out = out.replace(/\[\s*\d+\s*(?:,\s*\d+\s*)*\]/g, '')
+  // 3. 残留下标: 直接数字 [...] 但前面的字段已经被翻译, 留下空 [], 去掉
+  out = out.replace(/\[\s*\]/g, '')
   return out
 }
 
@@ -1401,7 +1511,9 @@ export default function TicketReview() {
                       <TableCell>
                         <Badge appearance="filled" color="warning">已保存到本地</Badge>
                       </TableCell>
-                      <TableCell>-</TableCell>
+                      <TableCell style={{ fontSize: '12px', color: tokens.colorNeutralForeground3 }}>
+                        {d.updated_at ? new Date(d.updated_at).toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-') : '-'}
+                      </TableCell>
                       <TableCell>
                         <Button
                           size="small"
