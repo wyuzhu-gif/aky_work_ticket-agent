@@ -24,6 +24,7 @@ from routers import review_external, files, rules, rule_documents, permits, chat
 from routers import sqlagent_admin
 from routers import dashboard, wiki_router
 from routers import hermes_review
+from routers import drafts
 
 # Set up logging configuration
 setup_logging()
@@ -78,6 +79,7 @@ app.include_router(sqlagent_admin.router)
 app.include_router(dashboard.router)
 app.include_router(wiki_router.router)
 app.include_router(hermes_review.router)
+app.include_router(drafts.router)
 
 
 # Health check endpoint

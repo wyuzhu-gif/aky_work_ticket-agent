@@ -63,6 +63,12 @@ import {
   hermesReview,
   hermesWarmup,
   hermesStatus,
+  saveDraft,
+  listDrafts,
+  getDraft,
+  deleteDraft,
+  DraftSummary,
+  DraftDetail,
 } from '../../services/permitsApi'
 
 //  ──────────────── Styles ────────────────
@@ -606,21 +612,23 @@ export default function TicketReview() {
   const [extractedPermitType, setExtractedPermitType] = useState('hot_work')
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
   const [pendingPermitType, setPendingPermitType] = useState('hot_work')
-  const [drafts, setDrafts] = useState<{ permit_type: string; permit: Permit; gas_analyses: HotWorkGasAnalysis[]; safety_checks: ExtractedSafetyCheck[] }[]>([])
+  const [drafts, setDrafts] = useState<DraftSummary[]>([])
   const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const formRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // 2026-06-12 改: 不再调后端 listPermits (会 500, MySQL king 库没 8 个 permit 表)
-  // 改: 只刷 drafts (从 localStorage 加载)
+  // 2026-06-22 改: 后端 SQLite (permit_drafts 表) — 跨设备/同事都能看, 不会丢
+  // 替代原 localStorage (同浏览器才看得到)
   const refreshList = useCallback(async () => {
     setLoadingList(true)
     try {
-      const raw = localStorage.getItem('ticket_drafts')
-      setDrafts(raw ? JSON.parse(raw) : [])
-    } catch {
-      /* ignore */
+      const list = await listDrafts()
+      setDrafts(list)
+    } catch (e) {
+      // 后端拉取失败, 容错: 留空列表, 提示用户
+      console.error('listDrafts failed', e)
+      setDrafts([])
     } finally {
       setLoadingList(false)
     }
@@ -721,14 +729,14 @@ export default function TicketReview() {
       setGasAnalyses([])
       setSafetyChecks([])
       setReviewResults([])
-      localStorage.removeItem('ticket_draft')
-      // Also remove from drafts list
-      const rawDrafts = localStorage.getItem('ticket_drafts')
-      if (rawDrafts) {
-        let allDrafts = JSON.parse(rawDrafts)
-        allDrafts = allDrafts.filter((d: any) => d.permit.permit_code !== permit.permit_code)
-        localStorage.setItem('ticket_drafts', JSON.stringify(allDrafts))
-        setDrafts(allDrafts)
+      // 2026-06-22 改: 草稿入库成功, 后端删草稿 (跨设备, 不依赖 localStorage)
+      if (permit.permit_code) {
+        try {
+          await deleteDraft(permit.permit_code)
+          setDrafts(prev => prev.filter(d => d.permit_code !== permit.permit_code))
+        } catch {
+          /* 草稿没找到 / 已删, 忽略 */
+        }
       }
       refreshList()
     } catch (e: any) {
@@ -738,26 +746,42 @@ export default function TicketReview() {
     }
   }, [permit, gasAnalyses, safetyChecks, refreshList])
 
-  const handleSaveDraft = useCallback(() => {
-    // 2026-06-11 改: 不再因 permit_code 空就静默返回
-    // 用 timestamp 给没有 permit_code 的临时生成一个 key (用 _draft_ 前缀)
+  // 2026-06-22 改: 调后端 saveDraft (permit_drafts 表, 跨设备持久化)
+  // reviewResults 一起存, 已审查的草稿重新加载不丢审查结果
+  const handleSaveDraft = useCallback(async () => {
     const draftCode = permit.permit_code || `_draft_${Date.now()}`
     const draftPermit = { ...permit, permit_code: draftCode }
-    const draft = { permit_type: extractedPermitType, permit: draftPermit, gas_analyses: gasAnalyses, safety_checks: safetyChecks }
-    // Load existing drafts, add or update by permit_code
-    const raw = localStorage.getItem('ticket_drafts')
-    let all: typeof drafts = raw ? JSON.parse(raw) : []
-    const idx = all.findIndex(d => d.permit.permit_code === draftCode)
-    if (idx >= 0) {
-      all[idx] = draft
-    } else {
-      all.unshift(draft)
+    try {
+      const saved = await saveDraft({
+        permit_code: draftCode,
+        permit_type: extractedPermitType,
+        permit: draftPermit,
+        gas_analyses: gasAnalyses,
+        safety_checks: safetyChecks,
+        review_results: reviewResults,
+      })
+      // 同步本地 state (让列表立刻刷出来, 不依赖 refreshList 二次请求)
+      setDrafts(prev => {
+        const idx = prev.findIndex(d => d.permit_code === saved.permit_code)
+        if (idx >= 0) {
+          const next = [...prev]
+          next[idx] = saved
+          return next
+        }
+        return [saved, ...prev]
+      })
+      // 如果原 permit 没有 code, 把当前表单的 permit_code 同步成 draftCode
+      // (这样再点暂存会覆盖同一个, 而不会又生成一个新的 _draft_)
+      if (!permit.permit_code) {
+        setPermit(prev => ({ ...prev, permit_code: draftCode }))
+      }
+      setDraftSaved(true)
+      setTimeout(() => setDraftSaved(false), 2000)
+    } catch (e: any) {
+      console.error('saveDraft failed', e)
+      setExtractError(`暂存失败: ${e?.message || e}`)
     }
-    localStorage.setItem('ticket_drafts', JSON.stringify(all))
-    setDrafts(all)
-    setDraftSaved(true)
-    setTimeout(() => setDraftSaved(false), 2000)
-  }, [permit, gasAnalyses, safetyChecks, extractedPermitType])
+  }, [permit, gasAnalyses, safetyChecks, reviewResults, extractedPermitType])
   const handleSubmit = useCallback(() => doSave('CONFIRMED'), [doSave])
 
   const handleCancel = useCallback(() => {
@@ -770,24 +794,40 @@ export default function TicketReview() {
     localStorage.removeItem('ticket_draft')
   }, [])
 
-  const handleLoadLocalDraft = useCallback((draft: typeof drafts[0]) => {
-    setExtractedPermitType(draft.permit_type)
-    setPermitType(draft.permit_type)  // 修 bug: 渲染用的是 permitType, 不是 extractedPermitType
-    setExtracted({ permit: draft.permit, gas_analyses: draft.gas_analyses || [], safety_checks: draft.safety_checks || [], raw_md: '' } as PermitUploadResponse)
-    setPermit(draft.permit)
-    setGasAnalyses(draft.gas_analyses || [])
-    setSafetyChecks(draft.safety_checks || [])
-    setReviewResults([])
-    setExtractError(null)
+  // 2026-06-22 改: 列表项是 DraftSummary (只有 permit_type + permit_code + has_review 等元信息)
+  // 实际数据 + 审查结果要再 GET /api/v1/drafts/{code} 拉详情
+  const handleLoadLocalDraft = useCallback(async (summary: DraftSummary) => {
+    try {
+      const detail: DraftDetail = await getDraft(summary.permit_code)
+      setExtractedPermitType(detail.permit_type)
+      setPermitType(detail.permit_type)  // 修 bug: 渲染用的是 permitType, 不是 extractedPermitType
+      setExtracted({
+        permit: detail.permit,
+        gas_analyses: detail.gas_analyses || [],
+        safety_checks: detail.safety_checks || [],
+        raw_md: '',
+      } as PermitUploadResponse)
+      setPermit(detail.permit)
+      setGasAnalyses(detail.gas_analyses || [])
+      setSafetyChecks(detail.safety_checks || [])
+      // 2026-06-22 关键: 恢复 AI 审查结果, 重新加载不丢
+      setReviewResults(detail.review_results || [])
+      setExtractError(null)
+    } catch (e: any) {
+      console.error('getDraft failed', e)
+      setExtractError(`加载草稿失败: ${e?.message || e}`)
+    }
   }, [])
 
-  const handleDeleteDraft = useCallback((permitCode: string) => {
-    const raw = localStorage.getItem('ticket_drafts')
-    let all: typeof drafts = raw ? JSON.parse(raw) : []
-    all = all.filter(d => d.permit.permit_code !== permitCode)
-    localStorage.setItem('ticket_drafts', JSON.stringify(all))
-    setDrafts(all)
-  }, [drafts])
+  const handleDeleteDraft = useCallback(async (permitCode: string) => {
+    try {
+      await deleteDraft(permitCode)
+      setDrafts(prev => prev.filter(d => d.permit_code !== permitCode))
+    } catch (e: any) {
+      console.error('deleteDraft failed', e)
+      setExtractError(`删除草稿失败: ${e?.message || e}`)
+    }
+  }, [])
 
   const handleComplianceReview = useCallback(async () => {
     setReviewing(true)
@@ -1121,9 +1161,22 @@ export default function TicketReview() {
                 <span style={{ marginRight: 4 }}>🤖</span>
                 {hermesReviewing ? 'AI 审查中...' : 'AI 合规性审查'}
               </Button>
-              <Button appearance="primary" onClick={() => { handleSaveDraft(); setTimeout(() => { setExtracted(null); setPermit({} as Permit); setGasAnalyses([]); setSafetyChecks([]); setReviewResults([]); setExtractError(null); }, 500); }} disabled={saving}>
+              <Button
+                appearance="primary"
+                onClick={async () => {
+                  await handleSaveDraft()
+                  // 暂存成功后清空表单, 准备新建下一张
+                  setExtracted(null)
+                  setPermit({} as Permit)
+                  setGasAnalyses([])
+                  setSafetyChecks([])
+                  setReviewResults([])
+                  setExtractError(null)
+                }}
+                disabled={saving}
+              >
                 <SaveRegular style={{ marginRight: 4 }} />
-                暂存并新建
+                保存到本地
               </Button>
             </div>
           </div>
@@ -1253,13 +1306,13 @@ export default function TicketReview() {
                 <TableBody>
                   {drafts.map((d, i) => (
                     <TableRow
-                      key={`draft-${i}`}
+                      key={`draft-${d.permit_code}`}
                       className={classes.draftRow}
                       onClick={() => handleLoadLocalDraft(d)}
                     >
-                      <TableCell style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.permit.permit_code || '-'}</TableCell>
-                      <TableCell style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{(d.permit.work_content || '').slice(0, 80)}</TableCell>
-                      <TableCell style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{(d.permit.work_location || '').slice(0, 50)}</TableCell>
+                      <TableCell style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.permit_code || '-'}</TableCell>
+                      <TableCell style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{(d.permit_job || '').slice(0, 80)}</TableCell>
+                      <TableCell style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{(d.permit_location || '').slice(0, 50)}</TableCell>
                       <TableCell>
                         <Badge appearance="filled" color="informative">
                           {(d.permit_type || 'hot_work') === 'hot_work' ? '动火作业' :
@@ -1273,7 +1326,7 @@ export default function TicketReview() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge appearance="filled" color="warning">暂存(本地)</Badge>
+                        <Badge appearance="filled" color="warning">已暂存 (服务器本地)</Badge>
                       </TableCell>
                       <TableCell>-</TableCell>
                       <TableCell>
@@ -1281,7 +1334,7 @@ export default function TicketReview() {
                           size="small"
                           appearance="subtle"
                           icon={<DeleteRegular />}
-                          onClick={(e) => { e.stopPropagation(); handleDeleteDraft(d.permit.permit_code) }}
+                          onClick={(e) => { e.stopPropagation(); handleDeleteDraft(d.permit_code) }}
                         />
                       </TableCell>
                     </TableRow>

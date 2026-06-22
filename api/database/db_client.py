@@ -99,6 +99,21 @@ CREATE TABLE IF NOT EXISTS document_rule_documents (
 );
 """
 
+# 2026-06-22 新增: 作业票暂存草稿 (前端 "暂存" / "保存到本地" 用)
+# permit_code 为临时占位 (无票号) 时用 _draft_<timestamp> 形式, 主键约束覆盖
+CREATE_PERMIT_DRAFTS_TABLE = """
+CREATE TABLE IF NOT EXISTS permit_drafts (
+    permit_code TEXT PRIMARY KEY,
+    permit_type TEXT NOT NULL,
+    permit_json TEXT NOT NULL,
+    gas_json TEXT NOT NULL DEFAULT '[]',
+    safety_json TEXT NOT NULL DEFAULT '[]',
+    review_json TEXT NOT NULL DEFAULT '[]',
+    has_review INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+"""
 
 
 class SQLiteClient:
@@ -114,6 +129,7 @@ class SQLiteClient:
             await db.execute(CREATE_DOCUMENT_RULES_TABLE)
             await db.execute(CREATE_RULE_DOCUMENTS_TABLE)
             await db.execute(CREATE_DOCUMENT_RULE_DOCUMENTS_TABLE)
+            await db.execute(CREATE_PERMIT_DRAFTS_TABLE)
             await db.commit()
             
             # Migration: Add risk_level column to existing issues table if not exists

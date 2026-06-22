@@ -8,6 +8,7 @@ from database.db_client import SQLiteClient
 from database.issues_repository import IssuesRepository
 from database.rules_repository import RulesRepository
 from database.rule_documents_repository import RuleDocumentsRepository
+from database.drafts_repository import DraftsRepository
 
 
 _issues_service: IssuesService | None = None
@@ -143,3 +144,27 @@ async def get_permits_service() -> PermitsService:
         repo = PermitsRepository(mysql)
         _permits_service = PermitsService(repo)
         return _permits_service
+
+
+# ──────────── Drafts Repository (SQLite app.db) ────────────
+# 2026-06-22 新增: 作业票草稿 (前端 "暂存" / "保存到本地")
+_drafts_repo: DraftsRepository | None = None
+_drafts_repo_lock = asyncio.Lock()
+
+
+async def get_drafts_repository() -> DraftsRepository:
+    """Singleton DraftsRepository (SQLite app.db)."""
+    global _drafts_repo
+
+    if _drafts_repo is not None:
+        return _drafts_repo
+
+    async with _drafts_repo_lock:
+        if _drafts_repo is not None:
+            return _drafts_repo
+
+        db_client = SQLiteClient()
+        repo = DraftsRepository(db_client)
+        await repo.init()
+        _drafts_repo = repo
+        return _drafts_repo

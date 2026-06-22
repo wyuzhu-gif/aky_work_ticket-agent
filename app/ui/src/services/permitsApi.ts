@@ -6,6 +6,7 @@ import type { HotWorkPermit, HotWorkGasAnalysis, ComplianceReviewItem } from '..
 
 const BASE = (import.meta.env.VITE_API_ORIGIN ?? '') + '/api/v1/permits'
 const TYPES_BASE = (import.meta.env.VITE_API_ORIGIN ?? '') + '/api/v1/permit-types'
+const DRAFTS_BASE = (import.meta.env.VITE_API_ORIGIN ?? '') + '/api/v1/drafts'
 
 async function parse<T>(resp: Response): Promise<T> {
   if (!resp.ok) {
@@ -109,4 +110,62 @@ export async function hermesStatus(): Promise<{ available: boolean; hermes_bin: 
 /** 删除 */
 export async function deletePermit(id: number, permitType: string = 'hot_work'): Promise<void> {
   await fetch(`${BASE}/${id}?permit_type=${permitType}`, { method: 'DELETE' })
+}
+
+// ──────────── 2026-06-22: 草稿 (暂存 / 保存到本地) ────────────
+
+export interface DraftSummary {
+  permit_code: string
+  permit_type: string
+  permit_unit?: string
+  permit_location?: string
+  permit_job?: string
+  gas_count: number
+  safety_count: number
+  has_review: boolean
+  review_count: number
+  created_at?: string
+  updated_at?: string
+}
+
+export interface DraftDetail extends Omit<DraftSummary, 'permit_unit' | 'permit_location' | 'permit_job' | 'gas_count' | 'safety_count' | 'review_count'> {
+  permit: Record<string, any>
+  gas_analyses: any[]
+  safety_checks: any[]
+  review_results: ComplianceReviewItem[]
+}
+
+/** 暂存 / 保存到本地 (upsert, 后端按 permit_code 覆盖) */
+export async function saveDraft(data: {
+  permit_code: string
+  permit_type: string
+  permit: Record<string, any>
+  gas_analyses?: any[]
+  safety_checks?: any[]
+  review_results?: ComplianceReviewItem[]
+}): Promise<DraftSummary> {
+  const resp = await fetch(DRAFTS_BASE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  return parse<DraftSummary>(resp)
+}
+
+/** 列草稿 (元信息, 不含大 JSON) */
+export async function listDrafts(permitType?: string): Promise<DraftSummary[]> {
+  const q = permitType ? `?permit_type=${encodeURIComponent(permitType)}` : ''
+  const resp = await fetch(`${DRAFTS_BASE}${q}`)
+  return parse<DraftSummary[]>(resp)
+}
+
+/** 加载单个草稿 (含 permit + gas + safety + review 完整) */
+export async function getDraft(permitCode: string): Promise<DraftDetail> {
+  const resp = await fetch(`${DRAFTS_BASE}/${encodeURIComponent(permitCode)}`)
+  return parse<DraftDetail>(resp)
+}
+
+/** 删除草稿 */
+export async function deleteDraft(permitCode: string): Promise<void> {
+  await fetch(`${DRAFTS_BASE}/${encodeURIComponent(permitCode)}`, { method: 'DELETE' })
 }
