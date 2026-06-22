@@ -38,6 +38,8 @@ import {
   ArrowUploadRegular,
   DeleteRegular,
   DatabaseRegular,
+  ChevronDownRegular,
+  ChevronRightRegular,
   SaveRegular,
   DismissRegular,
   ShieldCheckmarkRegular,
@@ -63,7 +65,36 @@ import {
   hermesStatus,
 } from '../../services/permitsApi'
 
-// ──────────────── Styles ────────────────
+//  ──────────────── Styles ────────────────
+
+// 字段名翻译表 (英文 → 中文), 业务用户看不懂英文代码
+const FIELD_NAME_CN: Record<string, string> = {
+  'permit_code': '作业票编号',
+  'work_content': '作业内容',
+  'work_location': '作业地点',
+  'work_unit': '作业单位',
+  'apply_unit': '申请单位',
+  'work_level': '作业级别',
+  'work_type': '作业类型',
+  'plan_start': '计划开始时间',
+  'plan_end': '计划结束时间',
+  'actual_start': '实际开始时间',
+  'complete_time': '完工时间',
+  'gas_analysis': '气体分析',
+  'gas_analyses': '气体分析',
+  'safety_measures': '安全措施',
+  'safety_checks': '安全措施',
+  'task_manager': '作业负责人',
+  'safe_disclose_person': '安全交底人',
+  'operator': '作业人员',
+  'guardian': '监护人',
+  'fire_watcher': '监火人',
+  'approver': '审批人',
+  'permit_type': '作业票类型',
+  'special_task_view': '特殊作业票',
+  'top_level': '作业大类',
+  'sub_level': '作业小类',
+}
 
 const useStyles = makeStyles({
   container: { display: 'flex', flexDirection: 'column', gap: '24px' },
@@ -154,6 +185,7 @@ const useStyles = makeStyles({
   issueText: { fontSize: '13px', color: tokens.colorNeutralForeground1, lineHeight: '20px' },
   issueSuggestion: { fontSize: '12px', color: tokens.colorBrandForeground1, marginTop: '4px', lineHeight: '18px' },
   issueClause: { fontSize: '11px', color: tokens.colorNeutralForeground3, marginTop: '4px', lineHeight: '16px', fontStyle: 'italic' },
+  issueClauseContent: { fontSize: '11px', color: tokens.colorNeutralForeground2, marginTop: '2px', lineHeight: '16px', padding: '4px 6px', backgroundColor: tokens.colorNeutralBackground2, borderLeft: `2px solid ${tokens.colorBrandForeground1}`, borderRadius: 2, whiteSpace: 'pre-wrap' as const, fontStyle: 'italic' as const },
   issueFieldTag: {
     display: 'inline-block',
     fontSize: '11px',
@@ -1127,39 +1159,66 @@ export default function TicketReview() {
                 )}
               </div>
               <Divider />
-              {sortedResults.map((r, i) => (
+              {sortedResults.map((r, i) => {
+                // 兼容两种格式: 旧版 {category, status, issues: [...]} 和新版 {field, severity, issue, clause, suggestion}
+                const severity = r.status || r.severity || 'fail'
+                return (
                 <div key={i} className={classes.reviewCategory}>
                   <div className={classes.categoryHeader}>
                     <span className={`${classes.statusBadge} ${
-                      r.status === 'pass' ? classes.statusPass :
-                      r.status === 'warning' ? classes.statusWarn :
+                      severity === 'pass' ? classes.statusPass :
+                      severity === 'warning' ? classes.statusWarn :
                       classes.statusFail
                     }`}>
-                      {r.status === 'pass' ? '合规' : r.status === 'warning' ? '警告' : '不合规'}
+                      {severity === 'pass' ? '合规' : severity === 'warning' ? '警告' : '不合规'}
                     </span>
-                    <Text weight="semibold" size={200}>{r.category}</Text>
+                    <Text weight="semibold" size={200}>{r.category || r.field || `项目 ${i + 1}`}</Text>
                   </div>
-                  {r.issues.length === 0 && (
-                    <Text size={200} style={{ color: tokens.colorNeutralForeground4 }}>未发现问题</Text>
-                  )}
-                  {r.issues.map((issue, j) => (
-                    <div
-                      key={j}
-                      className={classes.issueItem}
-                      onClick={() => handleIssueClick(issue.field_key)}
-                    >
-                      <div className={classes.issueText}>{issue.text}</div>
-                      {issue.suggestion && (
-                        <div className={classes.issueSuggestion}>建议：{issue.suggestion}</div>
-                      )}
-                      {issue.clause && (
-                        <div className={classes.issueClause}>📖 {issue.clause}</div>
-                      )}
-                      <div className={classes.issueFieldTag}>{issue.field_key}</div>
-                    </div>
-                  ))}
+                  {/* 兼容两种格式: 旧版 {issues: [...]} 和新版 {field, issue, clause, suggestion} */}
+                  {(() => {
+                    const issues = r.issues || [r]
+                    if (!issues || issues.length === 0) {
+                      return <Text size={200} style={{ color: tokens.colorNeutralForeground4 }}>未发现问题</Text>
+                    }
+                    return issues.map((issue, j) => {
+                      // 新格式: {field, issue, clause, suggestion, clause_content}
+                      // 旧格式: {text, field_key, suggestion, clause}
+                      const text = issue.text || issue.issue || ''
+                      const fieldKey = issue.field_key || issue.field || ''
+                      const clause = issue.clause || ''
+                      const clauseContent = issue.clause_content || ''
+                      const suggestion = issue.suggestion || ''
+                      return (
+                        <div
+                          key={j}
+                          className={classes.issueItem}
+                          onClick={() => handleIssueClick(fieldKey)}
+                        >
+                          <div className={classes.issueText}>{text}</div>
+                          {suggestion && (
+                            <div className={classes.issueSuggestion}>建议：{suggestion}</div>
+                          )}
+                          {clause && (
+                            <div className={classes.issueClause}>📖 {clause}</div>
+                          )}
+                          {clauseContent && (
+                            <ClauseContentFoldable content={clauseContent} />
+                          )}
+                          {fieldKey && (
+                            <div
+                              className={classes.issueFieldTag}
+                              title={fieldKey}
+                            >
+                              {FIELD_NAME_CN[fieldKey] || fieldKey}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })
+                  })()}
                 </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
@@ -1231,6 +1290,30 @@ export default function TicketReview() {
               </Table>
             </div>
           )}
+    </div>
+  )
+}
+
+// ──────────────── Clause Content Foldable ────────────────
+
+/** 折叠的条款原文组件 - 默认折叠, 用户点击展开 */
+function ClauseContentFoldable({ content }: { content: string }) {
+  const classes = useStyles()
+  const [expanded, setExpanded] = useState(false)
+  return (
+    <div style={{ marginTop: '2px' }}>
+      <Button
+        size="small"
+        appearance="subtle"
+        onClick={() => setExpanded(!expanded)}
+        icon={expanded ? <ChevronDownRegular /> : <ChevronRightRegular />}
+        style={{ fontSize: '11px', height: 22, padding: '0 6px' }}
+      >
+        {expanded ? '收起条款原文' : '查看条款原文'}
+      </Button>
+      {expanded && (
+        <div className={classes.issueClauseContent}>原文：{content}</div>
+      )}
     </div>
   )
 }

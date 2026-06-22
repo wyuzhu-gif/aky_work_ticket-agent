@@ -188,16 +188,31 @@ export interface PermitSaveRequest {
 }
 
 export interface ComplianceReviewIssue {
-  text: string
-  field_key: string
-  suggestion: string
-  clause?: string  // 法规条款 (GB 30871-2022 第 X.X 条), 可能为空
+  // 旧格式字段
+  text?: string
+  field_key?: string
+  suggestion?: string
+  clause?: string
+  // 新格式字段 (hermes 新审查输出)
+  field?: string
+  issue?: string
+  severity?: 'pass' | 'warning' | 'fail'
+  // 条款原文 (后端从 wiki 自动追加, 让用户核对条款)
+  clause_content?: string
 }
 
 export interface ComplianceReviewItem {
-  category: string
-  status: 'pass' | 'warning' | 'fail'
-  issues: ComplianceReviewIssue[]
+  // 旧格式字段
+  category?: string
+  status?: 'pass' | 'warning' | 'fail'
+  // 新格式字段 (hermes 新审查输出)
+  field?: string
+  severity?: 'pass' | 'warning' | 'fail'
+  // issues: 旧格式必需, 新格式可空 (每条 item 本身就是 issue)
+  issues?: ComplianceReviewIssue[]
+  issue?: string
+  clause?: string
+  suggestion?: string
 }
 
 export interface ComplianceReviewRequest {
