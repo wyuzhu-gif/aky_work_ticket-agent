@@ -100,6 +100,79 @@ const FIELD_NAME_CN: Record<string, string> = {
   'special_task_view': '特殊作业票',
   'top_level': '作业大类',
   'sub_level': '作业小类',
+  // 2026-06-22 补: 安全措施 / 气体分析 内部字段
+  // 这些是 ExtractedSafetyCheck / HotWorkGasAnalysis 里的 key,
+  // LLM 审查时拿 key 当描述, 业务人员看不懂
+  'is_confirmed': '是否确认',
+  'confirmed_by': '确认人',
+  'description': '措施内容',
+  'check_item': '检查项',
+  'result': '结果',
+  'remark': '备注',
+  'o2': '氧气浓度',
+  'ch4': '甲烷浓度',
+  'co': '一氧化碳浓度',
+  'h2s': '硫化氢浓度',
+  'time': '检测时间',
+  'location': '检测位置',
+  'temperature': '温度',
+  'humidity': '湿度',
+  'applicant_name': '申请人',
+  'work_start': '开始时间',
+  'work_end': '结束时间',
+  'fire_watch': '监火人',
+}
+
+// 2026-06-22 新增: 把审查文本里嵌入的英文 key 替换成中文
+// 优先级: 单词边界匹配, 避免误伤 (is_confirmed= 不会跟 is_confirmed_other 撞)
+// 顺序: 长的在前 (confirmed_by 优先于 confirmed)
+const FIELD_NAME_REGEX_REPLACEMENTS: Array<[RegExp, string]> = [
+  [/\bconfirmed_by\b/g, '确认人'],
+  [/\bis_confirmed\b/g, '是否确认'],
+  [/\bcheck_item\b/g, '检查项'],
+  [/\bgas_analyses\b/g, '气体分析'],
+  [/\bsafety_checks\b/g, '安全措施'],
+  [/\bwork_content\b/g, '作业内容'],
+  [/\bwork_location\b/g, '作业地点'],
+  [/\bwork_unit\b/g, '作业单位'],
+  [/\bapply_unit\b/g, '申请单位'],
+  [/\bwork_level\b/g, '作业级别'],
+  [/\bwork_type\b/g, '作业类型'],
+  [/\bplan_start\b/g, '计划开始时间'],
+  [/\bplan_end\b/g, '计划结束时间'],
+  [/\bpermit_code\b/g, '作业票编号'],
+  [/\bpermit_type\b/g, '作业票类型'],
+  [/\bspecial_task_view\b/g, '特殊作业票'],
+  [/\btop_level\b/g, '作业大类'],
+  [/\bsub_level\b/g, '作业小类'],
+  [/\boperator\b/g, '作业人员'],
+  [/\bguardian\b/g, '监护人'],
+  [/\bfire_watcher\b/g, '监火人'],
+  [/\bapprover\b/g, '审批人'],
+  [/\btask_manager\b/g, '作业负责人'],
+  [/\bsafe_disclose_person\b/g, '安全交底人'],
+]
+
+/**
+ * 2026-06-22 新增: 把审查文本里嵌入的英文字段名替换成中文
+ * 例: "is_confirmed=false 与 confirmed_by=韩志良 矛盾" → "是否确认=false 与 确认人=韩志良 矛盾"
+ */
+function humanizeReviewText(text: string): string {
+  if (!text) return text
+  let out = text
+  for (const [re, cn] of FIELD_NAME_REGEX_REPLACEMENTS) {
+    out = out.replace(re, cn)
+  }
+  return out
+}
+
+/**
+ * 2026-06-22 新增: 翻译 field/category key 为中文
+ * 例: r.field = "is_confirmed" → "是否确认"
+ */
+function fieldLabel(key: string | undefined, fallback: string = ''): string {
+  if (!key) return fallback
+  return FIELD_NAME_CN[key] || key
 }
 
 const useStyles = makeStyles({
@@ -1225,7 +1298,7 @@ export default function TicketReview() {
                     }`}>
                       {severity === 'pass' ? '合规' : severity === 'warning' ? '警告' : '不合规'}
                     </span>
-                    <Text weight="semibold" size={200}>{r.category || r.field || `项目 ${i + 1}`}</Text>
+                    <Text weight="semibold" size={200}>{fieldLabel(r.category || r.field, `项目 ${i + 1}`)}</Text>
                   </div>
                   {/* 兼容两种格式: 旧版 {issues: [...]} 和新版 {field, issue, clause, suggestion} */}
                   {(() => {
@@ -1236,11 +1309,11 @@ export default function TicketReview() {
                     return issues.map((issue, j) => {
                       // 新格式: {field, issue, clause, suggestion, clause_content}
                       // 旧格式: {text, field_key, suggestion, clause}
-                      const text = issue.text || issue.issue || ''
+                      const text = humanizeReviewText(issue.text || issue.issue || '')
                       const fieldKey = issue.field_key || issue.field || ''
                       const clause = issue.clause || ''
-                      const clauseContent = issue.clause_content || ''
-                      const suggestion = issue.suggestion || ''
+                      const clauseContent = humanizeReviewText(issue.clause_content || '')
+                      const suggestion = humanizeReviewText(issue.suggestion || '')
                       return (
                         <div
                           key={j}
