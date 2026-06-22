@@ -1150,7 +1150,7 @@ export default function TicketReview() {
               </Button>
               <Button appearance="subtle" onClick={handleSaveDraft} disabled={saving}>
                 {draftSaved ? <CheckmarkRegular style={{ marginRight: 4 }} /> : <ArrowRedoRegular style={{ marginRight: 4 }} />}
-                {draftSaved ? '已暂存 ✓' : '暂存'}
+                {draftSaved ? '已保存到本地 ✓' : '保存到本地'}
               </Button>
               <Button
                 appearance="secondary"
@@ -1279,7 +1279,7 @@ export default function TicketReview() {
 
       <Divider />
       <Text className={classes.title} style={{ fontSize: '16px' }}>
-        暂存作业票 (本地)
+        已保存到本地的作业票
       </Text>
 
           {loadingList ? (
@@ -1326,7 +1326,7 @@ export default function TicketReview() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge appearance="filled" color="warning">已暂存 (服务器本地)</Badge>
+                        <Badge appearance="filled" color="warning">已保存到本地</Badge>
                       </TableCell>
                       <TableCell>-</TableCell>
                       <TableCell>
