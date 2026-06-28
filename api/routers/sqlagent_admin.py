@@ -504,39 +504,6 @@ async def query_raw(req: RawQueryRequest):
     rows_positional = [[r.get(c) for c in columns] for r in rows_json]
     chart_config = infer_chart({"columns": columns, "rows": rows_positional})
 
-    # 6) 语义提取 (Phase 4.1, 2026-06-25 用户拍板):
-    #    NL2SQL 是最了解数据语义的地方 — SQL 字段天然映射到 topic
-    #    让 raw API 直接返回 topics + recommended_wiki, agent 不用猜
-    from routers.agent_chat_rules import analyze_rows, TOPIC_REGISTRY
-    analysis = analyze_rows(rows_json, columns)
-    topics = analysis["topics"]
-    risk_flags = analysis["risk_flags"]
-    # topic → recommended_wiki (去重)
-    recommended_wiki_set = set()
-    for t in topics:
-        for std in TOPIC_REGISTRY.get(t, []):
-            recommended_wiki_set.add(std)
-    recommended_wiki = sorted(recommended_wiki_set)
-    # risk_type 标记 (从 risk_flags 提取)
-    risk_types = []
-    if analysis["metadata"].get("has_high_danger"):
-        risk_types.append("重大隐患")
-    for rf in risk_flags:
-        if "增长" in rf:
-            risk_types.append("持续增长")
-        if "高发" in rf:
-            risk_types.append("集中爆发")
-    semantic = {
-        "topics": topics,
-        "risk_types": risk_types,
-        "risk_flags": risk_flags,
-        "recommended_wiki": recommended_wiki,
-    }
-    logger.info(
-        f"query_raw: topics={topics}, risk_types={risk_types}, "
-        f"recommended_wiki={recommended_wiki}"
-    )
-
     # DEBUG D-2 (2026-06-25 临时): dump 接口返回结构, 验证 Phase 1 输出
     import os as _os
     if _os.environ.get("TICKET_DEBUG_DUMP") == "1":
@@ -562,6 +529,5 @@ async def query_raw(req: RawQueryRequest):
         "columns": columns,
         "chart_config": chart_config,
         "stats": stats,
-        "semantic": semantic,  # Phase 4.1: topics + risk_types + recommended_wiki
         "execution_time": round(time.time() - start, 3),
     }

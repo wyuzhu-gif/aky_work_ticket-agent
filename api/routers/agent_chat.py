@@ -718,72 +718,50 @@ async def agent_chat(
     # ⚠️ Phase 3 (2026-06-25): 如果已经预加载了数据, 把 rows + chart_config 注入到 user message
     #   禁用 LLM 走 curl / execute_code / read_file 三步链路
     if preloaded_data:
-        # === Phase 4.1 (2026-06-25): 优先用 raw API 返回的 semantic ===
-        # raw API 自己分析 rows → recommended_wiki (不用 agent 猜)
-        # fallback: 如果 raw API 没给 semantic, 调 analyze_rows 兜底
-        from routers.agent_chat_rules import analyze_rows, topics_to_wiki_queries
-
-        semantic_data = preloaded_data.get("semantic") or {}
-        recommended_wiki_list = semantic_data.get("recommended_wiki", [])
-        risk_types = semantic_data.get("risk_types", [])
-        risk_flags_from_semantic = semantic_data.get("risk_flags", [])
-
-        wiki_queries: list[str] = []  # 提前初始化, 避免 UnboundLocalError
-        topics: list[str] = []
-        risk_flags: list[str] = []
-
-        if not recommended_wiki_list:
-            # Fallback: 用 analyze_rows 自己分析 (旧 Phase 4 路径)
-            analysis = analyze_rows(
-                preloaded_data.get("rows", []),
-                preloaded_data.get("columns", [])
-            )
-            topics = analysis["topics"]
-            risk_flags = risk_flags_from_semantic or analysis["risk_flags"]
-            wiki_queries = topics_to_wiki_queries(topics, user_query)
-        else:
-            # raw API 已给 recommended_wiki (e.g. [GB30871, GB50016])
-            # 翻译成 wiki query 字符串
-            wiki_queries = [f"{std} 安全管理要求" for std in recommended_wiki_list[:2]]
-            risk_flags = risk_flags_from_semantic
-            topics = semantic_data.get("topics", [])
-
+        # === Phase 6 (2026-06-25 用户拍板): 直接传 question + SQL + rows 给 llm-wiki ===
+        # 不再维护 TOPIC_REGISTRY, 让 llm-wiki 自己根据上下文决定查什么法规
         logger.info(
-            f"agent_chat: trace={trace_id} data semantic (from raw API): "
-            f"topics={topics}, risk_types={risk_types}, "
-            f"recommended_wiki={recommended_wiki_list}, "
-            f"wiki_queries={wiki_queries}"
+            f"agent_chat: trace={trace_id} wiki input = question + SQL + rows"
         )
 
-        # 调 llm-wiki 拿法规 (限定 1-2 篇, 避免超时)
+        # 调 llm-wiki: input = question + SQL + rows, 让 wiki 自己决定查什么法规
         wiki_results = []
-        if topics:
-            wiki_queries = topics_to_wiki_queries(topics, user_query)
-            logger.info(f"agent_chat: trace={trace_id} wiki queries: {wiki_queries}")
-            for wq in wiki_queries:
-                try:
-                    wiki_payload = {
-                        "question": wq,
-                        "stream": False,
-                        "messages": [{"role": "user", "content": wq}],
-                        "skills": ["llm-wiki"]
-                    }
-                    async with httpx.AsyncClient(timeout=30.0) as _wclient:
-                        wiki_resp = await _wclient.post(HERMES_GATEWAY_URL, json=wiki_payload)
-                    if wiki_resp.status_code == 200:
-                        wiki_data = wiki_resp.json()
-                        wiki_content = wiki_data.get("answer", "")
-                        if not wiki_content:
-                            # OpenAI 兼容格式
-                            try:
-                                wiki_content = wiki_data.get("choices", [{}])[0].get("message", {}).get("content", "")
-                            except Exception:
-                                pass
-                        if wiki_content:
-                            wiki_results.append(f"### {wq}\n{wiki_content[:800]}")
-                except Exception as e_wiki:
-                    logger.warning(f"agent_chat: trace={trace_id} wiki call failed for '{wq}': {e_wiki}")
+        try:
+            # 构造 wiki 输入: user question + SQL + rows (完整上下文)
+            wiki_user_message = (
+                f"用户问题: {user_query}\n\n"
+                f"SQL 查询: {preloaded_data.get('sql', '')}\n\n"
+                f"查询结果 (rows): "
+                f"{json.dumps(preloaded_data.get('rows', []), ensure_ascii=False, default=str)[:3000]}\n\n"
+                f"请基于以上用户问题、SQL 查询和查询结果, 返回相关的法规条款、标准或政策依据. "
+                f"重点关注与查询数据维度 (类型/等级/企业/时间等) 相关的安全法规. "
+                f"如果是统计数据, 返回 GB/T 33000 / AQ 3067 等通用安全管理标准; "
+                f"如果是特殊作业 (动火/受限空间/高处/临时用电等), 返回 GB 30871 相关条款; "
+                f"如果是消防/电气, 返回 GB 50016 / GB 50054; "
+                f"如果是危险化学品, 返回 GB 18218 / GB 15603. "
+                f"返回格式: ### 法规名称\\n 关键条款摘录"
+            )
+            wiki_payload = {
+                "question": user_query,
+                "stream": False,
+                "messages": [{"role": "user", "content": wiki_user_message}],
+                "skills": ["llm-wiki"]
+            }
+            async with httpx.AsyncClient(timeout=30.0) as _wclient:
+                wiki_resp = await _wclient.post(HERMES_GATEWAY_URL, json=wiki_payload)
+            if wiki_resp.status_code == 200:
+                wiki_data = wiki_resp.json()
+                wiki_content = wiki_data.get("answer", "")
+                if not wiki_content:
+                    try:
+                        wiki_content = wiki_data.get("choices", [{}])[0].get("message", {}).get("content", "")
+                    except Exception:
+                        pass
+                if wiki_content:
+                    wiki_results.append(wiki_content[:1500])
             logger.info(f"agent_chat: trace={trace_id} wiki got {len(wiki_results)} results")
+        except Exception as e_wiki:
+            logger.warning(f"agent_chat: trace={trace_id} wiki call failed: {e_wiki}")
 
         # 在最后一条 user message 后追加结构化数据块
         structured_block = (
@@ -795,13 +773,6 @@ async def agent_chat(
             f"chart_config: {json.dumps(preloaded_data.get('chart_config'), ensure_ascii=False)[:500] if preloaded_data.get('chart_config') else 'None'}\n"
             f"stats: {json.dumps(preloaded_data.get('stats'), ensure_ascii=False)}\n\n"
         )
-        # 数据风险信号
-        if risk_flags:
-            structured_block += (
-                "[agent 规则分析 - 数据风险信号]:\n"
-                + "\n".join(f"- {f}" for f in risk_flags)
-                + "\n\n"
-            )
         # 法规 (来自 llm-wiki)
         if wiki_results:
             structured_block += (
@@ -810,9 +781,19 @@ async def agent_chat(
                 + "\n\n"
             )
         structured_block += (
-            "请基于以上数据 + 风险信号 + 相关法规, 生成最终专业分析报告 (📊核心发现 / 🔍详细分析 / ⚠️风险提示 / 💡改进建议 4 段结构). "
-            "不要调用 curl / execute_code / read_file / ticket-nl2sql skill, 数据已准备好. "
-            "在风险/建议部分, 必须引用上述法规条款."
+            "\n\n【强制输出格式 - 必须完整 4 段, 缺一段视为不完整】:\n"
+            "## 📊 核心发现\n"
+            "[3-5 句话总结最关键的事实, 引用 rows 里的具体数字]\n\n"
+            "## 🔍 详细分析\n"
+            "[按维度用 bullet 列表分析, 必须引用上面的 SQL/rows/columns 内容]\n\n"
+            "## ⚠️ 风险提示\n"
+            "[指出潜在风险和异常点, 必须引用上面的法规条款]\n\n"
+            "## 💡 改进建议\n"
+            "[按优先级 (P0/P1/P2) 排序的具体建议, 每条说明依据]\n\n"
+            "要求:\n"
+            "- 4 段标题必须完全一致 (emoji + 文字), 缺一段视为输出不完整\n"
+            "- 每段至少 2-3 个 bullet point 或 3-5 句话\n"
+            "- 不要调用 curl / execute_code / read_file / ticket-nl2sql skill, 数据已准备好"
         )
         # 追加到 user role (合并到最后一条 user msg 后面)
         for i in range(len(upstream_messages) - 1, -1, -1):
