@@ -494,12 +494,8 @@ function KnowledgeReference({ results }: { results: WikiRef[] }) {
           {results.map((ref, idx) => (
             <div key={idx} style={{ marginBottom: '8px', paddingBottom: idx < results.length - 1 ? '8px' : 0, borderBottom: idx < results.length - 1 ? `1px solid ${tokens.colorNeutralStroke3}` : 'none' }}>
               <div style={{ fontSize: '12px', fontWeight: 600, marginBottom: '4px', color: tokens.colorNeutralForeground1 }}>{ref.title || ref.filepath}</div>
-              {ref.content ? (
-                <div style={{ fontSize: '11px', lineHeight: 1.5, opacity: 0.85, whiteSpace: 'pre-wrap' }}>
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{ref.content}</ReactMarkdown>
-                </div>
-              ) : (
-                <div style={{ fontSize: '11px', lineHeight: 1.5, opacity: 0.85 }}>{ref.snippet || ''}</div>
+              {ref.filepath && (
+                <div style={{ fontSize: '11px', opacity: 0.7, fontFamily: 'monospace' }}>{ref.filepath}</div>
               )}
             </div>
           ))}

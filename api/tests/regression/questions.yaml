@@ -1,0 +1,108 @@
+# Regression Test Questions
+# 总计 26 题, 覆盖三种意图
+# 跑回归测试: python tests/regression/run_regression.py
+
+phases:
+  - name: "Phase A: database_query"
+    description: "数据查询类 - 验证 raw API 抢数据控制权"
+    questions:
+      # 12 题预期有图 (rows >= 2)
+      - text: "今日新增隐患数量,按类型分布"
+        expect_chart: true
+        expect_tool_calls_zero: true
+      - text: "近30天隐患趋势"
+        expect_chart: true
+        expect_tool_calls_zero: true
+      - text: "各部门整改率"
+        expect_chart: true
+        expect_tool_calls_zero: true
+      - text: "近半年隐患变化"
+        expect_chart: true
+        expect_tool_calls_zero: true
+      - text: "本周新增隐患"
+        expect_chart: true
+        expect_tool_calls_zero: true
+      - text: "各企业隐患总数排名"
+        expect_chart: true
+        expect_tool_calls_zero: true
+      - text: "高风险作业数量"
+        expect_chart: true
+        expect_tool_calls_zero: true
+      - text: "未整改隐患清单"
+        expect_chart: true
+        expect_tool_calls_zero: true
+      - text: "验收通过率"
+        expect_chart: true
+        expect_tool_calls_zero: true
+      - text: "各类型作业票数量"
+        expect_chart: true
+        expect_tool_calls_zero: true
+      - text: "动火作业违规次数"
+        expect_chart: true
+        expect_tool_calls_zero: true
+      - text: "近 7 天高发隐患类型"
+        expect_chart: true
+        expect_tool_calls_zero: true
+
+      # 8 题预期无图 (rows = 1, 单值聚合)
+      - text: "今日新增隐患"
+        expect_chart: false
+        expect_tool_calls_zero: true
+      - text: "本月动火作业数量"
+        expect_chart: false
+        expect_tool_calls_zero: true
+      - text: "受限空间作业数量"
+        expect_chart: false
+        expect_tool_calls_zero: true
+      - text: "本周作业票总数"
+        expect_chart: false
+        expect_tool_calls_zero: true
+      - text: "特种作业人员数量"
+        expect_chart: false
+        expect_tool_calls_zero: true
+      - text: "高处作业数量"
+        expect_chart: false
+        expect_tool_calls_zero: true
+      - text: "临时用电作业数量"
+        expect_chart: false
+        expect_tool_calls_zero: true
+      - text: "本月重大隐患数量"
+        expect_chart: false
+        expect_tool_calls_zero: true
+
+  - name: "Phase B: safety_knowledge"
+    description: "法规类 - 验证 wiki 链路未被破坏"
+    questions:
+      - text: "动火作业审批流程"
+        expect_chart: false
+        expect_tool_calls_zero: false  # 预期会调 wiki
+      - text: "受限空间作业安全要求"
+        expect_chart: false
+        expect_tool_calls_zero: false
+      - text: "高处作业防护措施"
+        expect_chart: false
+        expect_tool_calls_zero: false
+
+  - name: "Phase C: mixed"
+    description: "混合类 - 验证 database + wiki 联合调用"
+    questions:
+      - text: "今天新增消防隐患有哪些？依据 GB30871 应该怎么整改？"
+        expect_chart: false  # rows=1 不会画图 (按今日数据), 但期望有 wiki 法规
+        expect_tool_calls_zero: false
+      - text: "本月动火作业违规情况，依据法规怎么处置？"
+        expect_chart: false
+        expect_tool_calls_zero: false
+      - text: "近 30 天重大隐患，依据 GB30871 第 6 章如何整改？"
+        expect_chart: true  # 近 30 天重大隐患有多行, 期望有图
+        expect_tool_calls_zero: false
+
+# Regression Gate 阈值 (gates/regression_gates.md 参考)
+gates:
+  database_query_success_min: 0.95  # 19/20
+  safety_knowledge_success_min: 1.0  # 3/3
+  mixed_success_min: 0.67  # 2/3
+  chart_success_min: 0.95  # 11/12 预期图
+  timeout_rate_max: 0.05  # 1/26
+  answer_length_min: 400  # 之前 220-580 是 220
+  answer_length_max: 5000  # 没设上限
+  avg_elapsed_max_seconds: 120  # 当前 avg=50, P95=109

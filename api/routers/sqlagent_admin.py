@@ -371,3 +371,197 @@ def _mask_password(d: dict) -> dict:
     if "password" in result and isinstance(result["password"], str) and len(result["password"]) > 3:
         result["password"] = "******"
     return result
+
+# ============================================================
+# Phase 1: Raw Query 接口 (2026-06-25)
+# 数据驱动架构: SQL → rows → (返回给上层 LLM/Hermes)
+# 禁止: Report LLM / markdown / summary / chartconfig LLM / prompt 结构设计
+# 允许: SQL 执行 + DataFrame→JSON + infer_chart(rows) + stats aggregation
+# ============================================================
+
+from pydantic import BaseModel, Field
+
+
+class RawQueryRequest(BaseModel):
+    question: str = Field(..., description="用户自然语言问题")
+    auto_train: bool = Field(default=False, description="成功后是否自动训练 (默认 False, raw 接口只读)")
+
+
+def _compute_numeric_stats(rows: list) -> dict:
+    """对每列是数字的列, 自动算 min/max/avg/sum"""
+    if not rows:
+        return {}
+    cols = list(rows[0].keys())
+    stats = {}
+    for col in cols:
+        nums = []
+        for r in rows:
+            v = r.get(col)
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                nums.append(float(v))
+        if nums:
+            stats[col] = {
+                "min": min(nums),
+                "max": max(nums),
+                "avg": round(sum(nums) / len(nums), 4),
+                "sum": round(sum(nums), 4),
+            }
+    return stats
+
+
+@router.post("/query/raw")
+async def query_raw(req: RawQueryRequest):
+    """
+    Phase 1: Raw Query 接口
+
+    返回结构化数据 (SQL + rows + chart_config + stats), 不生成文字.
+    让上层 LLM (Hermes) 一次性整合分析.
+
+    与 /api/v1/chat 的区别:
+      - /api/v1/chat: SQL + Report LLM + markdown 报告 (Presentation Plane)
+      - /api/v1/sqlagent/query: SQL + rows + chart (Data Plane, 此次新增)
+      - /api/v1/sqlagent/chat: (未来) 报表层, 调用 query + 加 wiki + 整合
+    """
+    if not is_initialized():
+        raise HTTPException(status_code=503, detail="SmartQuery 未初始化")
+
+    import time
+    import json as _json
+    from smart_query.clients import (
+        get_last_query_result, get_last_query_sql, clear_last_query_result
+    )
+    from routers.agent_chat import infer_chart
+
+    start = time.time()
+
+    # 1) 清缓存, 避免读到上次的结果
+    clear_last_query_result()
+
+    # 2) 跑 LangChain Agent 拿 SQL + 执行结果 (复用 chat.py 的 agent 流程)
+    try:
+        from smart_query.service import get_agent
+        agent = get_agent()
+        cfg = {
+            "configurable": {"thread_id": f"raw-{int(time.time()*1000)}"},
+            "recursion_limit": 100,
+        }
+        # 触发 NL2SQL + execute_sql tool, 会写缓存
+        for _ in agent.stream(
+            {"messages": [{"role": "user", "content": req.question}]},
+            stream_mode="values",
+            config=cfg,
+        ):
+            pass  # 不需要中间 event, 只要触发 execute_sql 写缓存
+    except Exception as e:
+        return {
+            "error": f"Agent 执行失败: {e}",
+            "sql": None,
+            "rows": [],
+            "columns": [],
+            "chart_config": None,
+            "stats": {"row_count": 0, "numeric_summary": {}},
+            "execution_time": round(time.time() - start, 3),
+        }
+
+    # 3) 从缓存拿 DataFrame + SQL
+    df = get_last_query_result()
+    sql = get_last_query_sql()
+
+    if df is None or len(df) == 0:
+        return {
+            "error": "未取到 SQL 数据 (Agent 可能没调 execute_sql)",
+            "sql": sql,
+            "rows": [],
+            "columns": [],
+            "chart_config": None,
+            "stats": {"row_count": 0, "numeric_summary": {}},
+            "execution_time": round(time.time() - start, 3),
+        }
+
+    # 4) DataFrame → rows (list of dict) + columns
+    try:
+        rows_json = _json.loads(df.to_json(orient="records", force_ascii=False))
+    except Exception as e:
+        return {
+            "error": f"DataFrame 序列化失败: {e}",
+            "sql": sql,
+            "rows": [],
+            "columns": [],
+            "chart_config": None,
+            "stats": {"row_count": 0, "numeric_summary": {}},
+            "execution_time": round(time.time() - start, 3),
+        }
+
+    columns = list(df.columns)
+    stats = {
+        "row_count": len(rows_json),
+        "column_count": len(columns),
+        "numeric_summary": _compute_numeric_stats(rows_json),
+    }
+
+    # 5) infer_chart 派生 chart_config (后端确定性, 不让 LLM 参与)
+    #    rows_json 是对象数组 [{"col": val}, ...], 转成数组数组 [[val, val], ...]
+    rows_positional = [[r.get(c) for c in columns] for r in rows_json]
+    chart_config = infer_chart({"columns": columns, "rows": rows_positional})
+
+    # 6) 语义提取 (Phase 4.1, 2026-06-25 用户拍板):
+    #    NL2SQL 是最了解数据语义的地方 — SQL 字段天然映射到 topic
+    #    让 raw API 直接返回 topics + recommended_wiki, agent 不用猜
+    from routers.agent_chat_rules import analyze_rows, TOPIC_REGISTRY
+    analysis = analyze_rows(rows_json, columns)
+    topics = analysis["topics"]
+    risk_flags = analysis["risk_flags"]
+    # topic → recommended_wiki (去重)
+    recommended_wiki_set = set()
+    for t in topics:
+        for std in TOPIC_REGISTRY.get(t, []):
+            recommended_wiki_set.add(std)
+    recommended_wiki = sorted(recommended_wiki_set)
+    # risk_type 标记 (从 risk_flags 提取)
+    risk_types = []
+    if analysis["metadata"].get("has_high_danger"):
+        risk_types.append("重大隐患")
+    for rf in risk_flags:
+        if "增长" in rf:
+            risk_types.append("持续增长")
+        if "高发" in rf:
+            risk_types.append("集中爆发")
+    semantic = {
+        "topics": topics,
+        "risk_types": risk_types,
+        "risk_flags": risk_flags,
+        "recommended_wiki": recommended_wiki,
+    }
+    logger.info(
+        f"query_raw: topics={topics}, risk_types={risk_types}, "
+        f"recommended_wiki={recommended_wiki}"
+    )
+
+    # DEBUG D-2 (2026-06-25 临时): dump 接口返回结构, 验证 Phase 1 输出
+    import os as _os
+    if _os.environ.get("TICKET_DEBUG_DUMP") == "1":
+        try:
+            with open("/tmp/ticket_query_raw_result.json", "w", encoding="utf-8") as f:
+                _json.dump({
+                    "error": None,
+                    "sql": sql,
+                    "rows_count": len(rows_json),
+                    "rows_sample": rows_json[:3],
+                    "columns": columns,
+                    "chart_config_type": chart_config.get("type") if chart_config else None,
+                    "stats": stats,
+                }, f, ensure_ascii=False, indent=2)
+            logger.info("D DEBUG: dumped /api/v1/sqlagent/query/raw result to /tmp/ticket_query_raw_result.json")
+        except Exception as _e:
+            logger.warning(f"D DEBUG dump failed: {_e}")
+
+    return {
+        "error": None,
+        "sql": sql,
+        "rows": rows_json,
+        "columns": columns,
+        "chart_config": chart_config,
+        "stats": stats,
+        "semantic": semantic,  # Phase 4.1: topics + risk_types + recommended_wiki
+        "execution_time": round(time.time() - start, 3),
+    }

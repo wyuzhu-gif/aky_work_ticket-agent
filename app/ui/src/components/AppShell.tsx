@@ -21,6 +21,7 @@ import {
   DocumentRegular,
   ChevronDown16Regular,
   ChevronRight16Regular,
+  ChatRegular,
 } from '@fluentui/react-icons'
 import { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
@@ -278,6 +279,7 @@ const NAV_SECTIONS = [
     icon: <DataUsageRegular />,
     items: [
       { to: '/smart-query', label: '智能问数', icon: <DataUsageRegular /> },
+      { to: '/hermes-chat', label: 'Hermes 问答', icon: <ChatRegular /> },
     ],
   },
   {
@@ -293,6 +295,7 @@ const NAV_SECTIONS = [
 const PAGE_TITLES: Record<string, string> = {
   '/ticket-review': '作业票审查',
   '/smart-query': '智能问数',
+  '/hermes-chat': 'Hermes 问答',
   '/agent-admin': '智能体配置',
 }
 
@@ -352,7 +355,7 @@ export function AppShell({ mode, onToggleMode, children }: AppShellProps) {
   const pageTitle = PAGE_TITLES[basePath] || PAGE_TITLES[location.pathname] || 'AI 文档审核'
   const breadcrumb = PAGE_BREADCRUMBS[basePath] || PAGE_BREADCRUMBS[location.pathname] || ''
 
-  const isTopLevel = ['/ticket-review', '/smart-query', '/agent-admin'].includes(basePath)
+  const isTopLevel = ['/ticket-review', '/smart-query', '/hermes-chat', '/agent-admin'].includes(basePath)
 
   return (
     <div className={classes.shell}>

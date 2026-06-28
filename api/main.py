@@ -23,7 +23,7 @@ from routers import issues
 from routers import review_external, files, rules, rule_documents, permits, chat
 from routers import sqlagent_admin
 from routers import dashboard, wiki_router
-from routers import hermes_review
+from routers import hermes_review, agent_chat
 from routers import drafts
 
 # Set up logging configuration
@@ -79,6 +79,7 @@ app.include_router(sqlagent_admin.router)
 app.include_router(dashboard.router)
 app.include_router(wiki_router.router)
 app.include_router(hermes_review.router)
+app.include_router(agent_chat.router)
 app.include_router(drafts.router)
 
 
@@ -110,7 +111,7 @@ if settings.serve_static:
             from fastapi import HTTPException
             raise HTTPException(status_code=404)
 
-        for route in ["/smart-query", "/ticket-review", "/agent-admin", "/dashboard", "/settings"]:
+        for route in ["/smart-query", "/ticket-review", "/agent-admin", "/dashboard", "/settings", "/agent-chat", "/hermes-chat"]:
             app.get(route, include_in_schema=False)(spa_fallback_handler)
 
         app.mount("/", StaticFiles(directory=static_dir, html=True))

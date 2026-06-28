@@ -42,6 +42,142 @@ def convert_decimals(obj):
         return obj
 
 
+def generate_final_report(
+    question: str,
+    query_data: list | None,
+    sql_query: str | None,
+    fallback_answer: str = "",
+):
+    """
+    抽出的报告生成 + chartconfig 解析逻辑 (2026-06-24)
+
+    跟 generate_chat_stream 内部 (line 300-435) 行为一致:
+    1. 调 call_hermes_sync (内层 hermes + llm-wiki) 拿法规依据
+    2. 调 report_llm (qwen3.6) 合成最终报告
+    3. 解析 ```chartconfig``` 块
+    4. 返 (final_answer, chart_config)
+
+    之前 chat_non_stream 直接返回 agent.stream 的 final answer,
+    没调内层 hermes + report_llm, 答案不完整 (LLM 强停时输出截断).
+    现在统一走这个函数, SSE / non_stream 行为一致.
+
+    Args:
+        question: 用户问题
+        query_data: SQL 查询结果 (list of dicts)
+        sql_query: 执行的 SQL
+        fallback_answer: agent.stream 拿到的 final answer (失败时 fallback 用)
+
+    Returns:
+        (final_answer: str, chart_config: dict | None)
+    """
+    answer = fallback_answer
+    chart_config = None
+
+    if not query_data:
+        # 没真实数据, 不调内层 hermes + report_llm, 直接用 fallback answer + 解析 chartconfig
+        logger.info("[Final Report] 无 query_data, 跳过两段式 prompt, 用 fallback answer")
+    else:
+        try:
+            from .config import OUTPUT_FORMAT_PROMPT
+            from langchain_core.messages import SystemMessage, HumanMessage
+            from common.llm_utils import build_llm
+            from services.hermes_singleton import call_hermes_sync
+
+            # 调内层 hermes + llm-wiki 拿法规依据
+            wiki_prompt = f"""你是安全管理专家. 用户问了关于作业票数据库的问题, SQL 查询已返回真实数据.
+
+⚠️ 关键约束 (避免胡编 / 幻觉):
+- 所有数字必须从 SQL 结果来, 严禁自己造
+- **严禁编造百分比/比例/分布** — DataFrame 没有的列, 严禁写"100% 包含 X"这种统计
+- **严禁编造标准条款号** — 引用 GB/AQ 等条款时, 只能引用 hermes + llm-wiki 查到的内容, 自己不知道的条款不要写
+- 单次任务总工具调用不超过 8 次
+
+用户问题: {question}
+
+SQL 查询结果 (前 {min(len(query_data), 20)} 行 / 共 {len(query_data)} 行):
+{json.dumps(query_data[:20], ensure_ascii=False, default=str)}
+
+SQL 语句: {sql_query or 'N/A'}
+
+任务:
+1. 用 llm-wiki 查 llmwiki 知识库中相关的国标/行标 (不限定特定 GB/AQ, hermes 自己决定查哪些页)
+2. 严格基于 SQL 结果分析 (禁止编造, 禁止假设, 禁止"估计/大约")
+3. 给出:
+   a. 数据洞察 (关键的发现/异常/趋势, 必须有 DataFrame 数字支撑)
+   b. 法规依据 (引用的具体条款, 标准号 + 条款号, 必须从 wiki 查到的内容来)
+   c. 改进建议 (具体可执行的措施, 引用法规)
+4. 输出 3 段 markdown 报告 (不要 JSON, 写人话):
+   ### 数据洞察
+   ### 法规依据
+   ### 改进建议
+
+只输出 markdown 报告, 不要 JSON 代码块, 不要寒暄."""
+
+            wiki_enhancement = ""
+            try:
+                t0 = time.time()
+                # call_hermes_sync 是 generator, 消费拿到 stdout
+                for event in call_hermes_sync(wiki_prompt, timeout=180):
+                    if isinstance(event, str):
+                        wiki_enhancement = event
+                logger.info(f"[Final Report] wiki_enhancement {len(wiki_enhancement)} 字符, 耗时 {time.time()-t0:.1f}s")
+            except Exception as e_wiki:
+                logger.warning(f"[Final Report] hermes 失败, 降级到基础报告: {e_wiki}")
+                wiki_enhancement = ""
+
+            # 调第二次 LLM 合成最终报告
+            report_llm = build_llm(max_tokens=3000)
+            report_messages = [
+                SystemMessage(content=(
+                    "你是数据分析员. "
+                    "严格基于 SQL 结果 + hermes 提供的法规依据, 生成专业报告. "
+                    "禁止编造数据, 禁止假设, 禁止'估计/大约'等模糊措辞.\n"
+                    "\n"
+                    "**输出规范 (重要)**:\n"
+                    "- 写给业务用户看的报告, 不要出现英文字段名\n"
+                    "- 用中文: 计划开始时间 / 日期 / 作业类型大类 / 特殊作业票表\n"
+                    "- 用通俗语言, 避免技术术语"
+                )),
+                HumanMessage(content=(
+                    f"用户问题: {question}\n\n"
+                    f"SQL 查询结果 ({len(query_data)} 行, 前 20 行):\n"
+                    f"{json.dumps(query_data[:20], ensure_ascii=False, default=str)[:2000]}\n\n"
+                    f"SQL 语句: {sql_query or 'N/A'}\n\n"
+                    f"---\n\n"
+                    f"## hermes 通过 llm-wiki 查到的专业分析 + 法规依据\n\n"
+                    f"{wiki_enhancement if wiki_enhancement else '(hermes 调用失败或无结果, 仅基于 SQL 数据分析)'}\n\n"
+                    f"---\n\n"
+                    f"{OUTPUT_FORMAT_PROMPT}\n\n"
+                    f"**重要**: 严格基于 SQL 结果 + hermes 提供的法规依据, 写报告."
+                )),
+            ]
+
+            logger.info(f"[Final Report] Calling LLM with hermes-enhanced context ({len(wiki_enhancement)} chars from hermes)")
+            t0 = time.time()
+            report_resp = report_llm.invoke(report_messages)
+            logger.info(f"[Final Report] LLM response in {time.time()-t0:.1f}s, content_len={len(report_resp.content)}")
+            answer = report_resp.content
+        except Exception as e:
+            logger.error(f"[Final Report] Failed, fallback to original answer: {e}")
+            # fallback: 用 fallback_answer
+            if not answer and fallback_answer:
+                answer = fallback_answer
+
+    # 解析 chartconfig 块
+    chartconfig_pattern = r'```chartconfig\s*\n?(.*?)\n?```'
+    chartconfig_match = re.search(chartconfig_pattern, answer, re.DOTALL)
+    if chartconfig_match:
+        try:
+            chart_config = json.loads(chartconfig_match.group(1).strip())
+        except (json.JSONDecodeError, Exception) as e:
+            logger.warning(f"[Final Report] Chart config parse failed: {e}")
+            chart_config = None
+        # 从 answer 移除 chartconfig 块
+        answer = re.sub(chartconfig_pattern, '', answer, flags=re.DOTALL).strip()
+
+    return answer, chart_config
+
+
 def generate_chat_stream(
     agent,
     question: str,
@@ -316,7 +452,7 @@ def generate_chat_stream(
                             'action': '⏳ AI 报告生成中, 请稍候...',
                             'tool_name': 'generate_report',
                             'status': 'running',
-                            'description': '已获取查询数据, 调 hermes + llm-wiki 查 GB 30871 等标准, 生成专业分析报告 (10-30 秒)',
+                            'description': '已获取查询数据, 检索标准库并生成专业分析报告 (10-30 秒)',
                         }
                         yield f"data: {json.dumps(step_data, ensure_ascii=False)}\n\n"
 
@@ -327,6 +463,12 @@ def generate_chat_stream(
                         # hermes 会调 llm-wiki skill, 读完整 .md, 给专业建议
                         wiki_prompt = f"""你是安全管理专家. 用户问了关于作业票数据库的问题, SQL 查询已返回真实数据.
 
+⚠️ 关键约束 (避免 Agent 循环超时):
+- 最多读 3 个 wiki 页 (1 个核心 + 2 个补充), 不要再读更多
+- 优先用 `grep -l` 定位 1~3 个最相关的 .md, 然后只 `read_file` 这 1~3 个
+- 拿到关键条款后**立即停止 read_file, 合成答案**, 不要继续 search
+- 单次任务总工具调用不超过 8 次
+
 用户问题: {question}
 
 SQL 查询结果 (前 {min(len(query_data), 20)} 行 / 共 {len(query_data)} 行):
@@ -335,13 +477,14 @@ SQL 查询结果 (前 {min(len(query_data), 20)} 行 / 共 {len(query_data)} 行
 SQL 语句: {sql_query or 'N/A'}
 
 任务:
-1. 用 llm-wiki 查 GB 30871-2022 / AQ 3064 / 相关行业标准 (如果问题涉及作业安全)
-2. 严格基于 SQL 结果分析 (禁止编造, 禁止假设, 禁止"估计/大约")
-3. 给出:
+1. 先 `grep -l` 定位 1~3 个最相关的国标/行标 (不限定 GB 30871, hermes 自己决定)
+2. 只 `read_file` 这 1~3 个 .md
+3. 严格基于 SQL 结果分析 (禁止编造, 禁止假设, 禁止"估计/大约")
+4. 给出:
    a. 数据洞察 (关键的发现/异常/趋势)
-   b. 法规依据 (引用的具体条款, GB 30871 第 X.X 条)
+   b. 法规依据 (引用的具体条款, 标准号 + 条款号)
    c. 改进建议 (具体可执行的措施, 引用法规)
-4. 输出 3 段 markdown 报告 (不要 JSON, 写人话):
+5. 输出 3 段 markdown 报告 (不要 JSON, 写人话):
    ### 数据洞察
    ### 法规依据
    ### 改进建议
@@ -351,8 +494,15 @@ SQL 语句: {sql_query or 'N/A'}
                         wiki_enhancement = ""
                         try:
                             t0 = time.time()
-                            wiki_enhancement = call_hermes_sync(wiki_prompt, timeout=120)
+                            # call_hermes_sync 现在是 generator, 先 yield 中间进度 step, 最后 yield stdout 字符串
+                            for event in call_hermes_sync(wiki_prompt, timeout=180):
+                                if isinstance(event, str):
+                                    wiki_enhancement = event
+                                else:
+                                    # 进度事件 → 推给前端
+                                    yield _sse_step(**event)
                             logger.info(f"[Hermes Wiki] {len(wiki_enhancement)} 字符, 耗时 {time.time()-t0:.1f}s")
+                            logger.info(f"[Hermes Wiki] 前500字符: {wiki_enhancement[:500]!r}")
                         except Exception as e_wiki:
                             logger.warning(f"[Hermes Wiki] 失败, 降级到基础报告: {e_wiki}")
                             wiki_enhancement = ""
@@ -485,3 +635,208 @@ SQL 语句: {sql_query or 'N/A'}
         logger.error(f"Stream generation error: {e}", exc_info=True)
         error_data = {'type': 'error', 'message': str(e)}
         yield f"data: {json.dumps(error_data, ensure_ascii=False)}\n\n"
+
+
+# =============================================================================
+# 意图分流新增 (2026-06-23):
+# - generate_safety_stream: 纯安全知识 → 调 hermes 查 llm-wiki, 输出 markdown 法规依据
+# - generate_casual_stream: 闲聊 → 调 hermes 友好回复 (统一入口, 不直连 LLM)
+# - generate_chat_stream:   不变, 数据库查询走完整链路
+# =============================================================================
+
+def _sse_step(action: str, tool_name: str, status: str, **extra) -> str:
+    """构造统一的 step SSE 事件 (3 路共用)"""
+    data = {
+        "type": "step",
+        "action": action,
+        "tool_name": tool_name,
+        "status": status,
+    }
+    data.update(extra)
+    return f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+def _sse_answer_chunk(content: str, done: bool = False) -> str:
+    """构造 answer SSE 事件 (3 路共用)"""
+    return f"data: {json.dumps({'type': 'answer', 'content': content, 'done': done}, ensure_ascii=False)}\n\n"
+
+
+def _sse_done(session_id: str) -> str:
+    return f"data: {json.dumps({'type': 'done', 'session_id': session_id}, ensure_ascii=False)}\n\n"
+
+
+def _sse_error(message: str) -> str:
+    return f"data: {json.dumps({'type': 'error', 'message': message}, ensure_ascii=False)}\n\n"
+
+
+def _save_assistant_message(session_id: str, content: str) -> None:
+    """把 AI 回复存到会话历史 (3 路共用)"""
+    try:
+        from .sessions import add_message
+        add_message(session_id=session_id, role="assistant", content=content)
+    except Exception as e:
+        logger.warning(f"[Stream] save assistant msg failed: {e}")
+
+
+def _push_markdown_answer(session_id: str, answer: str):
+    """把 hermes 返回的整段 markdown 逐字符推给 SSE (模拟打字效果, 跟现有 db_query 链路一致)"""
+    for char in answer:
+        yield _sse_answer_chunk(char, done=False)
+        # 复用现有 db_query 的打字节奏: 20ms/字符
+        # 短答案不延迟 (避免用户以为卡)
+        if len(answer) > 200:
+            import time as _t
+            _t.sleep(0.02)
+
+
+def generate_safety_stream(
+    question: str,
+    session_id: str,
+):
+    """
+    纯安全知识问题 → 调 hermes 查 llm-wiki, 输出 markdown 法规依据.
+
+    流程:
+      1. step: 通知前端"正在查法规"
+      2. 调 hermes 子进程, prompt 写明 "用 llm-wiki 查 GB 30871 / AQ 等"
+      3. 把 hermes 输出逐字符推给 SSE (markdown 报告)
+      4. done 收尾 + 保存会话历史
+
+    跟 database_query 的区别:
+      - 不调 Vanna / 不执行 SQL / 不出图表
+      - 单一 hermes 调用, 没有"阶段 1 → 阶段 2"两段式
+    """
+    from services.hermes_singleton import call_hermes_sync
+
+    try:
+        yield _sse_step(
+            action="🔍 正在查询安全法规...",
+            tool_name="wiki_search",
+            status="running",
+        )
+
+        wiki_prompt = f"""你是安全管理专家. 用户问了一个安全知识/法规相关问题, 请用 llm-wiki 查**最相关的 1~3 个标准**, 给专业答复.
+
+⚠️ 关键约束 (避免 Agent 循环超时):
+- 最多读 3 个 wiki 页 (1 个核心 + 2 个补充), 不要再读更多
+- 优先用 `grep -l` 定位 1~3 个最相关的 .md, 然后只 `read_file` 这 1~3 个
+- 拿到关键条款后**立即停止 read_file, 合成答案**, 不要继续 search
+- 单次任务总工具调用不超过 8 次
+
+用户问题: {question}
+
+任务:
+1. 先 `grep -l "关键词" /home/czys/workspace/llmwiki/entities/*.md` 定位 1~3 个最相关标准
+2. `read_file` 这 1~3 个最相关的 .md
+3. 严格基于 wiki 内容, wiki 里没收录的就明确说"wiki 未收录"
+4. 输出 markdown 报告:
+   ### 法规依据
+   ### 安全措施 / 操作要点
+   ### 参考条款
+
+只输出 markdown, 不要寒暄, 不要 JSON."""
+
+        t0 = time.time()
+        answer = ""
+        try:
+            # call_hermes_sync 现在是 generator: 先 yield 中间进度 step, 最后 yield stdout 字符串
+            for event in call_hermes_sync(wiki_prompt, timeout=180):
+                if isinstance(event, str):
+                    answer = event
+                else:
+                    # 进度事件 → 推给前端
+                    yield _sse_step(**event)
+            logger.info(f"[Safety Stream] hermes 返回 {len(answer)} 字符, 耗时 {time.time()-t0:.1f}s")
+        except Exception as e:
+            logger.error(f"[Safety Stream] hermes 失败: {e}")
+            answer = f"⚠️ 法规查询暂时不可用: {e}\n\n请稍后重试, 或直接咨询安全管理人员。"
+
+        yield _sse_step(
+            action="✅ 法规查询完成",
+            tool_name="wiki_search",
+            status="completed",
+            duration_ms=int((time.time() - t0) * 1000),
+            update=True,
+        )
+
+        # 逐字符推 markdown
+        for chunk in _push_markdown_answer(session_id, answer):
+            yield chunk
+
+        # 保存会话
+        _save_assistant_message(session_id, answer)
+
+        yield _sse_done(session_id)
+
+    except Exception as e:
+        logger.error(f"[Safety Stream] 异常: {e}", exc_info=True)
+        yield _sse_error(str(e))
+
+
+def generate_casual_stream(
+    question: str,
+    session_id: str,
+):
+    """
+    闲聊/打招呼 → 调 hermes 友好回复 (统一入口).
+
+    为什么不直连本地 LLM:
+      - 用户决定所有 LLM 调用统一走 hermes (统一入口/审计/记忆)
+      - 虽然 hermes 启动 ~12s, 但闲聊不要求快
+
+    流程:
+      1. step: 通知前端"hermes 准备回复"
+      2. 调 hermes, prompt 写明"友好回复用户闲聊"
+      3. 输出回复
+      4. done
+    """
+    from services.hermes_singleton import call_hermes_sync
+
+    try:
+        yield _sse_step(
+            action="💬 正在准备回复...",
+            tool_name="chat_engine",
+            status="running",
+        )
+
+        casual_prompt = f"""你是作业票系统的智能助手. 用户跟你打招呼或闲聊, 请友好简洁地回复 (1-3 句, 不要长篇大论).
+
+用户输入: {question}
+
+回复要求:
+- 友好自然, 像同事聊天
+- 简要说一下你能干啥 (作业票查询 + 安全知识问答)
+- 不要 markdown 标题, 不要列表
+- 1-3 句即可"""
+
+        t0 = time.time()
+        answer = ""
+        try:
+            for event in call_hermes_sync(casual_prompt, timeout=120):
+                if isinstance(event, str):
+                    answer = event
+                else:
+                    yield _sse_step(**event)
+            logger.info(f"[Casual Stream] hermes 返回 {len(answer)} 字符, 耗时 {time.time()-t0:.1f}s")
+        except Exception as e:
+            logger.error(f"[Casual Stream] hermes 失败: {e}")
+            answer = "你好! 我是作业票系统的智能助手, 可以帮你:\n1. 查询/统计作业票数据 (例如: 昨天动火多少张)\n2. 解答安全知识问题 (GB 30871 等标准)\n\n请告诉我你想了解什么?"
+
+        yield _sse_step(
+            action="✅ 回复就绪",
+            tool_name="chat_engine",
+            status="completed",
+            duration_ms=int((time.time() - t0) * 1000),
+            update=True,
+        )
+
+        for chunk in _push_markdown_answer(session_id, answer):
+            yield chunk
+
+        _save_assistant_message(session_id, answer)
+
+        yield _sse_done(session_id)
+
+    except Exception as e:
+        logger.error(f"[Casual Stream] 异常: {e}", exc_info=True)
+        yield _sse_error(str(e))

@@ -3,6 +3,7 @@ import { AppShell } from './components/AppShell'
 import TicketReview from './pages/ticketReview/TicketReview'
 import SmartQuery from './pages/smartQuery/SmartQuery'
 import AgentAdmin from './pages/agentAdmin/AgentAdmin'
+import HermesChat from './pages/hermesChat/HermesChat'
 import type { ThemeMode } from './theme'
 
 type AppProps = {
@@ -29,6 +30,7 @@ function Pages() {
 
       {/* 数据分析 */}
       <Route path="/smart-query" element={<SmartQuery />} />
+      <Route path="/hermes-chat" element={<HermesChat />} />
 
       {/* 系统管理 */}
       <Route path="/agent-admin" element={<AgentAdmin />} />

@@ -119,32 +119,104 @@ def extract_json(text: str) -> Optional[dict]:
     return None
 
 
-def call_hermes_sync(prompt: str, timeout: int = 120) -> str:
+def call_hermes_sync(prompt: str, timeout: int = 120):
     """
     同步版 call_hermes - 给 streaming.py (sync generator) 用
-    
-    用 asyncio.run 包一层, 因为 streaming.py 是 def (不是 async def),
-    不能直接 await. 这个函数牺牲并发性换简单性.
-    
+
+    实现: 直接 subprocess.run 同步阻塞读 stdout, 不绕 asyncio。
+    之前用 asyncio.run_coroutine_threadsafe + new_event_loop 在 sync generator 上下文里
+    拿不到完整 stdout (streaming.py 里 wiki_enhancement 是空), 改成直接 subprocess.run。
+
     Args:
         prompt: 给 hermes 的 prompt
         timeout: 超时秒数
-    
-    Returns:
-        hermes 输出文本
-    
+
+    Yields:
+        {"type": "step", "action": "...", "status": "running"}  ← 中间进度事件
+        "stdout 内容"  ← hermes 最终输出字符串 (最后一项)
+
     Raises:
         RuntimeError: hermes 失败 / 超时
     """
+    env = os.environ.copy()
+    env["HERMES_ACCEPT_HOOKS"] = "1"
+    # 关键: 必须传 --skills llm-wiki, hermes 才会加载 llm-wiki skill 并激活 wiki 检索工具
+    # 之前漏了, hermes -z 默认不加载 skill, 只能靠 LLM 训练数据硬答 (查 wiki 库等于失效)
+    cmd = [HERMES_BIN, "-z", prompt, "--skills", "llm-wiki", "--yolo"]
+
+    t0 = time.time()
+    stdout_buf = []
+
+    # 用 Popen 流式读 stdout, 每读一行 yield 一次进度事件
+    # 让前端在 hermes 跑长任务时能看到 "在查 wiki / 在合成报告" 等中间状态
     try:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(call_hermes(prompt, timeout=timeout))
-        finally:
-            loop.close()
-    except Exception as e:
-        raise RuntimeError(f"call_hermes_sync failed: {e}") from e
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            env=env,
+            bufsize=1,  # 行缓冲
+        )
+    except FileNotFoundError:
+        raise RuntimeError(f"hermes 命令未找到: {HERMES_BIN}")
+
+    # 阶段 1: 启动提示
+    yield {"type": "step", "action": "🚀 启动智能引擎...", "tool_name": "engine_progress", "status": "running"}
+
+    # 阶段 2: 轮询读取 stdout, 每行 yield 进度
+    last_yield_time = time.time()
+    line_count = 0
+    import select as _select
+    stdout_pipe = proc.stdout  # 类型收窄 (pyright 嫌 None 不安全)
+    assert stdout_pipe is not None
+    while True:
+        # 超时检查
+        elapsed = time.time() - t0
+        if elapsed > timeout:
+            proc.kill()
+            proc.wait()
+            raise RuntimeError(f"处理超时 ({timeout}s)")
+
+        # 非阻塞读 stdout (避免 CPU 100%)
+        ready, _, _ = _select.select([stdout_pipe], [], [], 0.5)
+        if ready:
+            line = stdout_pipe.readline()
+            if not line:
+                # EOF: 进程结束
+                break
+            stdout_buf.append(line)
+            line_count += 1
+            # 每 5s yield 一次进度 (避免 SSE 洪水)
+            if time.time() - last_yield_time > 5:
+                last_yield_time = time.time()
+                yield {
+                    "type": "step",
+                    "action": f"🔄 知识库检索中 (已读 {line_count} 段, 累计 {elapsed:.0f}s)",
+                    "tool_name": "engine_progress",
+                    "status": "running",
+                    "update": True,
+                }
+
+        # 检查进程是否结束
+        if proc.poll() is not None:
+            # 读完剩余 stdout
+            remaining = stdout_pipe.read()
+            if remaining:
+                stdout_buf.append(remaining)
+            break
+
+    elapsed = time.time() - t0
+    full_stdout = "".join(stdout_buf)
+    logger.info(
+        "hermes_sync 调完成 (%.1fs, stdout=%d 字符, %d 行, returncode=%d)",
+        elapsed, len(full_stdout), line_count, proc.returncode,
+    )
+
+    if proc.returncode != 0 and proc.stderr:
+        logger.warning("hermes returncode=%d, stderr=%s", proc.returncode, (proc.stderr.read() or "")[:500])
+
+    yield full_stdout or ""
 
 
 async def is_hermes_available() -> bool:

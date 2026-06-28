@@ -392,7 +392,11 @@ function TrainingTab() {
               {items.map(item => (
                 <TableRow key={item.id}>
                   <TableCell><Badge appearance="ghost" color="informative" size="small">{typeLabel(item.training_data_type)}</Badge></TableCell>
-                  <TableCell><Text size={200} truncate>{(item.content || item.sql || item.question || '-').slice(0, 120)}</Text></TableCell>
+                  <TableCell><Text size={200} truncate>
+                    {item.training_data_type === 'sql'
+                      ? (item.question || '-')
+                      : (item.content || '-').slice(0, 120)}
+                  </Text></TableCell>
                   <TableCell>
                     <div style={{ display: 'flex', gap: 2 }}>
                       <Tooltip content="编辑" relationship="label">
