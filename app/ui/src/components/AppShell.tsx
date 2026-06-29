@@ -279,7 +279,7 @@ const NAV_SECTIONS = [
     icon: <DataUsageRegular />,
     items: [
       { to: '/smart-query', label: '智能问数', icon: <DataUsageRegular /> },
-      { to: '/hermes-chat', label: 'Hermes 问答', icon: <ChatRegular /> },
+      { to: '/hermes-chat', label: '智能问答', icon: <ChatRegular /> },
     ],
   },
   {
@@ -295,7 +295,7 @@ const NAV_SECTIONS = [
 const PAGE_TITLES: Record<string, string> = {
   '/ticket-review': '作业票审查',
   '/smart-query': '智能问数',
-  '/hermes-chat': 'Hermes 问答',
+  '/hermes-chat': '智能问答',
   '/agent-admin': '智能体配置',
 }
 
