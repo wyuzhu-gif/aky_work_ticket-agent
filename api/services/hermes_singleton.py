@@ -49,7 +49,10 @@ async def call_hermes(prompt: str, timeout: int = 120) -> str:
     """
     
     # 永远新 session (不用 --resume)
-    cmd = [HERMES_BIN, "-z", prompt, "--yolo"]  # --yolo 自动批准 hooks
+    # ⚠️ 2026-06-29: 云端 glm-5.2 5h 额度耗尽 (HTTP 429), 改用本地 ollama qwen3.6:35b
+    # ⚠️ 2026-06-30: 移除 --skills llm-wiki, 法规原文已由 gb30871.py 直接注入 prompt
+    #    不加载 skill → hermes 只做纯 LLM 推理, 不再内部调 wiki → 大幅减少耗时
+    cmd = [HERMES_BIN, "-z", prompt, "--yolo", "-m", "qwen3.6:35b", "--provider", "ollama"]  # --yolo 自动批准 hooks
     
     env = os.environ.copy()
     env["HERMES_ACCEPT_HOOKS"] = "1"  # headless 自动批准
