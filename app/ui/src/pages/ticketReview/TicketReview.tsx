@@ -1359,7 +1359,7 @@ export default function TicketReview() {
                 disabled={saving}
               >
                 <SaveRegular style={{ marginRight: 4 }} />
-                保存到本地
+                保存并新建
               </Button>
             </div>
           </div>

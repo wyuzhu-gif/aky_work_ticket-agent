@@ -294,47 +294,64 @@ class WikiSearch:
         """
         从 wiki 抽取具体条款的内容 (如 "5.4.1" -> "5.4.1 特级动火作业应符合 5.2、5.3 的规定。")
         用于审查结果中给用户看条款原文, 让用户自己核对
+
+        Fallback 策略:
+        1. 先查 wiki_path (默认 entities/)
+        2. 如果找不到或为空, 自动尝试 raw/papers/
         """
         import re
+
+        # 构建候选路径列表
         if wiki_path is None:
             wiki_path = "entities/GB 30871-2022危险化学品企业特殊作业安全规范.md"
-        full = self.get_page(wiki_path)
-        if not full:
-            return None
 
-        # 找 "5.4.1 ..." 这一行起, 到下一个 "数字.数字" 条款号 (或 "## 数字" 标题) 止
-        # 例: 5.4.1 ... 5.4.2 ... 5.5.1 ... 6.1 ...
-        # 多种格式: 5.4.1 / 5.4.1. / 5.4.1 xxx / # 5.4.1 xxx
-        lines = full.split('\n')
-        captured = []
-        started = False
-        for line in lines:
-            stripped = line.strip().lstrip('#').strip()  # 去 # 标题符
-            # 行首是 clause_num + 空格/点/冒号
-            if not started:
-                if stripped.startswith(clause_num) and (len(stripped) == len(clause_num) or stripped[len(clause_num)] in ' .:：、\t'):
-                    captured.append(line)
-                    started = True
-            else:
-                # 停在下个 "数字.数字" 条款号 或 "## 数字" 标题
-                m_next = re.match(r'^(?:#\s*)?(\d+(?:\.\d+(?:\.\d+)?))(?:\s+|\.|\:|\u3001)', stripped)
-                if m_next and m_next.group(1) != clause_num:
-                    break
-                # 跳过空行
-                if not stripped:
-                    captured.append(line)
-                    continue
-                captured.append(line)
-                # 单条条款超过 10 行, 强制停
-                if len(captured) > 10:
-                    break
+        # 主路径 + fallback 路径
+        candidate_paths = [wiki_path]
+        if wiki_path.startswith("entities/"):
+            fallback_path = wiki_path.replace("entities/", "raw/papers/")
+            candidate_paths.append(fallback_path)
 
-        content = '\n'.join(captured).strip()
-        if not content:
-            return None
-        if len(content) > 500:
-            content = content[:500] + "..."
-        return content
+        # 尝试每个路径
+        for path in candidate_paths:
+            full = self.get_page(path)
+            if not full:
+                continue
+
+            # 找 "5.4.1 ..." 这一行起, 到下一个 "数字.数字" 条款号 (或 "## 数字" 标题) 止
+            # 例: 5.4.1 ... 5.4.2 ... 5.5.1 ... 6.1 ...
+            # 多种格式: 5.4.1 / 5.4.1. / 5.4.1 xxx / # 5.4.1 xxx
+            lines = full.split('\n')
+            captured = []
+            started = False
+            for line in lines:
+                stripped = line.strip().lstrip('#').strip()  # 去 # 标题符
+                # 行首是 clause_num + 空格/点/冒号
+                if not started:
+                    if stripped.startswith(clause_num) and (len(stripped) == len(clause_num) or stripped[len(clause_num)] in ' .:：、\t'):
+                        captured.append(line)
+                        started = True
+                else:
+                    # 停在下个 "数字.数字" 条款号 或 "## 数字" 标题
+                    m_next = re.match(r'^(?:#\s*)?(\d+(?:\.\d+(?:\.\d+)?))(?:\s+|\.|\:|\u3001)', stripped)
+                    if m_next and m_next.group(1) != clause_num:
+                        break
+                    # 跳过空行
+                    if not stripped:
+                        captured.append(line)
+                        continue
+                    captured.append(line)
+                    # 单条条款超过 10 行, 强制停
+                    if len(captured) > 10:
+                        break
+
+            content = '\n'.join(captured).strip()
+            if content:
+                if len(content) > 500:
+                    content = content[:500] + "..."
+                return content
+
+        # 所有路径都找不到
+        return None
 
     # ------------------------------------------------------------------
     # High-level: permit review context

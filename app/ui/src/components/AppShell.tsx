@@ -369,7 +369,7 @@ export function AppShell({ mode, onToggleMode, children }: AppShellProps) {
             <div className={classes.brandInfo}>
               <div className={classes.statusRow}>
                 <span className={classes.statusDot} />
-                <span className={classes.brandTitle}>作业票审查系统</span>
+                <span className={classes.brandTitle}>安达园区大模型助手</span>
               </div>
               <span className={classes.brandSub}>智能审阅 · 风险识别</span>
             </div>

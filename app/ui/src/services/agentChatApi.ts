@@ -24,6 +24,8 @@ export interface AgentChatRequest {
   skills?: string[]
   /** 覆盖默认模型 */
   model?: string
+  /** 会话 ID: 已有会话则追加消息, 不传则后端自动创建新会话 */
+  sessionId?: string
 }
 
 export interface AgentChunkDelta {
@@ -41,6 +43,11 @@ export interface AgentChatHandlers {
   onError?: (err: Error) => void
   /** 拿到 trace_id 时触发 (从响应头 X-Request-ID) */
   onTraceId?: (traceId: string) => void
+  /**
+   * 后端在流开始时推的 metadata 事件 (含 session_id)
+   * 前端拿到后保存 currentSessionId
+   */
+  onMetadata?: (meta: { sessionId?: string; traceId?: string; taskId?: string }) => void
   /**
    * 后端从 LLM 输出里抽到 chartconfig 块, 推过来
    * 触发时机: 流式结束后, 最后一个 data 帧之后
@@ -119,6 +126,7 @@ export async function agentChatStream(
         messages: [{ role: 'user', content: req.question }],
         stream: true,
         skills: finalSkills,
+        ...(req.sessionId ? { session_id: req.sessionId } : {}),
       }),
       signal: abortCtrl.signal,
     })
@@ -267,6 +275,23 @@ function parseAndDispatch(
       msg = obj?.error?.message || obj?.message || data
     } catch { /* keep raw */ }
     handlers.onError?.(new Error(String(msg)))
+    return null
+  }
+
+  if (eventName === 'metadata') {
+    // 后端在流开始时推的 metadata 事件 (含 session_id)
+    try {
+      const obj = JSON.parse(data) as {
+        session_id?: string
+        trace_id?: string
+        task_id?: string
+      }
+      handlers.onMetadata?.({
+        sessionId: obj.session_id,
+        traceId: obj.trace_id,
+        taskId: obj.task_id,
+      })
+    } catch { /* ignore parse error */ }
     return null
   }
 

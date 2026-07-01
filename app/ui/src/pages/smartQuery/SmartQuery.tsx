@@ -561,7 +561,7 @@ export default function SmartQuery() {
   // 加载会话列表
   const loadSessions = useCallback(async () => {
     try {
-      const list = await listSessions()
+      const list = await listSessions(50, 0, 'smart_query')
       setSessions(list)
     } catch (e) {
       console.error('Failed to load sessions:', e)

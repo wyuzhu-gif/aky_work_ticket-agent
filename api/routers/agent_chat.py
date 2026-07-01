@@ -616,6 +616,8 @@ class ChatRequest(BaseModel):
     max_tokens: Optional[int] = None
     # 业务层: 显式声明要加载的 skills, 由网关在 system policy 里注入
     skills: Optional[list[str]] = None
+    # 会话 ID (可选): 前端传入已有会话则追加消息, 不传则自动创建新会话
+    session_id: Optional[str] = None
     # 透传其它 OpenAI 参数（top_p, stop, ...）
     extra: dict = Field(default_factory=dict)
 
@@ -652,7 +654,41 @@ async def agent_chat(
                 detail=f"skill '{s}' not in allow-list: {ALLOWED_SKILLS}",
             )
 
-    # 4) 构造上游 payload
+    # 4) 会话管理: session_id 为空则创建新会话, 保存 user 消息
+    #    关键: history 只存不参与推理, 不改 upstream_messages 的构造方式
+    # 先提取 user_query (后面 preloaded_data 也要用)
+    user_query = ""
+    for m in reversed(req.messages):
+        content = m.content
+        if isinstance(content, str) and content.strip():
+            user_query = content
+            break
+
+    session_id = req.session_id
+    try:
+        from smart_query.sessions import create_session, add_message, get_session
+        if not session_id:
+            # 新会话: title = 第一条 user 消息前 50 字符
+            title = user_query[:50] if user_query else "新对话"
+            session = create_session(title=title, source="hermes_chat")
+            session_id = session["id"]
+            logger.info("agent_chat: trace=%s created session=%s title=%r", trace_id, session_id, title)
+        else:
+            # 校验会话存在
+            existing = get_session(session_id)
+            if not existing:
+                # 会话不存在 (可能被删了), 创建新的
+                title = user_query[:50] if user_query else "新对话"
+                session = create_session(session_id=session_id, title=title, source="hermes_chat")
+                logger.info("agent_chat: trace=%s session=%s not found, recreated", trace_id, session_id)
+        # 保存 user 消息
+        add_message(session_id=session_id, role="user", content=user_query)
+        logger.info("agent_chat: trace=%s saved user msg to session=%s", trace_id, session_id)
+    except Exception as e_session:
+        logger.warning("agent_chat: trace=%s session save failed: %s (non-fatal)", trace_id, e_session)
+        session_id = session_id or ""
+
+    # 5) 构造上游 payload
     #   - 业务 policy 强制在 system role 顶部
     #   - user 消息进 messages 数组, 永远进 user role
     upstream_messages = [{"role": "system", "content": BUSINESS_SYSTEM_POLICY}]
@@ -662,13 +698,7 @@ async def agent_chat(
     #   禁止 LLM 走 curl / execute_code / read_file 三步链路 (会再压缩数据)
     preloaded_data = None
     try:
-        # ChatRequest 没有 question 字段, 从 messages 里拿最后一条 user message
-        user_query = ""
-        for m in reversed(req.messages):
-            content = m.content if hasattr(m, "content") else m.get("content", "")
-            if isinstance(content, str) and content.strip():
-                user_query = content
-                break
+        # user_query 已在前面 (session 管理) 提取
         if not user_query:
             raise ValueError("no user message in req.messages")
         from smart_query.intent_classifier import classify_intent
@@ -852,7 +882,7 @@ async def agent_chat(
 
     if req.stream:
         return StreamingResponse(
-            _stream_from_hermes(payload, headers, trace_id, task_id, user.oid),
+            _stream_from_hermes(payload, headers, trace_id, task_id, user.oid, session_id),
             media_type="text/event-stream",
             headers={
                 "X-Request-ID": trace_id,
@@ -871,6 +901,7 @@ async def _stream_from_hermes(
     trace_id: str,
     task_id: str,
     user_id: str,
+    session_id: str = "",
 ) -> AsyncIterator[bytes]:
     """
     字节级 SSE 透传 + stream guard + 主动取消
@@ -897,6 +928,11 @@ async def _stream_from_hermes(
     )
     _register_task(task)
     upstream_response: Optional[httpx.Response] = None
+
+    # 推 metadata event: 让前端第一时间拿到 session_id (不用读 HTTP header)
+    if session_id:
+        meta_event = json.dumps({"session_id": session_id, "trace_id": trace_id, "task_id": task_id})
+        yield f"event: metadata\ndata: {meta_event}\n\n".encode("utf-8")
 
     async def _cancel_watcher():
         # 等到取消信号 -> 关掉上游 stream (不影响其他并发流)
@@ -1094,6 +1130,29 @@ async def _stream_from_hermes(
             "has_chart": state["chart_config"] is not None,
         })
         yield f"event: done\ndata: {done_event}\n\n".encode("utf-8")
+
+        # ===== 保存 assistant 消息到 session (只存最终 answer, 不存中间 buffer) =====
+        if session_id:
+            final_answer = state["cleaned_text"] or ""
+            # 如果 cleaned_text 为空但有 accumulated_content (异常中断), 用 accumulated
+            if not final_answer and state.get("accumulated_content"):
+                final_answer = state["accumulated_content"]
+            if final_answer:
+                try:
+                    from smart_query.sessions import add_message as _add_msg
+                    _add_msg(
+                        session_id=session_id,
+                        role="assistant",
+                        content=final_answer,
+                        chart_config=state.get("chart_config"),
+                    )
+                    logger.info(
+                        "agent_chat: trace=%s saved assistant msg to session=%s (len=%d, chart=%s)",
+                        trace_id, session_id, len(final_answer),
+                        "yes" if state.get("chart_config") else "no",
+                    )
+                except Exception as e_save:
+                    logger.warning("agent_chat: trace=%s save assistant msg failed: %s", trace_id, e_save)
 
         # ===== Task 生命周期清理 (Phase 1 兜底) =====
         # 关键: 不管前面是 success/error/cancel, 一定从 registry 摘除

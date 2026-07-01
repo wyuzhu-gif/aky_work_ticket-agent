@@ -34,9 +34,9 @@ class ChatRequest(BaseModel):
 # ─── 会话管理 API ───
 
 @router.get("/sessions")
-async def api_list_sessions(limit: int = 50, offset: int = 0):
-    """列出所有会话"""
-    sessions = list_sessions(limit=limit, offset=offset)
+async def api_list_sessions(limit: int = 50, offset: int = 0, source: Optional[str] = None):
+    """列出会话, 可按 source 过滤: smart_query / hermes_chat"""
+    sessions = list_sessions(limit=limit, offset=offset, source=source)
     return {"data": sessions, "total": len(sessions)}
 
 

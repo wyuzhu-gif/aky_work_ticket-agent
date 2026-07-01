@@ -31,8 +31,10 @@ export interface SessionMessage {
   created_at: string
 }
 
-export async function listSessions(limit = 50, offset = 0): Promise<SessionInfo[]> {
-  const resp = await fetch(`${apiOrigin}/api/v1/chat/sessions?limit=${limit}&offset=${offset}`)
+export async function listSessions(limit = 50, offset = 0, source?: string): Promise<SessionInfo[]> {
+  const params = new URLSearchParams({ limit: String(limit), offset: String(offset) })
+  if (source) params.set('source', source)
+  const resp = await fetch(`${apiOrigin}/api/v1/chat/sessions?${params}`)
   if (!resp.ok) throw new Error('获取会话列表失败')
   const json = await resp.json()
   return json.data ?? []

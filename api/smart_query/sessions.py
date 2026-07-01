@@ -53,21 +53,27 @@ def _get_conn() -> sqlite3.Connection:
         if stmt:
             conn.execute(stmt)
     conn.commit()
+    # 兼容已有表: 确保 source 列存在
+    cols = [r[1] for r in conn.execute("PRAGMA table_info(sq_sessions)").fetchall()]
+    if "source" not in cols:
+        conn.execute("ALTER TABLE sq_sessions ADD COLUMN source TEXT DEFAULT 'smart_query'")
+        conn.commit()
+        logger.info("added 'source' column to sq_sessions")
     return conn
 
 
 # ─── 会话 CRUD ───
 
-def create_session(session_id: Optional[str] = None, title: str = "") -> Dict[str, Any]:
-    """创建新会话，返回会话信息"""
+def create_session(session_id: Optional[str] = None, title: str = "", source: str = "smart_query") -> Dict[str, Any]:
+    """创建新会话，返回会话信息. source 区分来源: smart_query / hermes_chat"""
     if not session_id:
         import uuid
         session_id = str(uuid.uuid4())
     conn = _get_conn()
     try:
         conn.execute(
-            "INSERT INTO sq_sessions(id, title) VALUES(?, ?)",
-            (session_id, title),
+            "INSERT INTO sq_sessions(id, title, source) VALUES(?, ?, ?)",
+            (session_id, title, source),
         )
         conn.commit()
         row = conn.execute("SELECT * FROM sq_sessions WHERE id=?", (session_id,)).fetchone()
@@ -88,15 +94,22 @@ def get_or_create_session(session_id: str) -> Dict[str, Any]:
     return create_session(session_id=session_id)
 
 
-def list_sessions(limit: int = 50, offset: int = 0) -> List[Dict[str, Any]]:
-    """列出所有会话，按更新时间倒序"""
+def list_sessions(limit: int = 50, offset: int = 0, source: Optional[str] = None) -> List[Dict[str, Any]]:
+    """列出会话，按更新时间倒序. source 可选过滤: smart_query / hermes_chat"""
     conn = _get_conn()
     try:
-        rows = conn.execute(
-            "SELECT s.*, (SELECT COUNT(*) FROM sq_messages WHERE session_id=s.id) AS msg_count "
-            "FROM sq_sessions s ORDER BY s.updated_at DESC LIMIT ? OFFSET ?",
-            (limit, offset),
-        ).fetchall()
+        if source:
+            rows = conn.execute(
+                "SELECT s.*, (SELECT COUNT(*) FROM sq_messages WHERE session_id=s.id) AS msg_count "
+                "FROM sq_sessions s WHERE s.source=? ORDER BY s.updated_at DESC LIMIT ? OFFSET ?",
+                (source, limit, offset),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT s.*, (SELECT COUNT(*) FROM sq_messages WHERE session_id=s.id) AS msg_count "
+                "FROM sq_sessions s ORDER BY s.updated_at DESC LIMIT ? OFFSET ?",
+                (limit, offset),
+            ).fetchall()
         return [dict(r) for r in rows]
     finally:
         conn.close()
